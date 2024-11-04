@@ -63,6 +63,7 @@ ogrinfo --version
 
 
 ## My script to use proj, gdal, pdal, lastools, ...
+All example files are on the examples directory.
 
 ### hillshade.sh - Make hillshade from lidar file (laz)
 
@@ -74,26 +75,38 @@ hillshade.sh -i input.laz -o resultname [ -g 0|1 ] [ -d 0|1 ]
   * -d 0|1 , default 0 - debug output
   * -v 	     version
   * -h       this help
-  
 ```
+Example hillshade from example.laz
+```sh
+cd examples
+../hillshade.sh -i example.laz -o example1
+```
+Result file is example1.tif
+
+Convert Tiff to PNG
+```sh
+gdal_translate -of PNG example1.tif example1.png
+```
+
 
 ### lidar_volume.py - Calculate volume of Lidar
 
 ***lidar_volume.py*** I have used to calculate volume of lidar, using some base z-index.
 
-Here is example how to clip some area from LAZ-file and then calculate volume above level 112
+Here is example how to clip some area from LAZ-file and then calculate volume above level 112.
 ```
+cd examples
 # unzip laz and clip area using polycon area.txt
-lasclip64 -i P5313E1.laz -o areax.las -poly area.txt  -keep_class 2
+lasclip64 -i example.laz -o areax.las -poly area.txt  -keep_class 2
 # or drop below 112 data already in this step, lidar_volume.py also accept above level value
-lasclip64 -i P5313E1.laz -o areax.las -poly area.txt  -keep_class 2  -drop_z_below 112
+lasclip64 -i example.laz -o areax.las -poly area.txt  -keep_class 2  -drop_z_below 112
 
 # or using Pdal to unzip laz to las
-pdal translate P5313E1.laz P5313E1.las
+pdal translate example.laz example.las
 
 # clip is not so easy with Pdal as using Lastools
 
 # calculate volume 
-python3 lidar_volume.py areax.las 112
-The volume above height 112.0 is: 226715.38 cubic meters
+python3 ../lidar_volume.py areax.las 112
+112.0 38780.31 m3
 
