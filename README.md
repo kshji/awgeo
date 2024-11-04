@@ -93,7 +93,7 @@ Result file is example1.tif
 ### hillshade.sh - Make hillshade from lidar file (laz)
 
 
-![Ex. hillshade](../../blob/master/examples/example1.png){:height="128px" width="128px"}.
+![Ex. hillshade](../../blob/master/examples/example1.png | width=200)
 
 ```sh
 hillshade.sh -i input.laz -o resultname [ -g 0|1 ] [ -d 0|1 ]
