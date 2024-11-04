@@ -22,7 +22,7 @@ My geo programs use various software, including Lastools, PDAL and GDAL.
 The full licence terms can be found on the individual pages of the following tools.
 
 ### My online tools
-  * [Shp2Dxf](https://awot.fi/sf/ocad/shp2dxf) my online tool to make DXF from Shapefiles, ex. using in [Ocad](https://ocad.com)
+  * [Shp2Dxf](https://awot.fi/sf/ocad/shp2dxf) my online tool to make DXF from Shapefiles, ex. using in the [Ocad](https://ocad.com)
   * [Ocad angle correction GD: declination + convergence](https://awot.fi/sf/ocad/ocaddec?lang=eng)
 
 ### Lidar maps and tools
