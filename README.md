@@ -1,5 +1,10 @@
-# AwGeo Geo- and mappingtools
+# AwGeo - geo- and mappingtools
+I am a skilled orienteer who works with maps using Ocad software.
 
+   * [Awot](https://awot.fi), my company
+   * [Suunnistus.info](https://suunnistus.info), my orienteering pages
+   * [Kalevan Rasti](https://kalevanrasti.fi), my orienteering club
+   * [Github kshji](https://github.com/kshji), my github
 
 ## The tools used to find solution for my geoneeds ###
     
