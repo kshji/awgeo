@@ -1,5 +1,7 @@
 # AwGeo - geo- and mappingtools
 I am a skilled orienteer who works with maps using Ocad software.
+In Finland, we are happy  because we have so much open source geospatial data 
+(https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu?lang=en).
 
   * [Awot](https://awot.fi), my company
   * [Suunnistus.info](https://suunnistus.info), my orienteering pages
