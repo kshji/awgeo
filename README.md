@@ -47,11 +47,11 @@ sudo apt-get install gdal-bin libgdal-dev
 #       Check:
 ogrinfo --version
 
-       sudo apt-get install python3-gdal
+sudo apt-get install python3-gdal
 # If using perl and need GDAL, then
-       sudo apt-get install libgd-gd2-perl
+sudo apt-get install libgd-gd2-perl
 # PDAL
-       sudo apt-get install pdal
+sudo apt-get install pdal
 ```
 
 #### Pip for python
