@@ -69,7 +69,7 @@ ogrinfo --version
 ```
 
 
-## My script to use proj, gdal, pdal, lastools, ...
+## My sh-scripts use various software, including proj, gdal, pdal, lastools, ...
 All example files are on the ***examples*** directory.
 
 ### laz2tif.sh - Make GeoTiff from LAZ file
