@@ -47,7 +47,7 @@ def main():
         print(f'Usage: python3 {prg} <filename> <level>')
         sys.exit(1)
 
-    #file_path = 'some.las'
+    #file_path = 'louhoskaikki4.las'
     file_path = sys.argv[1]
     #height_threshold = 112  # Change this to your desired height
     height_threshold = float(sys.argv[2])
@@ -56,7 +56,8 @@ def main():
     tri = triangulate_points(x, y)
     volume = calculate_volume(tri, z, height_threshold)
 
-    print(f'The volume above height {height_threshold} is: {volume:.2f} cubic meters')
+    #print(f'The volume above height {height_threshold} is: {volume:.2f} cubic meters')
+    print(f'{height_threshold} {volume:.2f} m3')
 
 if __name__ == "__main__":
     main()
