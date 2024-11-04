@@ -117,6 +117,8 @@ gdal_translate -of PNG example1.tif example1.png
 
 ### lidar_volume.py - Calculate volume of Lidar
 
+Calculate the volume from the Lidar data (LAZ-file) data above a certain height.
+
 ***lidar_volume.py*** I have used to calculate volume of lidar, using some base z-index.
 
 Here is example how to clip some area from LAZ-file and then calculate volume above level 112.
