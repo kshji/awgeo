@@ -8,7 +8,7 @@ In Finland, we are happy  because we have so much open source
   * [Kalevan Rasti](https://kalevanrasti.fi), my orienteering club
   * [Github kshji](https://github.com/kshji), my github
 
-## The tools used to find solution for my geoneeds ###
+## The tools used to find the needs for processing geodata
 My geo programs use various software, including Lastools, PDAL and GDAL.
     
   * [PROJ](https://proj.org/)
