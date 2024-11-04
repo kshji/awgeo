@@ -119,7 +119,7 @@ gdal_translate -of PNG example1.tif example1.png
 
 ### lidar_volume.py - Calculate volume of Lidar
 
-<img src="../../blob/master/examples/hill.png" width="80%" height="80%">
+<img src="../../blob/master/examples/hill.png" width="50%" height="50%">
 
 Calculate the volume from the Lidar data (LAZ-file) data above a certain height.
 
