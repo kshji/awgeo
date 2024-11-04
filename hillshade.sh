@@ -38,7 +38,7 @@ VER="2024-11-04.a"
 #	Check:
 #	ogrinfo --version
 #
-#	sudo python3-gdal 
+#	sudo apt-get install python3-gdal 
 # If using perl, then
 #	sudo apt-get install libgd-gd2-perl
 # PDAL
