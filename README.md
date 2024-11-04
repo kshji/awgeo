@@ -24,7 +24,7 @@ The full licence terms can be found on the individual pages of the following too
 ### Install tools
 This example is for Ubuntu, Debian, WSL2 Ubuntu, ... 
 
-Each software pages include also download for Windows and so on.
+Each software pages include also download for Windows, OS/X, ...
 
 #### Ubuntu, Debian, WSL2 Ubuntu, ...
 
@@ -36,12 +36,12 @@ sudo apt-get install python3-dev python3.8-dev
 # Official stable UbuntuGIS packages.
 sudo add-apt-repository ppa:ubuntugis/ppa
 sudo apt-get update
-apt-get install gdal-bin libgdal-dev
+sudo apt-get install gdal-bin libgdal-dev
 #       Check:
 ogrinfo --version
 
        sudo apt-get install python3-gdal
-# If using perl, then
+# If using perl and need GDAL, then
        sudo apt-get install libgd-gd2-perl
 # PDAL
        sudo apt-get install pdal
@@ -63,7 +63,23 @@ ogrinfo --version
 
 
 ## My script to use proj, gdal, pdal, lastools, ...
-All example files are on the examples directory.
+All example files are on the ***examples*** directory.
+
+### laz2tif.sh - Make GeoTiff from LAZ file
+```sh
+laz2tif.sh -i input.laz -o result.tif [ -d 0|1 ]
+  * -i input laz file name
+  * -o result tif file
+  * -d 0|1 , default 0 - debug output
+  * -v       version
+  * -h       this help
+```
+Example from example.laz
+```sh
+cd examples
+../laz2tif.sh -i example.laz -o example1.tif
+```
+Result file is example1.tif
 
 ### hillshade.sh - Make hillshade from lidar file (laz)
 
@@ -88,6 +104,7 @@ Convert Tiff to PNG
 gdal_translate -of PNG example1.tif example1.png
 ```
 
+  * default values, look hillshade.sh, funtion *json and set_def.
 
 ### lidar_volume.py - Calculate volume of Lidar
 
