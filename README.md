@@ -79,7 +79,7 @@ sudo apt-get install pdal
 
 
 ## My sh-scripts use various software, including proj, gdal, pdal, lastools, ...
-All example files are on the ***examples*** directory.
+All example files are in the ***examples*** directory.
 
 ### xy2wkt.sh - Make WKT Polygon from x,y polygon text file
 
