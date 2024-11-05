@@ -74,6 +74,35 @@ sudo apt-get install pdal
 ## My sh-scripts use various software, including proj, gdal, pdal, lastools, ...
 All example files are on the ***examples*** directory.
 
+### xy2wkt.sh - Make WKT Polygon from x,y polygon from text file
+
+Convert x,y polygon textfile to the WKT polygon format.
+
+```
+cd examples
+cat area.txt
+632162.5 6954655.8
+632176.7 6954656.9
+632200.1 6954651.5
+632162.5 6954655.8
+
+../xy2wkt.sh -i area.txt -o area.wkt
+# or using pipe
+cat area.txt | ../xy2wkt.sh > area.wkt
+```
+
+### lazcrop.sh - Crop polyline from LAZ file
+You can use Lastools ***lasclip*** or this small PDAL script to crop polygon area from laz file.
+lazcrop.sh need polygon in WKT Polygon format. Look ***xy2wkt.sh*** how to convert x,y textfile to the wkt format.
+
+```sh
+# using lastools
+lasclip64 -i example.laz -o areax.las -poly area.txt
+# using lazcrop.sh
+../lazcrop.sh -i example.laz -p area.wkt -o areay.las
+
+```
+
 ### laz2tif.sh - Make GeoTiff from LAZ file
 ```sh
 laz2tif.sh -i input.laz -o result.tif [ -d 0|1 ]
@@ -127,19 +156,23 @@ Calculate the volume from the Lidar data (LAZ-file) data above a certain height.
 ***lidar_volume.py*** I have used to calculate volume of lidar, using some base z-index.
 
 Here is example how to clip some area from LAZ-file and then calculate volume above level 112.
-```
+```sh
 cd examples
 # unzip laz and clip area using polycon area.txt
 lasclip64 -i example.laz -o areax.las -poly area.txt  -keep_class 2
 # or drop below 112 data already in this step, lidar_volume.py also accept above level value
 lasclip64 -i example.laz -o areax.las -poly area.txt  -keep_class 2  -drop_z_below 112
+# or using my lazcrop.sh
 
 # or using Pdal to unzip laz to las
 pdal translate example.laz example.las
 
-# clip is not so easy with Pdal as using Lastools
+# look lazcrop.sh how to clip polygon from the LAZ-file
 
 # calculate volume 
 python3 ../lidar_volume.py areax.las 112
 112.0 38780.31 m3
+
+```
+
 
