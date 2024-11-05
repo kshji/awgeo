@@ -29,6 +29,11 @@ The full licence terms can be found on the individual pages of the following too
   * [Pullautuskartta](https://pullautuskartta.fi/)
   * [MapAnt FI](https://mapant.fi/)
   * [CloudCompare](https://github.com/cloudcompare/cloudcompare), CloudCompare is a 3D point cloud processing software. Also light CcViewer.
+  * [Courses: Point cloud processing with QGIS and PDAL wrench](https://courses.gisopencourseware.org/course/view.php?id=63)
+  * [Courses: Programming for Geospatial Hydrological Applications](https://courses.gisopencourseware.org/course/view.php?id=2)
+
+### Other interesting tools
+  * [Virtual DOS](https://copy.sh/v86/?profile=msdos), [Github](https://github.com/copy/v86), also Linux, Windows98, ... nice.
 
 ### Install tools
 This example is for Ubuntu, Debian, WSL2 Ubuntu, ... 
