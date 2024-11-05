@@ -46,7 +46,9 @@ Each software pages include also download for Windows, OS/X, ...
 
 ```sh
 sudo apt-get install proj-bin libproj-dev
-sudo apt-get install python3-dev python3.8-dev
+sudo apt-get install python3-dev python3.8-dev python3-pip
+# update PIP
+pip3 install --upgrade pip
 
 # GDAL
 # Official stable UbuntuGIS packages.
@@ -57,6 +59,8 @@ sudo apt-get install gdal-bin libgdal-dev
 ogrinfo --version
 
 sudo apt-get install python3-gdal
+sudo apt-get install python3-numpy
+
 # If using perl and need GDAL, then
 sudo apt-get install libgd-gd2-perl
 # PDAL
