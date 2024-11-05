@@ -134,7 +134,7 @@ Result file is example1.tif
 hillshade.sh -i input.laz -o resultname [ -g 0|1 ] [ -d 0|1 ]
    -i input laz file name
    -o resultname, result file is resultname.tif !!!
-   -g 0|1 , default 1, using ground fileter or not
+   -g 0|1 , default 1, using ground filter or not
    -d 0|1 , default 0 - debug output
    -v 	     version
    -h       this help
