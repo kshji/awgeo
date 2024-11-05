@@ -91,7 +91,7 @@ cat area.txt
 cat area.txt | ../xy2wkt.sh > area.wkt
 ```
 
-### lazcrop.sh - Crop polyline from LAZ file
+### lazcrop.sh - Crop polygon area from LAZ file
 You can use Lastools ***lasclip*** or this small PDAL script to crop polygon area from laz file.
 lazcrop.sh need polygon in WKT Polygon format. Look ***xy2wkt.sh*** how to convert x,y textfile to the wkt format.
 
