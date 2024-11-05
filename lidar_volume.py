@@ -47,7 +47,7 @@ def main():
         print(f'Usage: python3 {prg} <filename> <level>')
         sys.exit(1)
 
-    #file_path = 'louhoskaikki4.las'
+    #file_path = 'input.las'
     file_path = sys.argv[1]
     #height_threshold = 112  # Change this to your desired height
     height_threshold = float(sys.argv[2])
