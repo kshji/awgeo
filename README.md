@@ -26,6 +26,7 @@ The full licence terms can be found on the individual pages of the following too
   * [Ocad angle correction GD: declination + convergence](https://awot.fi/sf/ocad/ocaddec?lang=eng)
 
 ### Lidar maps and tools
+  * [GeoTIFF.io](https://app.geotiff.io/) GeoTiff viewer, 
   * [Pullautuskartta](https://pullautuskartta.fi/)
   * [MapAnt FI](https://mapant.fi/)
   * [CloudCompare](https://github.com/cloudcompare/cloudcompare), CloudCompare is a 3D point cloud processing software. Also light CcViewer.
@@ -33,6 +34,8 @@ The full licence terms can be found on the individual pages of the following too
   * [Courses: Point cloud processing with QGIS and PDAL wrench](https://courses.gisopencourseware.org/course/view.php?id=63)
   * [Courses: Programming for Geospatial Hydrological Applications](https://courses.gisopencourseware.org/course/view.php?id=2)
   * [Geospatial School](https://geospatialschool.com/)
+  * [Awesome-Geospatial](https://github.com/sacridini/Awesome-Geospatial), list of geotools
+  * [Proj Widard](https://projectionwizard.org/)
 
 ### Other interesting tools
   * [Virtual DOS](https://copy.sh/v86/?profile=msdos), [Github](https://github.com/copy/v86), also Linux, Windows98, ... nice.
