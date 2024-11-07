@@ -48,27 +48,38 @@ Each software pages include also download for Windows, OS/X, ...
 #### Ubuntu, Debian, WSL2 Ubuntu, ...
 
 ```sh
-sudo apt-get install proj-bin libproj-dev
+#sudo apt-get install proj-bin libproj-dev
 sudo apt-get install python3-dev python3.8-dev python3-pip
 # update PIP
 pip3 install --upgrade pip
 
-# GDAL
+# GDAL install include PROJ
 # Official stable UbuntuGIS packages.
 sudo add-apt-repository ppa:ubuntugis/ppa
 sudo apt-get update
-sudo apt-get install gdal-bin libgdal-dev
+sudo apt-get install gdal-bin libgdal-dev 
 #       Check:
 ogrinfo --version
 
-sudo apt-get install python3-gdal
-sudo apt-get install python3-numpy
+sudo apt-get install python3-gdal python3-numpy
 
 # If using perl and need GDAL, then
 sudo apt-get install libgd-gd2-perl
 # PDAL
-sudo apt-get install pdal
+sudo apt-get install -y pdal libpdal-plugins
 ```
+
+If you get error ***free(): invalid pointer*** using cmds:
+```sh
+ogrinfo --version
+gdalinfo --version
+pdal --version
+```
+Then you have problem with libproj versions.
+Solutions is usually to find correct libproj = latest and then soft link to the oler version numbers.
+
+[Read solutions](https://stackoverflow.com/questions/72345761/gdal-ogr2ogr-ogrinfo-produces-an-invalid-pointer-error-each-time-i-run-it).
+
 
 #### Pip for python
 ```sh
