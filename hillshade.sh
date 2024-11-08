@@ -61,9 +61,10 @@ DEBUG=0
 usage()
 {
 	cat <<EOF >&2
-usage:$PRG -i inputlaz -o outname [ -g 0|1 ] 
+usage:$PRG -i inputlaz -o outname [ -g 0|1 ]  [ -z NUM ]
 Result is outname.tif
   - g 0|1, 1 is default - use 1st ground filter before making hillshade
+  - z NUM , default is 3
 EOF
 	
 }
@@ -199,10 +200,6 @@ id=$$ # process number = unique id for tempfiles
 TEMP="tmp/$id"
 groundfilter="$TEMP.ground_filter.json"
 laz2tiff="$TEMP.laz2tif.json"
-status groundfilter $groundfilter
-status laz2tiff $laz2tiff
-make_json_ground > $groundfilter
-make_json_tiff > $laz2tiff
 
 
 
@@ -215,6 +212,7 @@ do
 		-o) result="$2"; shift  ;;
 		-g) ground="$2"; shift  ;;
 		-d) DEBUG="$2"; shift  ;;
+		-z) z="$2"; shift  ;;
 		-v) echo "$PRG Ver:$VER" >&2 ;;
 		-h) usage ; exit 1 ;;
 		-*) usage ; exit 1 ;;
@@ -225,6 +223,11 @@ done
 [ "$inf" = "" ] && usage && exit 1
 name=$(basename "$inf" .laz)
 [ "$result" = "" ] && result="$name"
+
+status groundfilter $groundfilter
+status laz2tiff $laz2tiff
+make_json_ground > $groundfilter
+make_json_tiff > $laz2tiff
 
 clear_result
 
