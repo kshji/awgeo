@@ -200,4 +200,22 @@ python3 ../lidar_volume.py areax.las 112
 
 ```
 
+### Rotate GeoTIFF
+[Source](https://gis.stackexchange.com/questions/418517/rotation-of-a-spatial-grid-by-an-angle-around-a-pivot-with-python-gdal-or-raster) for this solution. 
+Thanks for [WaterFox](https://gis.stackexchange.com/users/167793/waterfox).
+
+```sh
+python3 rotate.angle.py source.tif  angle rotated.tif
+# angle is +/- degrees
+```
+
+### Remove geogoords from GeoTiff
+Need to remove geodata from GeoTiff => it is "only" tif image without geolocation.
+
+```sh
+gdal_translate -of GTiff -co PROFILE=BASELINE input.tif output.tif
+# or
+cp geotif.tif image.tif
+gdal_edit.py  -unsetgt image.tif
+```
 
