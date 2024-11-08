@@ -149,10 +149,11 @@ Result file is example1.tif
 <img src="../../blob/master/examples/example1.png" width="30%" height="30%">
 
 ```sh
-hillshade.sh -i input.laz -o resultname [ -g 0|1 ] [ -d 0|1 ]
+hillshade.sh -i input.laz -o resultname [ -z NUMBER ] [ -g 0|1 ] [ -d 0|1 ]
    -i input laz file name
    -o resultname, result file is resultname.tif !!!
    -g 0|1 , default 1, using ground filter or not
+   -z NUMBER  , default is 3
    -d 0|1 , default 0 - debug output
    -v 	     version
    -h       this help
