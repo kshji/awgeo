@@ -226,7 +226,7 @@ Need to remove geodata from GeoTiff => it is "only" tif image without geolocatio
 ```sh
 gdal_translate -of GTiff -co PROFILE=BASELINE input.tif output.tif
 # or
-cp geotif.tif image.tif
-gdal_edit.py  -unsetgt image.tif
+cp geotif.tif output.tif
+gdal_edit.py  -unsetgt output.tif
 ```
 
