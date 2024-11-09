@@ -99,11 +99,21 @@ Solutions is usually to find correct libproj = latest and then soft link to the 
 ## My sh-scripts use various software, including proj, gdal, pdal, lastools, ...
 All example files are in the ***examples*** directory.
 
+### raw2xy.sh - Make XY polygon file from Ocad polygon information
+ * draw polygon in Ocad
+ * get polygon info (button i)
+ * copy polycon text to the textfile ex. area.raw
+
+Convert raw to the xy format:
+```sh
+../raw2xy.sh -i area.raw -o area.txt
+
+
 ### xy2wkt.sh - Make WKT Polygon from x,y polygon text file
 
 Convert x,y polygon textfile to the WKT polygon format.
 
-```
+```sh
 cd examples
 cat area.txt
 632162.5 6954655.8
