@@ -76,7 +76,7 @@ gdalinfo --version
 pdal --version
 ```
 Then you have problem with libproj versions.
-Solutions is usually to find correct libproj = latest and then soft link to the oler version numbers.
+Solutions is usually to find correct libproj = latest and then soft link to the older version numbers.
 
 [Read solutions](https://stackoverflow.com/questions/72345761/gdal-ogr2ogr-ogrinfo-produces-an-invalid-pointer-error-each-time-i-run-it).
 
