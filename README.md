@@ -109,6 +109,7 @@ Convert raw to the xy format:
 ```sh
 ../raw2xy.sh -i area.raw -o area.txt
 
+```
 
 ### xy2wkt.sh - Make WKT Polygon from x,y polygon text file
 
