@@ -15,7 +15,8 @@ My geo programs use various software, including Lastools, PDAL and GDAL.
   * [GDAL](https://gdal.org/)
   * [PDAL](https://pdal.io/)
   * [Lastools](https://lastools.github.io/)
-  * [Karttapullautin](https://www.routegadget.net/karttapullautin/), toolbox/workflow for generating O training maps from Lidar materials. Thank you Jarkko Ryyppö.
+  * [Karttapullautin archive](https://www.routegadget.net/karttapullautin/), toolbox/workflow for generating O training maps from Lidar materials. Thank you Jarkko Ryyppö.
+  * [Karttapullautin Github](https://github.com/rphlo/karttapullautin), same ***pullautin*** software, but rewrited using Rust
   * [LasPy](https://laspy.readthedocs.io/), [Python library](https://pypi.org/project/laspy/) for lidar LAS/LAZ IO, [Github](https://github.com/laspy/laspy)
   * [OCAD](https://ocad.com), Cad for mapping
 
