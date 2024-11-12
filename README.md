@@ -16,7 +16,8 @@ My geo programs use various software, including Lastools, PDAL and GDAL.
   * [PDAL](https://pdal.io/)
   * [Lastools](https://lastools.github.io/)
   * [Karttapullautin archive](https://www.routegadget.net/karttapullautin/), toolbox/workflow for generating O training maps from Lidar materials. Thank you Jarkko Ryyppö.
-  * [Karttapullautin Github](https://github.com/rphlo/karttapullautin), same ***pullautin*** software, but rewrited using Rust
+  * [Karttapullautin Github](https://github.com/rphlo/karttapullautin), same ***pullautin*** software, but rewrited using Rust - use this fast pullautin
+  * [Karttapullautin Perl](https://github.com/linville/kartta-pack), org perl version, still updated - some options has only in this version
   * [LasPy](https://laspy.readthedocs.io/), [Python library](https://pypi.org/project/laspy/) for lidar LAS/LAZ IO, [Github](https://github.com/laspy/laspy)
   * [OCAD](https://ocad.com), Cad for mapping
 
@@ -232,3 +233,51 @@ cp geotif.tif output.tif
 gdal_edit.py  -unsetgt output.tif
 ```
 
+
+### Karttapullautin batch execute
+
+pullauta.run.sh is my version to batch ***pullauta*** process.
+
+#### setup
+ * mkdir input and output
+ * cp pullauta.ini from config or edit your pullauta
+ * edit awgeo.ini, set directory where is AwGeo binary's
+
+#### pullauta.ini
+Have to set:
+```sh
+batch=1
+batchoutfolder=./output
+lazfolder=./input
+```
+
+#### execute
+
+Normal batch:
+ * put input files to the dir input: LAZ + Maastotietokanta SHP zipped (ZIP)
+ * make hillshade and  intermediate curves
+
+```sh
+pullauta.run.sh -a 11 -i 0.625 -s -z 3
+# - northlineangle 11, intermediate curve 0.625, hillshade using z=3
+```
+
+Only map without hillshade and intermediate curves, nothlines angle 11: If angle=0, no northlines.
+```sh
+pullauta.run.sh -a 11 
+```
+
+Re-run only using tempfiles hillshade:
+ * reuse temp files
+```sh
+pullauta.run.sh --onlyhillshade  -s  -z 3
+```
+
+Re-run only using tempfiles intermediate curves:
+```sh
+pullauta.run.sh --onlyintermediate -i 0.625
+# - run only intermediate curves (0.625 m) after basic run - use temp files
+```
+
+```sh
+```
