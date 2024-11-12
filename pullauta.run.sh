@@ -7,13 +7,13 @@ VER=2024-11-11a
 # https://awot.fi
 # pullauttelija@awot.fi
 #
-# run.sh -a 11 -i 0.625 -s -z 3
+# pullauta.run.sh -a 11 -i 0.625 -s -z 3
 # - northlineangle 11, intermediate curve 0.625, hillshade using z=3
 #
-# run.sh --onlyhillshade  -s  -z 3
+# pullauta.run.sh --onlyhillshade  -s  -z 3
 # - run only hillshade after basic run - use temp files
 #
-# run.sh --onlyintermediate -i 0.625
+# pullauta.run.sh --onlyintermediate -i 0.625
 # - run only intermediate curves (0.625 m) after basic run - use temp files
 #
 # pullauta.ini have to be:
