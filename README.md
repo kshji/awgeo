@@ -243,7 +243,7 @@ pullauta.run.sh is my version to batch ***pullauta*** process.
  * config/pullauta.ini use some variable = dynamic template , make your edits to this version
  * edit awgeo.ini, set directory where is AwGeo binary's
 
-#### pullauta.ini
+#### config/pullauta.ini
 Have to set:
 ```sh
 batch=1
