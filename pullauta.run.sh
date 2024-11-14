@@ -1,4 +1,4 @@
-e#!/usr/bin/env bash
+#!/usr/bin/env bash
 # pullauta.run.sh
 VER=2024-11-14a
 #
@@ -16,14 +16,15 @@ VER=2024-11-14a
 # pullauta.run.sh --onlyintermediate -i 0.625
 # - run only intermediate curves (0.625 m) after basic run - use temp files
 #
-# pullauta.ini have to be:
+#
+# config.pullauta.ini have to be:
 # batch=1
 # batchoutfolder=./output
 # lazfolder=./input
 #
 # - input dir include *laz and MML (maastotietokanta) zip
 # - result dir output
-# mkdir -p input output before 1st run
+# mkdir -p input output # before 1st run
 #
 PRG="$0"
 BINDIR="${PRG%/*}"
@@ -54,10 +55,13 @@ usage()
 usage:$PRG [ -a NUM ] [ -d 0|1 ]
         -a NUM, northline  angle, default = 0 = no lines
         -d 0|1 debug, default is 0
-	-i 1.25 | 0.625 | 0.3125  = intermediate curve
+	-i 1.25 | 0.625 | 0.3125  = intermediate curve for map makers
 
- 	The map can also have what is called an intermediate curve between the curve.
+ 	The map can also have what is called an intermediate curve between the curve with smoothjoin.
 	Usable for mapmakers and manual process to fix map
+
+	Pullautin from github: https://github.com/rphlo/karttapullautin
+	
 EOF
 
 }
