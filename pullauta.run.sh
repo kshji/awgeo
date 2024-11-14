@@ -1,6 +1,6 @@
 e#!/usr/bin/env bash
-# pullauta.run.h
-VER=2024-11-11a
+# pullauta.run.sh
+VER=2024-11-14a
 #
 # Karjalan ATK-Awot Oy
 # Jukka Inkeri
@@ -186,6 +186,7 @@ make_curve()
 ################################################################
 process_intermediate_curves()
 {
+	# pullautin make basecurves but not run smootjoin for those curves
 	Zcurve="$1"
 	xfunc="process_intermediate_curves"
 
