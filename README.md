@@ -240,7 +240,7 @@ pullauta.run.sh is my version to batch ***pullauta*** process.
 
 #### setup
  * mkdir input and output
- * cp pullauta.ini from config or edit your pullauta
+ * config/pullauta.ini use some variable = dynamic template , make your edits to this version
  * edit awgeo.ini, set directory where is AwGeo binary's
 
 #### pullauta.ini
