@@ -255,7 +255,8 @@ lazfolder=./input
 
 Normal batch:
  * put input files to the dir input: LAZ + Maastotietokanta SHP zipped (ZIP)
- * make hillshade and  intermediate curves
+ * execute pullauta
+ * make also hillshade and intermediate curves
 
 ```sh
 pullauta.run.sh -a 11 -i 0.625 -s -z 3
@@ -279,5 +280,3 @@ pullauta.run.sh --onlyintermediate -i 0.625
 # - run only intermediate curves (0.625 m) after basic run - use temp files
 ```
 
-```sh
-```
