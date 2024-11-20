@@ -10,6 +10,10 @@ VER=2024-11-14a
 # pullauta.run.sh -a 11 -i 0.625 -s -z 3
 # - northlineangle 11, intermediate curve 0.625, hillshade using z=3
 #
+# pullauta.run.sh -a 11 -i 0.625 -s -z 3 --spikefree
+# - northlineangle 11, intermediate curve 0.625, hillshade using z=3
+# - also make spike free (sf.png) - generating spike free digital surface model
+#
 # pullauta.run.sh --onlyhillshade  -s  -z 3
 # - run only hillshade after basic run - use temp files
 #
@@ -36,16 +40,17 @@ PRG="${PRG##*/}"
 # set defaults
 angle=0
 DEBUG=0
-configfile=config/pullauta.ini
+configfile=$AWGEO/config/pullauta.ini
+[ -f config/pullauta.ini ] && configfile=config/pullauta.ini
 intermediate_curve=""
 only_intermediate_curve=0
 only_hillshade=0
 hillshade=0
 z=3
+spikefree=0
 
 outputdir="output"
 inputdir="input"
-AWGEO=""
 
 
 ########################################################
@@ -154,6 +159,26 @@ clean_temp()
 }
 
 ################################################################
+process_spike_free()
+{
+	# https://rapidlasso.de/generating-spike-free-digital-surface-models-from-lidar/
+	# output AREALABEL.sf.png - generating spike free digital surface model 
+	xfunc="process_spike_free"
+	dbg "$xfunc: start"
+	for laz in $inputdir/*.laz
+	do
+		[ ! -f "$laz" ] && continue
+		fname=$(getfile "$laz")
+		Xname=$(getbase "$fname" ".laz")
+		las2dem64 -i "$laz" -spike_free 0.9  -step 0.5  -hillshade  -o "$outputdir/$Xname.sf.png" 2>/dev/null
+		# -step 0.25 not needed ...
+	done
+	dbg "$xfunc: end"
+
+}
+
+
+################################################################
 process_hillshade()
 {
 
@@ -236,7 +261,17 @@ process_intermediate_curves()
 
 step=0
 
-[ -f config/awgeo.ini ] && . config/awgeo.ini
+if [ "AWGEO" = "" ] ; then
+	# set AWGEO
+	awgeoinifile="awgeo.ini"
+	[ -f "$awgeoinifile" ] && awgeoinifile="config/awgeo.ini"
+	[ -f "$awgeoinifile" ] && awgeoinifile="$AWGEO/config/awgeo.ini"
+	[ -f "$awgeoinifile" ] && err "no awgeo.ini file dir: . or ./config or $AWGEO/config" >&2 && exit 2
+	. "$awgeoinifile"
+fi
+export AWGEO
+[ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
+
 while [ $# -gt 0 ]
 do
 	arg="$1"
@@ -247,6 +282,7 @@ do
 		-d|--debug) DEBUG="$2" ; shift ;;
 		--onlyhillshade ) only_hillshade=1 ;  hillshade=1 ; ((step+=1));;
 		-s|--hillshade) hillshade=1 ;;
+		--spikefree) spikefree=1 ;;
 		-z) z="$2" ; shift ;;
 		-c|--config) configfile="$2" ; shift ;;
 		-h) usage ;;
@@ -275,6 +311,8 @@ TEMP="tmp/$id"
 [ "$intermediate_curve" != "" ] && process_intermediate_curves "$intermediate_curve"
 
 (( hillshade>0 )) && process_hillshade 
+
+(( spikefree > 0 )) && process_spike_free
 
 ((DEBUG<1)) && rm -f $TEMP.??* 2>/dev/null
 
