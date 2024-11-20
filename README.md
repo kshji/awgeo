@@ -102,6 +102,16 @@ Solutions is usually to find correct libproj = latest and then soft link to the 
 ## My sh-scripts use various software, including proj, gdal, pdal, lastools, ...
 All example files are in the ***examples*** directory.
 
+### setup AWGEO env
+After you have get copy of ***awgeo***, you need setup ***config/awgeo.ini*** file.
+Example if this directory is /home/user/awgeo then your configfile 
+/home/user/awgeo/config/awgeo.ini
+has one line:
+```
+AWGEO=/home/user/awgeo
+```
+
+
 ### raw2xy.sh - Make XY polygon file from Ocad polygon information
  * draw polygon in Ocad
  * get polygon info (button i)
