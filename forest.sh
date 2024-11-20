@@ -6,7 +6,7 @@
 # Jukka Inkeri
 #
 # Make spike free digital surface model
-# "forest"
+# hillshade "forest" 
 #
 VER="2024-11-17.a"
 #

@@ -6,6 +6,7 @@
 # Jukka Inkeri
 #
 # Make hillshade tiff from LAZ and forest "spike free" png
+# ground hillshade and forest "hillshade"
 #
 # $AWGEO/forest_hillshade.sh -z ZNUM  -o outputdir inputlazfile(s)
 # $AWGEO/forest_hillshade.sh -o tulos ../P*.laz
