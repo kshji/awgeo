@@ -99,7 +99,7 @@ Solutions is usually to find correct libproj = latest and then soft link to the 
 ```
 
 
-## My sh-scripts use various software, including proj, gdal, pdal, lastools, ...
+## Awot sh-scripts use various software, including proj, gdal, pdal, lastools, ...
 All example files are in the ***examples*** directory.
 
 ### setup AWGEO env
@@ -245,6 +245,22 @@ gdal_edit.py  -unsetgt output.tif
 ```
 
 
+### Forest "hillshade" from LAZ
+
+More documentation in the script.
+```sh
+forest.sh
+```
+
+### Hillshade and Forest "hillshade" from LAZ
+
+Do both hillshade.sh and forest.sh
+
+More documentation in the script.
+```sh
+forest_hillshade.sh
+```
+
 ### Karttapullautin batch execute
 
 pullauta.run.sh is my version to batch ***pullauta*** process.
@@ -258,6 +274,7 @@ pullauta.run.sh is my version to batch ***pullauta*** process.
 Have to set:
 ```sh
 batch=1
+processes=4  # how many core you can use 
 batchoutfolder=./output
 lazfolder=./input
 ```
