@@ -21,6 +21,7 @@ My geo programs use various software, including Lastools, PDAL and GDAL.
   * [LasPy](https://laspy.readthedocs.io/), [Python library](https://pypi.org/project/laspy/) for lidar LAS/LAZ IO, [Github](https://github.com/laspy/laspy)
   * [OCAD](https://ocad.com), Cad for mapping
   * [Omapper](https://www.openorienteering.org/apps/mapper/), OMapper open source for mapping
+  * [PurplePen](https://purple-pen.org), free course setting software for orienteering
 
 The full licence terms can be found on the individual pages of the following tools.
 
