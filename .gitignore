@@ -4,3 +4,6 @@ tmp/
 jui/
 ymparisto
 config/awgeo.ini
+input
+output
+temp/
