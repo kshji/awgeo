@@ -126,7 +126,7 @@ AWGEO=/home/user/awgeo
 
 Convert raw to the xy format:
 ```sh
-../raw2xy.sh -i area.raw -o area.txt
+$AWGEO/raw2xy.sh -i area.raw -o area.txt
 
 ```
 
@@ -142,9 +142,9 @@ cat area.txt
 632200.1 6954651.5
 632162.5 6954655.8
 
-../xy2wkt.sh -i area.txt -o area.wkt
+$AWGEO/xy2wkt.sh -i area.txt -o area.wkt
 # or using pipe
-cat area.txt | ../xy2wkt.sh > area.wkt
+cat area.txt | $AWGEO/xy2wkt.sh > area.wkt
 ```
 
 ### lazcrop.sh - Crop polygon area from LAZ file
@@ -155,7 +155,7 @@ lazcrop.sh need polygon in WKT Polygon format. Look ***xy2wkt.sh*** how to conve
 # using lastools
 lasclip64 -i example.laz -o areax.las -poly area.txt
 # using lazcrop.sh
-../lazcrop.sh -i example.laz -p area.wkt -o areay.las
+$AWGEO/lazcrop.sh -i example.laz -p area.wkt -o areay.las
 
 ```
 
@@ -171,7 +171,7 @@ laz2tif.sh -i input.laz -o result.tif [ -d 0|1 ]
 Example from example.laz
 ```sh
 cd examples
-../laz2tif.sh -i example.laz -o example1.tif
+$AWGEO/laz2tif.sh -i example.laz -o example1.tif
 ```
 Result file is example1.tif
 
@@ -192,7 +192,7 @@ hillshade.sh -i input.laz -o resultname [ -z NUMBER ] [ -g 0|1 ] [ -d 0|1 ]
 Example hillshade from example.laz
 ```sh
 cd examples
-../hillshade.sh -i example.laz -o example1
+$AWGEO/hillshade.sh -i example.laz -o example1
 ```
 Result file is example1.tif
 
@@ -227,7 +227,7 @@ pdal translate example.laz example.las
 # look lazcrop.sh how to clip polygon from the LAZ-file
 
 # calculate volume 
-python3 ../lidar_volume.py areax.las 112
+python3 $AWGEO/lidar_volume.py areax.las 112
 112.0 38780.31 m3
 
 ```
