@@ -249,6 +249,7 @@ gdal_edit.py  -unsetgt output.tif
 
 
 ### Forest "hillshade" from LAZ
+A so-called "spike free" shade image representing the density and height of the trees.
 
 More documentation in the script.
 ```sh
@@ -310,4 +311,19 @@ Re-run only using tempfiles intermediate curves:
 pullauta.run.sh --onlyintermediate -i 0.625
 # - run only intermediate curves (0.625 m) after basic run - use temp files
 ```
+## Coming ...
 
+### Full packet to make map
+  * input MML (NLM) tile code, example P5313L
+  * need MML apikey
+  * execute - including all:
+    * get orthophoto, laser scanning data, topographic database (FI:ilmakuvat, laserdata, maastotietokanta)
+    * get ... 
+    * create DXF from shp files (topographic database)
+    * run ***pullauta*** including 0.625 intermediate curves
+    * hillshade image
+    * forest "spike free" image
+    * dxf2ISOM2017.crt file for Ocad
+  * you need import DXF using CRT file to Ocad and select background images
+
+<img src="../../blob/master/examples/result1.png" width="30%" height="30%">
