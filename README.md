@@ -1,4 +1,7 @@
 # AwGeo - geo- and mappingtools
+
+<img src="../../blob/master/examples/result1.png" width="50%" height="50%">
+
 I am a skilled orienteer who works with maps using Ocad software.
 In Finland, we are happy  because we have so much open source 
 [geospatial data](https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu?lang=en).
@@ -314,6 +317,9 @@ pullauta.run.sh --onlyintermediate -i 0.625
 ## Coming ...
 
 ### Full packet to make map
+
+<img src="../../blob/master/examples/result1.png" width="30%" height="30%">
+
   * input MML (NLM) tile code, example P5313L
   * need MML apikey
   * execute - including all:
@@ -326,4 +332,3 @@ pullauta.run.sh --onlyintermediate -i 0.625
     * dxf2ISOM2017.crt file for Ocad
   * you need import DXF using CRT file to Ocad and select background images
 
-<img src="../../blob/master/examples/result1.png" width="30%" height="30%">
