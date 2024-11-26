@@ -330,7 +330,7 @@ pullauta.run.sh --onlyintermediate -i 0.625
     * run ***pullauta*** including 0.625 intermediate curves
     * hillshade image
     * forest "spike free" image
-    * dxf2ISOM2017.crt file for Ocad
+    * FIshp2ISOM2017.crt file for Ocad
   * you need import DXF using CRT file to Ocad and select background images
 
 
