@@ -37,6 +37,7 @@ The full licence terms can be found on the individual pages of the following too
 ### Lidar maps and tools
   * [GeoTIFF.io](https://app.geotiff.io/) GeoTiff viewer, 
   * [Pullautuskartta](https://pullautuskartta.fi/)
+  * [Kapsi.fi](https://kartat.kapsi.fi/), file server including lidar data, orto, topo shp, ...
   * [MapAnt FI](https://mapant.fi/)
   * [CloudCompare](https://github.com/cloudcompare/cloudcompare), CloudCompare is a 3D point cloud processing software. Also light CcViewer.
   * [QGIS](https://www.qgis.org/), Spatial visualization and decision-making tools for everyone - Open Source
@@ -321,7 +322,7 @@ pullauta.run.sh --onlyintermediate -i 0.625
 <img src="../../blob/master/examples/result1.png" width="30%" height="30%">
 
   * input MML (NLM) tile code, example P5313L
-  * need MML apikey
+  * need MML apikey or use [Kapsi.fi](https://kartat.kapsi.fi/)-server to get those materials
   * execute - including all:
     * get orthophoto, laser scanning data, topographic database (FI:ilmakuvat, laserdata, maastotietokanta)
     * get ... 
@@ -331,4 +332,9 @@ pullauta.run.sh --onlyintermediate -i 0.625
     * forest "spike free" image
     * dxf2ISOM2017.crt file for Ocad
   * you need import DXF using CRT file to Ocad and select background images
+
+
+Open source data: [geospatial data](https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu?lang=en).
+[License CC 4.0](https://creativecommons.org/licenses/by/4.0/deed.fi),
+data source [National Land Survey of Finland](https://www.maanmittauslaitos.fi/en)
 
