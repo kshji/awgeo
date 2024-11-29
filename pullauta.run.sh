@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 # pullauta.run.sh
-VER=2024-11-14a
+VER=2024-11-29a
 #
 # Karjalan ATK-Awot Oy
 # Jukka Inkeri
 # https://awot.fi
 # pullauttelija@awot.fi
 #
-# pullauta.run.sh -a 11 -i 0.625 -s -z 3
-# - northlineangle 11, intermediate curve 0.625, hillshade using z=3
+# Basic pullauta using:
+# pullauta.run.sh -a 11 -i 0.625 -z 3
+# - northlineangle 11, intermediate curve 0.625
 #
-# pullauta.run.sh -a 11 -i 0.625 -s -z 3 --spikefree
+# Full AwGeo set:
+# pullauta.run.sh -a 11 -i 0.625 --hillshade -z 3 --spikefree --mergepng
+#
+# or use option --all to process all features
+#
+# pullauta.run.sh --all -a 11 
 # - northlineangle 11, intermediate curve 0.625, hillshade using z=3
 # - also make spike free (sf.png) - generating spike free digital surface model
 #
@@ -48,6 +54,7 @@ only_hillshade=0
 hillshade=0
 z=3
 spikefree=0
+mergepng=0
 
 outputdir="output"
 inputdir="input"
@@ -58,9 +65,17 @@ usage()
 {
         cat <<EOF >&2
 usage:$PRG [ -a NUM ] [ -d 0|1 ]
+	--in sourcedata dir, default sourcedata
+	--out result dir, default pullautettu
         -a NUM, northline  angle, default = 0 = no lines
-        -d 0|1 debug, default is 0
+	-all , process all features hillshade, spikefree, mergepng,  intermediate curve 0.625, ...
 	-i 1.25 | 0.625 | 0.3125  = intermediate curve for map makers
+	--hillshade , make hillshade
+	--spikefree , make hillshade
+	-c configfile, default $configfile
+	--mergepng , merge *depr.png
+	-z NUM, default 3
+        -d 0|1 debug, default is 0
 
  	The map can also have what is called an intermediate curve between the curve with smoothjoin.
 	Usable for mapmakers and manual process to fix map
@@ -68,7 +83,6 @@ usage:$PRG [ -a NUM ] [ -d 0|1 ]
 	Pullautin from github: https://github.com/rphlo/karttapullautin
 	
 EOF
-
 }
 
 ########################################################
@@ -158,6 +172,82 @@ clean_temp()
 	rm -f *.tif header*.xyz laz*.txt pullautus_depr*.* pullautus?.png temp*.xyz ziplist*.txt list*.txt 2>/dev/null
 }
 
+
+################################################################
+# conver aux.ml to worldfile
+# some.png.aux.xml
+#<PAMDataset>
+  #<GeoTransform>  6.2000000000000000e+05,  4.2333333333333334e-01,  0.0000000000000000e+00,  6.9659999900000002e+06,  0.0000000000000000e+00, -4.2333333333333334e-01</GeoTransform>
+#</PAMDataset>
+#1. => 5
+#2. => 1
+#3. => 2.
+#4. => 6
+#5. => 3
+#6. => 4
+#
+#some.pgw
+#0.4233333333
+#0.0000000000
+#0.0000000000
+#-0.4233333333
+#620000.2116666667
+#6965999.7783333333
+
+################################################################
+merge_png()
+{
+
+	xin="$1" 
+	#gdal_merge.py -o P5313L.tif P5313??.laz_depr.png
+	# convert GeoTiff to basic tif with worldfile
+	#gdal_translate -co  PROFILE=BASELINE -co "TFW=YES" -of PNG  P5313L.tif  P5313L.basic.tif
+  	# convert geoTiff to PNG and create worldfile
+	# gdal_translate -co WORLDFILE=YES -of PNG  P5313L.tif  P5313L.png
+	# make one big png
+	xfunc="merge_png"
+	dbg "$xfunc: start"
+	xnow=$PWD
+	mergename=""
+
+	# mergename = shpnames ...
+	cd "$inputdir"	
+	for img in *.shp.zip
+	do
+		[ "$img" = "*.shp.zip" ] && continue
+		label=$(getbase "$img" ".shp.zip")
+		mergename="$mergename$label"
+	done
+	cd $xnow
+
+	# if not shp's then use laz_depr.png names
+	if [ "$mergename" = "" ] ; then # there wasn't any shp.zip, then use laz
+		cd "$xin"
+		for img in *.laz_depr.png
+		do
+			[ "$img" = "*.laz_depr.png" ] && continue
+			label=$(getbase "$img" ".laz_depr.png")
+			mergename="$mergename$label"
+		done
+		cd $xnow
+	fi
+
+	[ "$mergename" = "" ] && return # no input files in this directory?	
+
+	cd "$xin"
+	gdal_merge.py -o fullarea.depr.tif *.laz_depr.png
+	gdal_translate -co WORLDFILE=YES -of PNG  fullarea.depr.tif  $mergename.depr.png
+	rm -f fullarea.depr.tif fullarea*aux.xml 2>/dev/null
+	mv $mergename.depr.wld $mergename.depr.pgw
+
+	#ex. Windows, Ocad, ... cannot handle 16xlaz size png's
+	#16xlaz = >2GT tif, PNG about 60 MB
+	cd $xnow
+	dbg "$xfunc: done: $mergename.depr.png"
+	dbg "$xfunc: ended"
+}
+
+
 ################################################################
 process_spike_free()
 {
@@ -193,7 +283,7 @@ process_hillshade()
 		dbg "   $AWGEO/hillshade.sh -i $laz -z $z -o $Xname -d $DEBUG "
 		$AWGEO/hillshade.sh -i "$laz" -z $z -o "$Xname" -d $DEBUG
 		rm -f "$Xname.ground.laz" 2>/dev/null
-		cp -f "$Xname.tif" "$outputdir/$Xname.hillshade.tif" 2>/dev/null
+		mv -f "$Xname.tif" "$outputdir/$Xname.hillshade.tif" 2>/dev/null
 	done
 	dbg "$xfunc: end"
 }
@@ -209,7 +299,7 @@ make_curve()
 	cp -f temp$Xi/*.xyz temp
 	pullauta xyz2contours $Xicurve xyz2.xyz null out.dxf
 	pullauta smoothjoin
-	cp -f temp/out2.dxf temp$Xi/countours$Xicurve.dxf
+	mv -f temp/out2.dxf temp$Xi/countours$Xicurve.dxf
 }
 
 ################################################################
@@ -253,13 +343,81 @@ process_intermediate_curves()
 }
 
 ################################################################
+get_pullauta()
+{
+        # angle
+        # icurve
+        [ "$angle" = "" ] && angle=11
+        [ "$icurve" = "" ] && icurve=0.625
+        dbg "$proc starting angle:$angle icurve:$icurve"
+
+        # need to read pullauta.ini max. process
+        pullautaini="$configfile"
+        [ ! -f "$pullautaini" ] && err "Can't read $pullautaini" && return 1
+
+        prosnum=$(grep "^processes.*=.*" "$pullautaini" 2>/dev/null)
+        batch=$(grep "^batch.*=.*1" "$pullautaini" 2>/dev/null)
+
+        [ "$batch" = "" ] && err "$pullautaini have to be batch=1" && exit 1
+
+        prosnum=${prosnum// /}   # remove spaces
+        [ "$prosnum" = "" ] && prosnum=1  # single
+
+
+	read lazfiles <<<$(echo $indir/*.laz)
+	[ "$lazfiles" = "$indir/*.laz" ] && err "no laz files in dir: $inputdir" && exit 6
+        dbg "$proc  lazfiles:$lazfiles"
+	
+
+        count=0
+        dbg "result dir:$outdir concurrent process:$prosnum"
+        rm -rf "$inputdir" "$outputdir"  2>/dev/null
+        mkdir -p "$inputdir" "$outputdir" "$outdir"
+
+	# copy source data to the pullautin input dir
+        cp -f "$indir"/*.shp.zip "$inputdir"
+
+	# process all laz files using prosnum block size!! = concurrent process/tasks
+        for Xa in $lazfiles
+        do
+                # build input
+                if ((count < prosnum )) ; then
+                        dbg "$proc   $PWD"
+                        cp -f $Xa "$inputdir"
+                        ((count+=1))
+                fi
+                if ((count >= prosnum )) ; then # max. files -> process
+                        count=0
+			# make pullauta
+			pullauta
+
+			# do add on
+			# The map can also have what is called an intermediate curve between the curve
+			[ "$intermediate_curve" != "" ] && process_intermediate_curves "$intermediate_curve"
+			
+			(( hillshade>0 )) && process_hillshade
+
+			(( spikefree > 0 )) && process_spike_free
+			
+			(( mergepng > 0 )) && merge_png "$outputdir" 
+
+			# mv pullauta results to the user outdir
+                        mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
+
+			# make clean to the next process block
+                        rm -rf "$inputdir" "$outputdir" 2>/dev/null
+        		mkdir -p "$inputdir" "$outputdir" 
+                fi
+        done
+
+        dbg "$proc ended "
+}
 
 ################################################################
 # MAIN
 ################################################################
 # parse cmdline options
 
-step=0
 
 if [ "AWGEO" = "" ] ; then
 	# set AWGEO
@@ -272,24 +430,46 @@ fi
 export AWGEO
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 
+outdir="pullautettu"
+indir="sourcedata"
+
 while [ $# -gt 0 ]
 do
 	arg="$1"
 	case "$arg" in
 		-a|--angle) angle="$2" ; shift ;;
+		--all) intermediate_curve=0.625
+			hillshade=1
+			spikefree=1
+			mergepng=1	
+			;;
 		-i|--curve) intermediate_curve="$2" ; shift ;;
-		--onlyintermediate ) only_intermediate_curve=1 ; ((step+=1));;
+		#--onlyintermediate ) only_intermediate_curve=1 ; ((step+=1));;
 		-d|--debug) DEBUG="$2" ; shift ;;
-		--onlyhillshade ) only_hillshade=1 ;  hillshade=1 ; ((step+=1));;
+		#--onlyhillshade ) only_hillshade=1 ;  hillshade=1 ; ((step+=1));;
 		-s|--hillshade) hillshade=1 ;;
 		--spikefree) spikefree=1 ;;
+		-m|--mergepng) mergepng=1 ;;
 		-z) z="$2" ; shift ;;
 		-c|--config) configfile="$2" ; shift ;;
+		--in) indir="$2"; shift ;;
+		--out) outdir="$2"; shift ;;
 		-h) usage ;;
 		-*) usage ;;
 	esac
 	shift
 done
+
+[ "$outdir" = "input" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 4
+[ "$outdir" = "output" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 4
+[ "$outdir" = "temp" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 4
+[ "$outdir" = "tmp" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 4
+[ "$indir" = "input" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 5
+[ "$indir" = "output" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 5
+[ "$indir" = "temp" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 5
+[ "$indir" = "tmp" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 5
+mkdir -p "$outdir"
+[ ! -d "$outdir" ] && err "can't make dir $outdir" && exit 6
 
 dbg "clean_temp"
 clean_temp
@@ -298,26 +478,13 @@ id=$$ # process number = unique id for tempfiles
 TEMP="tmp/$id"
 
 
-(( step < 1 )) && dbg "parse_file $configfile"
-(( step < 1 )) && parse_file "$configfile"  > pullauta.ini
+dbg "parse_file $configfile"
+parse_file "$configfile"  > pullauta.ini
 
-# 1st make pullauta, if not already done
-(( step < 1 )) && dbg "pullauta"
-(( step < 1 )) && pullauta
+dbg "pullauta"
+get_pullauta
 
-
-
-# The map can also have what is called an intermediate curve between the curve 
-[ "$intermediate_curve" != "" ] && process_intermediate_curves "$intermediate_curve"
-
-(( hillshade>0 )) && process_hillshade 
-
-(( spikefree > 0 )) && process_spike_free
-
-((DEBUG<1)) && rm -f $TEMP.??* 2>/dev/null
+((DEBUG<1)) && rm -f $TEMP.??* pullautus*.* temp* 2>/dev/null
 
 status "$(date) done"
-
-
-
 

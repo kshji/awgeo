@@ -274,29 +274,35 @@ forest_hillshade.sh
 pullauta.run.sh is my version to batch ***pullauta*** process.
 
 #### setup
- * mkdir input and output
+ * mkdir ***sourcedata*** and ***pullautettu*** - you can use any dir except input and output.
  * config/pullauta.ini use some variable = dynamic template , make your edits to this version
- * edit awgeo.ini, set directory where is AwGeo binary's
+ * edit awgeo.ini, set directory where is AwGeo binary's or set env variable AWGEO
 
 #### config/pullauta.ini
 Have to set:
 ```sh
 batch=1
-processes=4  # how many core you can use 
-batchoutfolder=./output
-lazfolder=./input
+processes=4  # how many core you can use  - concurrent process
+batchoutfolder=./output  # reserved only for pullauta-program, pullauta use this dirs and can destroy this dirs
+lazfolder=./input  # don't use input - only pullauta use this
 ```
 
 #### execute
 
 Normal batch:
- * put input files to the dir input: LAZ + Maastotietokanta SHP zipped (ZIP)
+ * put input files to the dir ***sourcedata***: LAZ + Maastotietokanta SHP zipped (ZIP)
  * execute pullauta
- * make also hillshade and intermediate curves
+ * make also hillshade, forestshade and intermediate curves
 
 ```sh
-pullauta.run.sh -a 11 -i 0.625 -s -z 3
+pullauta.run.sh -a 11 -i 0.625 --hillshade -z 3 --spikefree  --config $MYHOME/pullauta.ini
 # - northlineangle 11, intermediate curve 0.625, hillshade using z=3
+# - config template init file: $MYHOME/pullauta.ini , remember have to dynamic angle set
+# or use "full set" using defaults
+# inputdir=sourcedata, outputdir=pullautettu, z=3
+pullauta.run.sh -a 11 -i 0.625 --all
+# or set dirs
+pullauta.run.sh -a 11 -i 0.625 --all --in mysrc/thiscase --out myresult/thiscase
 ```
 
 Only map without hillshade and intermediate curves, nothlines angle 11: If angle=0, no northlines.
@@ -304,17 +310,11 @@ Only map without hillshade and intermediate curves, nothlines angle 11: If angle
 pullauta.run.sh -a 11 
 ```
 
-Re-run only using tempfiles hillshade:
- * reuse temp files
+Only map without hillshade and intermediate curves, nothlines angle 11: If angle=0, no northlines.
 ```sh
-pullauta.run.sh --onlyhillshade  -s  -z 3
+pullauta.run.sh -a 11 
 ```
 
-Re-run only using tempfiles intermediate curves:
-```sh
-pullauta.run.sh --onlyintermediate -i 0.625
-# - run only intermediate curves (0.625 m) after basic run - use temp files
-```
 ## Coming ...
 
 ### Full packet to make map
