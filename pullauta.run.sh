@@ -343,6 +343,33 @@ process_intermediate_curves()
 }
 
 ################################################################
+pullauta_this_set()
+{
+	 # make pullauta
+	 xfunc="pullauta_this_set"
+	 dbg "$xfunc: start"
+	 
+         pullauta
+
+         # do add on
+         # The map can also have what is called an intermediate curve between the curve
+         [ "$intermediate_curve" != "" ] && process_intermediate_curves "$intermediate_curve"
+
+         (( hillshade>0 )) && process_hillshade
+
+         (( spikefree > 0 )) && process_spike_free
+
+         (( mergepng > 0 )) && merge_png "$outputdir"
+
+         # mv pullauta results to the user outdir
+         mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
+
+         # make clean to the next process block
+         rm -rf "$inputdir" "$outputdir" 2>/dev/null
+         mkdir -p "$inputdir" "$outputdir"
+	 dbg "$xfunc: end"
+}
+################################################################
 get_pullauta()
 {
         # angle
@@ -388,27 +415,12 @@ get_pullauta()
                 fi
                 if ((count >= prosnum )) ; then # max. files -> process
                         count=0
-			# make pullauta
-			pullauta
-
-			# do add on
-			# The map can also have what is called an intermediate curve between the curve
-			[ "$intermediate_curve" != "" ] && process_intermediate_curves "$intermediate_curve"
-			
-			(( hillshade>0 )) && process_hillshade
-
-			(( spikefree > 0 )) && process_spike_free
-			
-			(( mergepng > 0 )) && merge_png "$outputdir" 
-
-			# mv pullauta results to the user outdir
-                        mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
-
-			# make clean to the next process block
-                        rm -rf "$inputdir" "$outputdir" 2>/dev/null
-        		mkdir -p "$inputdir" "$outputdir" 
+			pullauta_this_set
                 fi
         done
+
+	# pullauta last set if not yet done
+	(( count>0 )) && pullauta_this_set
 
         dbg "$proc ended "
 }
