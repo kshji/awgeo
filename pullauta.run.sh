@@ -7,6 +7,9 @@ VER=2024-11-29a
 # https://awot.fi
 # pullauttelija@awot.fi
 #
+# default inputdatadir = sourcedata
+# default outputdatadir = pullautettu
+#
 # Basic pullauta using:
 # pullauta.run.sh -a 11 -i 0.625 -z 3
 # - northlineangle 11, intermediate curve 0.625
@@ -19,6 +22,8 @@ VER=2024-11-29a
 # pullauta.run.sh --all -a 11 
 # - northlineangle 11, intermediate curve 0.625, hillshade using z=3
 # - also make spike free (sf.png) - generating spike free digital surface model
+# pullauta.run.sh --all -a 11 -i 1.25
+# pullauta.run.sh --all -a 11 -i 1.25 --in inputdatadir --out outputdatadir
 #
 # pullauta.run.sh --onlyhillshade  -s  -z 3
 # - run only hillshade after basic run - use temp files
@@ -32,9 +37,9 @@ VER=2024-11-29a
 # batchoutfolder=./output
 # lazfolder=./input
 #
-# - input dir include *laz and MML (maastotietokanta) zip
-# - result dir output
-# mkdir -p input output # before 1st run
+# - sourcedata dir include *laz and MML (maastotietokanta) zip
+# - result dir pullautettu
+# mkdir -p sourcedata pullautettu # before 1st run
 #
 PRG="$0"
 BINDIR="${PRG%/*}"
@@ -69,7 +74,7 @@ usage:$PRG [ -a NUM ] [ -d 0|1 ]
 	--out result dir, default pullautettu
         -a NUM, northline  angle, default = 0 = no lines
 	-all , process all features hillshade, spikefree, mergepng,  intermediate curve 0.625, ...
-	-i 1.25 | 0.625 | 0.3125  = intermediate curve for map makers
+	-i 1.25 | 0.625 | 0.3125  = intermediate curve for map makers, default 0.625
 	--hillshade , make hillshade
 	--spikefree , make hillshade
 	-c configfile, default $configfile
@@ -289,6 +294,19 @@ process_hillshade()
 }
 
 ################################################################
+make_vege()
+{
+	Xi=$1 
+
+	rm -rf temp 2>/dev/null
+	mkdir -p temp
+	cp -f temp$Xi/*.xyz temp
+	pullauta makevege
+	mv -f temp/vegetation.png temp$Xi/vegetation.png
+	mv -f temp/vegetation.pgw temp$Xi/vegetation.pgw
+}
+
+################################################################
 make_curve()
 {
 	Xi=$1 
@@ -301,6 +319,37 @@ make_curve()
 	pullauta smoothjoin
 	mv -f temp/out2.dxf temp$Xi/countours$Xicurve.dxf
 }
+
+################################################################
+process_rerun_vege()
+{
+        # pullauta can't handle batch mode to re-run vege
+        xfunc="process_rerun_vege"
+
+        cnt=0
+        set +f
+        set +o noglob
+        for area in $outputdir/*.laz_vege.png
+        do
+                [ "$area" = "" ] && continue
+                [ "$area" = "$outputdir/*.laz_vege.png" ] && continue # no files
+                ((cnt+=1))
+                fname=$(getfile "$area" )
+                name=$(getbase "$fname" ".laz_vege.png")
+                dbg "$xfunc: fname:$fname name:$name"
+
+                make_vege $cnt 
+                destfile=$outputdir/${name}.laz_vege
+                cp -f temp$cnt/vegetation.png "$destfile.png"
+                cp -f temp$cnt/vegetation.pgw "$destfile.pgw"
+                status "$xfunc done $destfile.p??"
+        done
+        dbg "$xfunc done"
+        ((cnt < 1 )) && return
+
+
+}
+
 
 ################################################################
 process_intermediate_curves()
@@ -343,12 +392,33 @@ process_intermediate_curves()
 }
 
 ################################################################
+process_shp()
+{
+
+	xfunc="pullauta_this_set"
+	dbg "$xfunc: start"
+	for shp in "$indir"/*.shp.zip
+	do
+		xfile=$(getfile "$shp")
+		label=$(getbase "$xfile" ".shp.zip")
+		dbg $AWGEO/get.mmlshp2ocad.sh -a $label -i "$indir" -o "$outdir"/shp
+		$AWGEO/get.mmlshp2ocad.sh -a $label -i "$indir" -o "$outdir"/shp
+	done
+	dbg "$xfunc: end"
+}
+
+################################################################
 pullauta_this_set()
 {
 	 # make pullauta
 	 xfunc="pullauta_this_set"
 	 dbg "$xfunc: start"
+
+         # clean previous output
+         rm -rf "$outputdir" 2>/dev/null
+         mkdir -p "$outputdir"
 	 
+	 #((DEBUG>0)) && ls "$inputdir" && echo -n "Continue:" && read continue || echo -n "Continue:" && read continue
          pullauta
 
          # do add on
@@ -364,11 +434,13 @@ pullauta_this_set()
          # mv pullauta results to the user outdir
          mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
 
-         # make clean to the next process block
-         rm -rf "$inputdir" "$outputdir" 2>/dev/null
-         mkdir -p "$inputdir" "$outputdir"
+         # make clean to the next process block input
+	 # output not removed, posible to run pullauta again ex. change vege
+         rm -rf "$inputdir"  2>/dev/null
+         mkdir -p "$inputdir" 
 	 dbg "$xfunc: end"
 }
+
 ################################################################
 get_pullauta()
 {
@@ -376,7 +448,8 @@ get_pullauta()
         # icurve
         [ "$angle" = "" ] && angle=11
         [ "$icurve" = "" ] && icurve=0.625
-        dbg "$proc starting angle:$angle icurve:$icurve"
+	xfunc="pullauta"
+        dbg "$xfunc starting angle:$angle icurve:$icurve"
 
         # need to read pullauta.ini max. process
         pullautaini="$configfile"
@@ -415,14 +488,24 @@ get_pullauta()
                 fi
                 if ((count >= prosnum )) ; then # max. files -> process
                         count=0
+         		rm -rf "$outputdir" 2>/dev/null
+         		mkdir -p "$outputdir" "$outputdir"
+			dbg "Next pullauta set, dir:$PWD"
 			pullauta_this_set
+         		rm -rf "$inputdir" 2>/dev/null
+         		mkdir -p "$inputdir" "$outputdir"
                 fi
         done
 
 	# pullauta last set if not yet done
+	(( count>0 && DEBUG>0 )) && dbg "Next pullauta, dir:$PWD"
 	(( count>0 )) && pullauta_this_set
 
-        dbg "$proc ended "
+	# some files to use data in the Ocad
+	cp -f $AWGEO/config/*.crt "$outdir"
+	cp -f $AWGEO/config/*.ocd "$outdir"
+
+	dbg "$xfunc: end"
 }
 
 ################################################################
@@ -444,6 +527,7 @@ export AWGEO
 
 outdir="pullautettu"
 indir="sourcedata"
+only_vege=0
 
 while [ $# -gt 0 ]
 do
@@ -459,6 +543,7 @@ do
 		#--onlyintermediate ) only_intermediate_curve=1 ; ((step+=1));;
 		-d|--debug) DEBUG="$2" ; shift ;;
 		#--onlyhillshade ) only_hillshade=1 ;  hillshade=1 ; ((step+=1));;
+		--onlyvege ) only_vege=1 ;;
 		-s|--hillshade) hillshade=1 ;;
 		--spikefree) spikefree=1 ;;
 		-m|--mergepng) mergepng=1 ;;
@@ -483,6 +568,12 @@ done
 mkdir -p "$outdir"
 [ ! -d "$outdir" ] && err "can't make dir $outdir" && exit 6
 
+# special: re-run vege - don't clean temp and copy ini template
+(( only_vege>0 )) && process_rerun_vege 
+(( only_vege>0 )) && exit
+
+# pullauta process ...
+# 
 dbg "clean_temp"
 clean_temp
 mkdir -p tmp input output 2>/dev/null
@@ -495,6 +586,9 @@ parse_file "$configfile"  > pullauta.ini
 
 dbg "pullauta"
 get_pullauta
+dbg "shp"
+exit 
+process_shp
 
 ((DEBUG<1)) && rm -f $TEMP.??* pullautus*.* temp* 2>/dev/null
 
