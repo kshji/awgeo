@@ -528,6 +528,7 @@ export AWGEO
 outdir="pullautettu"
 indir="sourcedata"
 only_vege=0
+year=2022
 
 while [ $# -gt 0 ]
 do
