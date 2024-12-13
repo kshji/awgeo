@@ -14,8 +14,10 @@ VER=2024-11-29a
 # pullauta.run.sh -a 11 -i 0.625 -z 3
 # - northlineangle 11, intermediate curve 0.625
 #
+# pullauta.run.sh --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
+#
 # Full AwGeo set:
-# pullauta.run.sh -a 11 -i 0.625 --hillshade -z 3 --spikefree --mergepng
+# pullauta.run.sh -a 11 -i 0.625 --hillshade -z 3 --spikefree 
 #
 # or use option --all to process all features
 #
@@ -73,13 +75,15 @@ usage:$PRG [ -a NUM ] [ -d 0|1 ]
 	--in sourcedata dir, default sourcedata
 	--out result dir, default pullautettu
         -a NUM, northline  angle, default = 0 = no lines
-	-all , process all features hillshade, spikefree, mergepng,  intermediate curve 0.625, ...
+	-all , process all features hillshade, spikefree,  intermediate curve 0.625, ...
 	-i 1.25 | 0.625 | 0.3125  = intermediate curve for map makers, default 0.625
 	--hillshade , make hillshade
 	--spikefree , make hillshade
 	-c configfile, default $configfile
-	--mergepng , merge *depr.png
 	-z NUM, default 3
+	--onlycountours, only countours from the laz
+        --onlyvege, only vege pullauta from laz
+        --greenlevel NUM, default $greenshade, 0.10-0.15 is good, 0.10 less green, 0.15 more green
         -d 0|1 debug, default is 0
 
  	The map can also have what is called an intermediate curve between the curve with smoothjoin.
@@ -298,6 +302,7 @@ make_vege()
 {
 	Xi=$1 
 
+	# make only one laz!!!
 	rm -rf temp 2>/dev/null
 	mkdir -p temp
 	cp -f temp$Xi/*.xyz temp
@@ -399,6 +404,7 @@ process_shp()
 	dbg "$xfunc: start"
 	for shp in "$indir"/*.shp.zip
 	do
+		[ "$shp" = "$indir/*.shp.zip" ] && continue 
 		xfile=$(getfile "$shp")
 		label=$(getbase "$xfile" ".shp.zip")
 		dbg $AWGEO/get.mmlshp2ocad.sh -a $label -i "$indir" -o "$outdir"/shp
@@ -415,7 +421,8 @@ pullauta_this_set()
 	 dbg "$xfunc: start"
 
          # clean previous output
-         rm -rf "$outputdir" 2>/dev/null
+         rm -rf "$outputdir" pullautus*.png pullautus*.pgw temp/* temp?/* 2>/dev/null
+	 rm -f *.xyz 2>/dev/null
          mkdir -p "$outputdir"
 	 
 	 #((DEBUG>0)) && ls "$inputdir" && echo -n "Continue:" && read continue || echo -n "Continue:" && read continue
@@ -436,7 +443,8 @@ pullauta_this_set()
 
          # make clean to the next process block input
 	 # output not removed, posible to run pullauta again ex. change vege
-         rm -rf "$inputdir"  2>/dev/null
+         rm -rf "$inputdir" 2>/dev/null
+	 status "pullauta_this_set done"
          mkdir -p "$inputdir" 
 	 dbg "$xfunc: end"
 }
@@ -475,7 +483,8 @@ get_pullauta()
         mkdir -p "$inputdir" "$outputdir" "$outdir"
 
 	# copy source data to the pullautin input dir
-        cp -f "$indir"/*.shp.zip "$inputdir"
+	# cp if exists ...
+        cp -f "$indir"/*.shp.zip "$inputdir" 2>/dev/null
 
 	# process all laz files using prosnum block size!! = concurrent process/tasks
         for Xa in $lazfiles
@@ -494,6 +503,7 @@ get_pullauta()
 			pullauta_this_set
          		rm -rf "$inputdir" 2>/dev/null
          		mkdir -p "$inputdir" "$outputdir"
+        		cp -f "$indir"/*.shp.zip "$inputdir"
                 fi
         done
 
@@ -527,8 +537,15 @@ export AWGEO
 
 outdir="pullautettu"
 indir="sourcedata"
-only_vege=0
+vegererun=0
 year=2022
+sesid=$$
+# pullauta.ini template variables
+contoursonly=0
+vegeonly=0
+greenshade=0.12  # 0.10 - 0.15 , 0.10 less green, 0.15 more green
+parse_config_only=0
+
 
 while [ $# -gt 0 ]
 do
@@ -538,26 +555,32 @@ do
 		--all) intermediate_curve=0.625
 			hillshade=1
 			spikefree=1
-			mergepng=1	
+			#mergepng=1	
 			;;
 		-i|--curve) intermediate_curve="$2" ; shift ;;
 		#--onlyintermediate ) only_intermediate_curve=1 ; ((step+=1));;
 		-d|--debug) DEBUG="$2" ; shift ;;
 		#--onlyhillshade ) only_hillshade=1 ;  hillshade=1 ; ((step+=1));;
-		--onlyvege ) only_vege=1 ;;
+		--onlycountours) contoursonly=1 ;;
+		--onlyvege) vegeonly=1 ;;
+		--greenlevel) greenshade=$2 ; shift ;;
+		--vegererun ) vegererun=1 ;;
 		-s|--hillshade) hillshade=1 ;;
 		--spikefree) spikefree=1 ;;
 		-m|--mergepng) mergepng=1 ;;
 		-z) z="$2" ; shift ;;
 		-c|--config) configfile="$2" ; shift ;;
+		-p|--parseconfig) parse_config_only=1  ;;
 		--in) indir="$2"; shift ;;
 		--out) outdir="$2"; shift ;;
-		-h) usage ;;
-		-*) usage ;;
+		--id) sesid="$2" ; shift ;;
+		-h) usage ; exit 1 ;;
+		-*) usage ; exit 1 ;;
 	esac
 	shift
 done
 
+errmsg="out dir have to be something else as input or output or temp or tmp"
 [ "$outdir" = "input" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 4
 [ "$outdir" = "output" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 4
 [ "$outdir" = "temp" ] && err "out dir have to be something else as input or output or temp or tmp" && exit 4
@@ -570,8 +593,8 @@ mkdir -p "$outdir"
 [ ! -d "$outdir" ] && err "can't make dir $outdir" && exit 6
 
 # special: re-run vege - don't clean temp and copy ini template
-(( only_vege>0 )) && process_rerun_vege 
-(( only_vege>0 )) && exit
+(( vegererun>0 )) && process_rerun_vege 
+(( vegererun>0 )) && exit
 
 # pullauta process ...
 # 
@@ -585,13 +608,9 @@ TEMP="tmp/$id"
 dbg "parse_file $configfile"
 parse_file "$configfile"  > pullauta.ini
 
+(( parse_config_only > 0 )) && dbg "only parse config: pullauta.ini" && exit 0
+
 dbg "pullauta"
 get_pullauta
 dbg "shp"
-exit 
-process_shp
-
-((DEBUG<1)) && rm -f $TEMP.??* pullautus*.* temp* 2>/dev/null
-
-status "$(date) done"
 
