@@ -1,4 +1,4 @@
-# AwGeo - Paikkatiedon ja kartoitukseen aputyövälineitä
+# AwGeo - Apuvälineitä paikkatiedon käsittelyyn ja kartoitukseen 
 
 <img src="../../blob/master/examples/result1.png" width="50%" height="50%">
 
