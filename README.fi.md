@@ -368,7 +368,7 @@ saadaksesi ko. materiaalin. Suosittelen: hanki api-avain korvauksetta MML:lta, o
     * suorittaa ***pullauta*** tuottaen myös välikäyrän 0.625 
     * rinnevarjokuva
     * metsävarjokuva
-    * FIshp2ISOM2017.crt tiedosto Ocadiä varten, jotta DXF:n tuonti onnistuu ISOM2015 symbolein 
+    * FIshp2ISOM2017.crt tiedosto Ocadiä varten, jotta DXF:n tuonti onnistuu ISOM2017II symbolein 
     * valmis OCD-tiedosto suuntaviivoin
 	* muutama erikoissymboli, mm. rakennukset eri reunaviiva MML:n luokituksesta riippuen
   * Ocad:ssä tuodaan ko. DXF:t käyttäen ko. CRT-tiedostoa
