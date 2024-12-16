@@ -359,16 +359,18 @@ Maastotietokanta, ESRI shapefile formaatti = näkyy ko. ruutuina Suomi.
   * Hakee MML:n alueen datan, esimerkiksi alue P5313L
   * jotta haku toimii, tarvitset MML:N api-avaimen tai käytä [Kapsi.fi](https://kartat.kapsi.fi/)-palvelinta
 saadaksesi ko. materiaalin. Suosittelen: hanki api-avain korvauksetta MML:lta, on varmasti tuorein data tarjolla
-  * suorita - sisältää kaiken tämän:
+  * suorita - lopputulos sisältää kaiken tämän:
     * hakee alueen kaikki ilmakuvat, laserdatan, maastotietokannan datan, tilarajat
     * hakee Metsähallitukselta hakkuuilmoitukset halutun vuoden jälkeen
     * tuottaa maastotiedotokannasta ja hakkuuilmoituksista DXF-tiedostot ladattavaksi esim. Ocadiin
-    * suorittaa ***pullauta*** tuottaen välikäyrän 0.625 
+    * suorittaa ***pullauta*** tuottaen myös välikäyrän 0.625 
     * rinnevarjokuva
     * metsävarjokuva
     * FIshp2ISOM2017.crt tiedosto Ocadiä varten, jotta DXF:n tuonti onnistuu ISOM2015 symbolein 
+    * valmis OCD-tiedosto suuntaviivoin
   * Ocad:ssä tuodaan ko. DXF:t käyttäen ko. CRT-tiedostoa
   * Ocad:ssä taustakuvaksi kaikki em. kuvat
+  * Sitten vaan kartoittamaan /suunnistamaan / ...
 
 
 Avoin data: [paikkatietoaineisto](https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu?lang=fi).
