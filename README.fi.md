@@ -142,9 +142,11 @@ AWGEO=/home/user/awgeo
 
 ### raw2xy.sh - Tehdään XY viiva Ocadin viivan tiedoista. 
  * piirrä viivalla alue Ocad:ssä
- * Katso alueen ominaisuudet, valikon nappula ***i*** 
- * klikkaa kopio nappulaa, kopio tiedot leikepöydälle
+ * Katso alueen ominaisuudet, valikon nappula ***i***  
+ * dialogi *Kohteen tiedot*
+ * klikkaa kopio nappulaa dialogin oikeassa alanurkassa, kopioi tiedot leikepöydälle
  * tallenna ko. tiedot tiedostoon esim. area.raw
+ * katso examples kansiosta malli area.raw, millaisen tiedoston tulisi olla
 
 Konvertoi ko. raakadata xy formaattiin:
 ```sh
@@ -368,6 +370,7 @@ saadaksesi ko. materiaalin. Suosittelen: hanki api-avain korvauksetta MML:lta, o
     * metsävarjokuva
     * FIshp2ISOM2017.crt tiedosto Ocadiä varten, jotta DXF:n tuonti onnistuu ISOM2015 symbolein 
     * valmis OCD-tiedosto suuntaviivoin
+	* muutama erikoissymboli, mm. rakennukset eri reunaviiva MML:n luokituksesta riippuen
   * Ocad:ssä tuodaan ko. DXF:t käyttäen ko. CRT-tiedostoa
   * Ocad:ssä taustakuvaksi kaikki em. kuvat
   * Sitten vaan kartoittamaan /suunnistamaan / ...
