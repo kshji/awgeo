@@ -2,10 +2,10 @@
 # shp2ocad.sh
 #
 # init_shp.sh has done before this
-# shp2ocad.sh -a 5313L   
-# - input from data/5313L
-# - output output/5313L
-# shp2ocad.sh -a 5313L    -i data/5313L -o output/5313L
+# shp2ocad.sh -a P5313L   
+# - input from sourcedata/P5313L
+# - output mml/5313L
+# shp2ocad.sh -a P5313L    -i data/P5313L -o result/P5313L
 #
 
 PRG="$0"
