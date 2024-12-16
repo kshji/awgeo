@@ -64,8 +64,10 @@ neuvotaan tekemään paikkatiedolle sitä ja tätä ...
   * [Virtual DOS](https://copy.sh/v86/?profile=msdos), [Github](https://github.com/copy/v86), myös Linux, Windows98, ... aikamoista.
 
 ### Paikkatietotyökalujen (Geo) asennus
-Tämä esimerkkiohjeistus on tehty käyttäen Ubuntu, Debian ja WSL2 Ubuntu Linux:ja. WSL2 on virtuaaliympäristö, jossa
-voi suorittaa esim. eri Linux:ja.  Ei travitse välttämättä erillistä Linux purkkia ajaaksesi Linux ympäristöä.
+Tämä esimerkkiohjeistus on tehty käyttäen Ubuntu, Debian ja WSL2 Ubuntu Linux:ja. WSL2 on virtuaaliympäristö
+Windowsiin, jossa
+voi suorittaa esim. eri Linux:ja ns. natiivisti.  
+Ei tarvitse välttämättä erillistä Linux purkkia ajaaksesi Linux ympäristöä.
 
 Kunkin ohjelman sivustot ohjeistavat kuinka saa asennettua Windowsiin, Applen OS/X:ään jne.
 
