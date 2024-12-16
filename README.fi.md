@@ -368,7 +368,7 @@ saadaksesi ko. materiaalin. Suosittelen: hanki api-avain korvauksetta MML:lta, o
     * metsävarjokuva
     * FIshp2ISOM2017.crt tiedosto Ocadiä varten, jotta DXF:n tuonti onnistuu ISOM2015 symbolein 
   * Ocad:ssä tuodaan ko. DXF:t käyttäen ko. CRT-tiedostoa
-  * Oacd:ssä taustakuvaksi kaikki em. kuvat
+  * Ocad:ssä taustakuvaksi kaikki em. kuvat
 
 
 Avoin data: [paikkatietoaineisto](https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu?lang=fi).
