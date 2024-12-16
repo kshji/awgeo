@@ -1,4 +1,4 @@
-# AwGeo - Geo ja kartoitukseen aputyövälineitä
+# AwGeo - Paikkatiedon ja kartoitukseen aputyövälineitä
 
 <img src="../../blob/master/examples/result1.png" width="50%" height="50%">
 
@@ -10,7 +10,7 @@ Kaikenlaisia suunnistukseen liittyviä palveluja tullut rakennettua vuodesta 198
 Suomessa olemme siinä suhteessa "onnekkaita", että Maanmittauslaitoksen aineistosta iso osa on avoimesti saatavissa.
 Jotain vastinetta maksetuille veroilla ilman, että tarvitsee erikseen maksaa uudelleen.
 Mm. Merenkulkulaitos ei ole oivaltanut saman idean hyötyä kansantaloudelle ja itselleen. Maanmittauslaitos on
-itsekin saanut syntyneistä ohjemistoista ja palveluista. Mm. Pullautin, MapAnt jne. Ilman
+itsekin saanut hyötyä syntyneistä ohjemistoista ja palveluista. Mm. Pullautin, MapAnt jne. Ilman
 avointa dataa ei olisi syntynyt erilaisia palveluja perustuen MML:n avoimeen dataan.
 
 [MML Avoin data](https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu?lang=fi).
@@ -24,7 +24,7 @@ avointa dataa ei olisi syntynyt erilaisia palveluja perustuen MML:n avoimeen dat
 
 ## Käyttämäni työkalut
 Oheisissa ratkaisuissa on käyttänyt pääasiassa ohjelmistoja: Lastools, PDAL and GDAL.
-Ja tietysti Jarko Ryypön tuotteistamaa loistavaa Pullautinta.
+Ja tietysti Jarkko Ryypön tuotteistamaa loistavaa Pullautinta.
     
   * [PROJ](https://proj.org/)
   * [GDAL](https://gdal.org/)
@@ -50,10 +50,10 @@ käytettäväksi vaikka [Ocad](https://ocad.com)-ohjelmassa
   * [Pullautuskartta](https://pullautuskartta.fi/)
   * [Kapsi.fi](https://kartat.kapsi.fi/), MML:n datojen jakelukanava
   * [MapAnt FI](https://mapant.fi/)
-  * [CloudCompare](https://github.com/cloudcompare/cloudcompare), CloudCompare on ilmainen 3D laserdatan käsittely 
+  * [CloudCompare](https://github.com/cloudcompare/cloudcompare), CloudCompare on ilmainen 3D paikkatiedon käsittely 
 ja esitystyökalu. CCViewer on pelkkä esitysversio.
   * [QGIS](https://www.qgis.org/), Geodatan esitys ja muokkaustyökalu, Open Source, vajaa 2 GT:n järkälä. QGIS:llä 
-neuvotaan tekemään geodatalle sitä ja tätä ...
+neuvotaan tekemään paikkatiedolle sitä ja tätä ...
   * [Courses: Point cloud processing with QGIS and PDAL wrench](https://courses.gisopencourseware.org/course/view.php?id=63)
   * [Courses: Programming for Geospatial Hydrological Applications](https://courses.gisopencourseware.org/course/view.php?id=2)
   * [Geospatial School](https://geospatialschool.com/)
@@ -63,7 +63,7 @@ neuvotaan tekemään geodatalle sitä ja tätä ...
 ### Muita mielenkiintoisia työkaluja
   * [Virtual DOS](https://copy.sh/v86/?profile=msdos), [Github](https://github.com/copy/v86), myös Linux, Windows98, ... aikamoista.
 
-### Geo työkalujen asennus
+### Paikkatietotyökalujen (Geo) asennus
 Tämä esimerkkiohjeistus on tehty käyttäen Ubuntu, Debian ja WSL2 Ubuntu Linux:ja. WSL2 on virtuaaliympäristö, jossa
 voi suorittaa esim. eri Linux:ja.  Ei travitse välttämättä erillistä Linux purkkia ajaaksesi Linux ympäristöä.
 
@@ -71,7 +71,7 @@ Kunkin ohjelman sivustot ohjeistavat kuinka saa asennettua Windowsiin, Applen OS
 
 Kaikkinensa koko paketin asennus voi olla aika haastavaa. Eri paketit olettavat kirjastoilta jotain versiotasoa ja
 se ei taas välttämättä onnistu helposti omassa ympäristössäsi. Kuten oheisista ohjeista voi havaita, voi joutua
-jumppaamaan, jotta eri Geo-ohjelmistot saa toimimaan samassa ympäristössä.
+jumppaamaan, jotta eri paikkatieto-ohjelmistot saa toimimaan samassa ympäristössä.
 
 #### Ubuntu, Debian, WSL2 Ubuntu, ...
 
