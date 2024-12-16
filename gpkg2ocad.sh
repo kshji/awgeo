@@ -190,7 +190,7 @@ DXF_ENCODING=LATIN1
 export DXF_ENCODING
 
 crtfile=$AWGEO/config/FIshp2ISOM2017.crt
-outputdir="data/save"
+outputdir="mml"
 arealabel=""
 inputdir=""
 indir=""
@@ -203,7 +203,7 @@ do
 		-d) DEBUG="$2" ; shift ;;
 		-a) arealabel="$2" ; shift
                         [ "$outputdir" = "" ] && outputdir="mml/$arealabel"
-                        [ "$indir" = "" ] && indir="sourcedata"
+                        [ "$indir" = "" ] && indir="sourcedata/$arealabel"
                         ;;
                 -o) outputdir="$2" ; shift ;;
                 -i) indir="$2" ; shift ;;
