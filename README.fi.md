@@ -347,7 +347,16 @@ pullauta.run.sh -a 11
 
 <img src="../../blob/master/examples/result1.png" width="30%" height="30%">
 
-  * Hakee MML:n alueen, esimerkiksi P5313L
+Oheinen komento jauhaa kolmisen tuntia Intel i7 prossun tietokoneella käyttäen 4 ydintä, 32 GT RAM, SSD kovalevyllä. 
+Lopputuloksena oheinen kaikki tarpeellinen (ja tarpeeton), suunnilleen 4 GT dataa yhdestä maastotietokannan
+ruudusta 12x12 km (tile).
+```sh
+get.area.all.sh  P5313L
+```
+
+  * [Katso aluekoodi](https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu/maastotietokanta?lang=fi), 
+Maastotietokanta, ESRI shapefile formaatti = näkyy ko. ruutuina Suomi.
+  * Hakee MML:n alueen datan, esimerkiksi alue P5313L
   * jotta haku toimii, tarvitset MML:N api-avaimen tai käytä [Kapsi.fi](https://kartat.kapsi.fi/)-palvelinta
 saadaksesi ko. materiaalin. Suosittelen: hanki api-avain korvauksetta MML:lta, on varmasti tuorein data tarjolla
   * suorita - sisältää kaiken tämän:
