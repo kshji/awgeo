@@ -2,7 +2,6 @@
 
 <img src="../../blob/master/examples/result1.png" width="50%" height="50%">
 
-[Sama ohje suomeksi](https://github.com/kshji/awgeo/blob/master/README.fi.md)
 [Sama ohje suomeksi](../../blob/master/README.fi.md)
 
 I am a skilled orienteer who works with maps using Ocad software.
