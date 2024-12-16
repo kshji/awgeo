@@ -2,6 +2,9 @@
 
 <img src="../../blob/master/examples/result1.png" width="50%" height="50%">
 
+[Sama ohje suomeksi](https://github.com/kshji/awgeo/blob/master/README.fi.md)
+[Sama ohje suomeksi](../../blob/master/README.fi.md)
+
 I am a skilled orienteer who works with maps using Ocad software.
 In Finland, we are happy  because we have so much open source 
 [geospatial data](https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu?lang=en).
@@ -145,6 +148,13 @@ cat area.txt
 $AWGEO/xy2wkt.sh -i area.txt -o area.wkt
 # or using pipe
 cat area.txt | $AWGEO/xy2wkt.sh > area.wkt
+```
+
+### Merge laz/las
+
+```sh
+# using lastools
+lasmerge64 -i *.laz -o merged.laz
 ```
 
 ### lazcrop.sh - Crop polygon area from LAZ file
@@ -297,7 +307,7 @@ Normal batch:
 ```sh
 pullauta.run.sh -a 11 -i 0.625 --hillshade -z 3 --spikefree  --config $MYHOME/pullauta.ini
 # - northlineangle 11, intermediate curve 0.625, hillshade using z=3
-# - config template init file: $MYHOME/pullauta.ini , remember have to dynamic angle set
+# - config template init file: $MYHOME/pullauta.ini , remember have to be dynamic angle set
 # or use "full set" using defaults
 # inputdir=sourcedata, outputdir=pullautettu, z=3
 pullauta.run.sh -a 11 -i 0.625 --all
