@@ -136,7 +136,8 @@ dbg "inputdir:$inputdir datadir:$datadir outputdir:$outputdir"
 [ ! -d "$inputdir" = "" ] && usage && exit 2
 [ ! -f "$crtfile" ] && echo "no crtfile:$crtfile" >&2 && exit 4
 
-mkdir -p "$inputdir" "$datadir" "$outputdir"
+dbg mkdir -p "$inputdir" "$outputdir"
+mkdir -p "$inputdir" "$outputdir"
 
 ((DEBUG>2)) && exit 0
 # get mml shp, if not already exists
@@ -167,6 +168,7 @@ gpkg_v_file="$inputdir/$arealabel.v.gpkg"
 if [ ! -f "$gpkg_v_file" ] ;then # old shp version
 	dbg "no $gpkg_v_file, use shp.zip"
 	$AWGEO/init_shp.sh -d $DEBUG -a "$arealabel" -o "$datadir" -i "$inputdir"  -d "$DEBUG"
+	mkdir -p "$datadir"
 	$AWGEO/shp2ocad.sh -a  "$arealabel" -i "$datadir" -o "$outputdir" -d "$DEBUG"
 else # new gpkg
 	dbg "we have new gpkg format $gpkg_v_file"
@@ -185,6 +187,9 @@ if (( save<1 )) ; then
         rm -rf "$datadir" 2>/dev/null
 fi
 
+
+dbg "crtfile:$crtfile" 
+dbg "ocdtemplate:$ocdtemplate" 
 [ -f "$crtfile" ] && cp -f "$crtfile" "$outputdir" 2>/dev/null
 [ -f "$ocdtemplate" ] && cp -f "$ocdtemplate" "$outputdir"/$arealabel.mml.ocd 2>/dev/null
 
