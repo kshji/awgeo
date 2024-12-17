@@ -512,8 +512,8 @@ get_pullauta()
 	(( count>0 )) && pullauta_this_set
 
 	# some files to use data in the Ocad
-	cp -f $AWGEO/config/*.crt "$outdir"
-	cp -f $AWGEO/config/*.ocd "$outdir"
+	cp -f $AWGEO/config/*.crt "$outdir" 2>/dev/null
+	cp -f $AWGEO/config/*.ocd "$outdir" 2>/dev/null
 
 	dbg "$xfunc: end"
 }

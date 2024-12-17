@@ -190,7 +190,7 @@ DXF_ENCODING=LATIN1
 export DXF_ENCODING
 
 crtfile=$AWGEO/config/FIshp2ISOM2017.crt
-outputdir="mml"
+outputdir=""
 arealabel=""
 inputdir=""
 indir=""
@@ -227,6 +227,8 @@ Xnow=$PWD
 id=$$ # process number = unique id for tempfiles
 TEMP="$PWD/tmp/$id"
 
+dbg "pwd:" $PWD
+dbg mkdir -p "$outputdir" "$TEMP"
 mkdir -p "$outputdir" "$TEMP"
 [ ! -d "$outputdir" ] && echo "no dir:$outputdir " >&2 && exit 3
 [ ! -d "$TEMP" ] && echo "no dir:$TEMP " >&2 && exit 3
@@ -261,8 +263,15 @@ cd $Xnow
 
 
 
+dbg mkdir -p "$outputdir"
 mkdir -p "$outputdir"
-[ -d "$outputdir" ] && (( save >0 )) && cp -rf "$TEMP"/* "$outputdir" 2>/dev/null
+if [ -d "$outputdir" ] && (( save >0 )) ; then
+	cp -rf "$TEMP"/* "$outputdir" 2>/dev/null
+	# some files to use data in the Ocad
+	cp -f $AWGEO/config/*.crt "$outputdir" 2>/dev/null
+	cp -f $AWGEO/config/*.ocd "$outputdir" 2>/dev/null
+fi
+
 dbg "data saved to dir:$outputdir"
 ((DEBUG<1)) && rm -rf "$TEMP"  2>/dev/null
 

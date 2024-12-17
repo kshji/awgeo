@@ -258,3 +258,10 @@ mkdir -p "$outputdir"
 dbg mv -f $inputdir/${arealabel}_?.dxf "$outputdir"
 mv -f $inputdir/${arealabel}_?.dxf "$outputdir"
 
+if [ -d "$outputdir" ] ; then
+        cp -rf "$TEMP"/* "$outputdir" 2>/dev/null
+        # some files to use data in the Ocad
+        cp -f $AWGEO/config/*.crt "$outputdir" 2>/dev/null
+        cp -f $AWGEO/config/*.ocd "$outputdir" 2>/dev/null
+fi
+
