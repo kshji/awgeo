@@ -440,6 +440,13 @@ pullauta_this_set()
 
          # mv pullauta results to the user outdir
          mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
+	 # some datafiles to subdir
+	 mkdir -p "$outdir/addon" 
+	 mv -f "$outdir"/*_undergrowth.* "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*_dotknolls.* "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*_contours_0*.dxf "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*_contours_1*.dxf "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*_contours03*.dxf "$outdir/addon" 2>/dev/null
 
          # make clean to the next process block input
 	 # output not removed, posible to run pullauta again ex. change vege
