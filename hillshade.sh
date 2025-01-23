@@ -2,12 +2,15 @@
 # ksh or bash or ...
 # hillshade.sh
 #
+# hillshade.sh -i input.laz # default -g 1 -z 3, outputfile input.hillshade.tif
+# hillshade.sh -i input.laz -o out.tif -g 1 -z 3
+#
 # Copyright 2024 Karjalan ATK-Awot Oy
 # Jukka Inkeri
 #
 # Make hillshade tiff from LAZ
 #
-VER="2024-11-04.a"
+VER="2025-01-23.a"
 #
 # using PDAL gdal GDAL
 # katso varjo4.sh, sama Lastools:lla
@@ -166,8 +169,11 @@ JSON
 set_def()
 {
         s=1.0
-        az=250
-        alt=55
+        az=200
+        #az=250 # darker slope
+        #az=335 # too dark slope
+        #alt=55
+        alt=60
         z=3
         alg=Horn
 }
@@ -202,6 +208,7 @@ groundfilter="$TEMP.ground_filter.json"
 laz2tiff="$TEMP.laz2tif.json"
 
 
+outaddon=".hillshade"
 
 # parse cmdline options
 while [ $# -gt 0 ]
@@ -209,7 +216,7 @@ do
 	arg="$1"
 	case "$arg" in
 		-i) inf="$2"; shift  ;;
-		-o) result="$2"; shift  ;;
+		-o) result="$2"; outaddon=""; shift  ;;
 		-g) ground="$2"; shift  ;;
 		-d) DEBUG="$2"; shift  ;;
 		-z) z="$2"; shift  ;;
@@ -244,8 +251,10 @@ laz2tif "$result".ground.laz "$TEMP.$result".ground.tif
 
 [ ! -f "$TEMP.$result".ground.tif ] && err "nofile $TEMP.$result.ground.tif" && exit 4
 step make result file
-dbg dbg:gdaldem hillshade -co compress=lzw -s $s -compute_edges -az $az -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  
-gdaldem hillshade -co compress=lzw -s $s -compute_edges -az $az -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  2>/dev/null
+#dbg dbg:gdaldem hillshade -co compress=lzw -s $s -compute_edges -az $az -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  
+#gdaldem hillshade -co compress=lzw -s $s -compute_edges -az $az -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  2>/dev/null
+dbg gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  
+gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".${outaddon}tif  2>/dev/null
 step done
 
 [ ! -f "$result".tif ] && err "nofile $result.tif" && exit 5
