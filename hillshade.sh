@@ -260,7 +260,7 @@ dbg gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -a
 gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result"${outaddon}.tif  2>/dev/null
 step done
 
-[ ! -f "$result".tif ] && err "nofile $result.tif" && exit 5
+[ ! -f "$result"${outaddon}.tif ] && err "nofile $result.tif" && exit 5
 
 ((save>0)) && mv -f $TEMP.$result.ground.tif  "$result".ground.tif
 
