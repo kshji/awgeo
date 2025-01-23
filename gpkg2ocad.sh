@@ -267,10 +267,11 @@ dbg mkdir -p "$outputdir"
 mkdir -p "$outputdir"
 if [ -d "$outputdir" ] && (( save >0 )) ; then
 	cp -rf "$TEMP"/* "$outputdir" 2>/dev/null
-	# some files to use data in the Ocad
-	cp -f $AWGEO/config/*.crt "$outputdir" 2>/dev/null
-	cp -f $AWGEO/config/*.ocd "$outputdir" 2>/dev/null
 fi
+
+# some files to use data in the Ocad
+cp -f $AWGEO/config/*.crt "$outputdir" 2>/dev/null
+cp -f $AWGEO/config/*.ocd "$outputdir" 2>/dev/null
 
 dbg "data saved to dir:$outputdir"
 ((DEBUG<1)) && rm -rf "$TEMP"  2>/dev/null
