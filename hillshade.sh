@@ -254,7 +254,7 @@ step make result file
 #dbg dbg:gdaldem hillshade -co compress=lzw -s $s -compute_edges -az $az -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  
 #gdaldem hillshade -co compress=lzw -s $s -compute_edges -az $az -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  2>/dev/null
 dbg gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  
-gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".${outaddon}tif  2>/dev/null
+gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result"${outaddon}.tif  2>/dev/null
 step done
 
 [ ! -f "$result".tif ] && err "nofile $result.tif" && exit 5
