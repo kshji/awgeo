@@ -209,6 +209,7 @@ laz2tiff="$TEMP.laz2tif.json"
 
 
 outaddon=".hillshade"
+save=0 # save ground tif
 
 # parse cmdline options
 while [ $# -gt 0 ]
@@ -222,6 +223,7 @@ do
 		-z) z="$2"; shift  ;;
 		-v) echo "$PRG Ver:$VER" >&2 ;;
 		-h) usage ; exit 1 ;;
+		-s) save="$2" ; shift;;
 		-*) usage ; exit 1 ;;
 	esac
 	shift
@@ -258,6 +260,8 @@ gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $
 step done
 
 [ ! -f "$result".tif ] && err "nofile $result.tif" && exit 5
+
+((save>0)) && mv -f $TEMP.$result.ground.tif"  "$result".ground.tif
 
 dbg "dbg: $TEMP.* temporary files"
 [ $DEBUG -lt 1 ] && rm -f $TEMP.* 2>/dev/null
