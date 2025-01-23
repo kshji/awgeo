@@ -3,7 +3,8 @@
 # hillshade.sh
 #
 # hillshade.sh -i input.laz # default -g 1 -z 3, outputfile input.hillshade.tif
-# hillshade.sh -i input.laz -o out.tif -g 1 -z 3
+# hillshade.sh -i input.laz -o out.tif -g 1 -z 3 -s 1
+# -s 1 = save also input.ground.tif
 #
 # Copyright 2024 Karjalan ATK-Awot Oy
 # Jukka Inkeri
@@ -261,7 +262,7 @@ step done
 
 [ ! -f "$result".tif ] && err "nofile $result.tif" && exit 5
 
-((save>0)) && mv -f $TEMP.$result.ground.tif"  "$result".ground.tif
+((save>0)) && mv -f $TEMP.$result.ground.tif  "$result".ground.tif
 
 dbg "dbg: $TEMP.* temporary files"
 [ $DEBUG -lt 1 ] && rm -f $TEMP.* 2>/dev/null
