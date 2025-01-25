@@ -21,11 +21,10 @@ VER=2024-11-29a
 #
 # or use option --all to process all features
 #
-# pullauta.run.sh --all -a 11 
+# pullauta.run.sh --all -a 11 -i 1.25 --in inputdatadir --out outputdatadir
 # - northlineangle 11, intermediate curve 0.625, hillshade using z=3
 # - also make spike free (sf.png) - generating spike free digital surface model
 # pullauta.run.sh --all -a 11 -i 1.25
-# pullauta.run.sh --all -a 11 -i 1.25 --in inputdatadir --out outputdatadir
 #
 # pullauta.run.sh --onlyhillshade  -s  -z 3
 # - run only hillshade after basic run - use temp files
@@ -33,6 +32,8 @@ VER=2024-11-29a
 # pullauta.run.sh --onlyintermediate -i 0.625
 # - run only intermediate curves (0.625 m) after basic run - use temp files
 #
+#  pullauta.run.sh -p
+#  - copy only pullauta.ini to the this directory
 #
 # config.pullauta.ini have to be:
 # batch=1
