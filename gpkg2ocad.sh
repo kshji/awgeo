@@ -1,5 +1,14 @@
 #!/usr/local/bin/awsh
+###/usr/bin/env ksh
+# ksh or bash or ...
 # gpkg2ocad.sh
+#
+# Copyright 2025 Karjalan ATK-Awot Oy
+# Jukka Inkeri
+# https://github.com/kshji/awgeo
+# https://awot.fi
+#
+# Convert GeoPackage to Ocad files (DXF)
 #
 # gpkg2ocad.sh -a P5313L   
 # - input from sourcedata/P5313L*

@@ -4,6 +4,8 @@
 #
 # Copyright 2024 Karjalan ATK-Awot Oy
 # Jukka Inkeri
+# https://github.com/kshji/awgeo
+# https://awot.fi
 #
 # Make hillshade tiff from LAZ and forest "spike free" png
 # ground hillshade and forest "hillshade"

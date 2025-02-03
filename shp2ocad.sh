@@ -1,6 +1,14 @@
 #!/usr/local/bin/awsh
 # shp2ocad.sh
 #
+#
+# Copyright 2025 Karjalan ATK-Awot Oy
+# Jukka Inkeri
+# https://github.com/kshji/awgeo
+# https://awot.fi
+#
+# Convert shp files to Ocad (dxf)
+#
 # init_shp.sh has done before this
 # shp2ocad.sh -a P5313L   
 # - input from sourcedata/P5313L

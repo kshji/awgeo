@@ -4,6 +4,8 @@
 #
 # Copyright 2024 Karjalan ATK-Awot Oy
 # Jukka Inkeri
+# https://github.com/kshji/awgeo
+# https://awot.fi
 #
 # Make spike free digital surface model
 # hillshade "forest" 

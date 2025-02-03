@@ -1,6 +1,13 @@
 #!/usr/local/bin/awsh
 # mml2ocad.sh
 #
+# Copyright 2025 Karjalan ATK-Awot Oy
+# Jukka Inkeri
+# https://github.com/kshji/awgeo
+# https://awot.fi
+#
+# Convert MML SHP files to the DXF files for importing to the Ocad
+#
 # $AWGEO/get.mmlshp2ocad.sh -a P5313L
 # - input default: dir sourcedata/P5313L include P5313L.shp.zip or if not, it will get if you have $AWMML defined
 # - output default: mml/P5313L

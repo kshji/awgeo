@@ -4,6 +4,7 @@ VER=2024-11-29a
 #
 # Karjalan ATK-Awot Oy
 # Jukka Inkeri
+# https://github.com/kshji/awgeo
 # https://awot.fi
 # pullauttelija@awot.fi
 #
