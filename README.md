@@ -48,6 +48,7 @@ The full licence terms can be found on the individual pages of the following too
   * [Geospatial School](https://geospatialschool.com/)
   * [Awesome-Geospatial](https://github.com/sacridini/Awesome-Geospatial), list of geotools
   * [Proj Widard](https://projectionwizard.org/)
+  * [World Magnetic Model (WMM)](https://www.ncei.noaa.gov/products/world-magnetic-model)
 
 ### Other interesting tools
   * [Virtual DOS](https://copy.sh/v86/?profile=msdos), [Github](https://github.com/copy/v86), also Linux, Windows98, ... nice.
@@ -70,6 +71,8 @@ pip3 install --upgrade pip
 sudo add-apt-repository ppa:ubuntugis/ppa
 sudo apt-get update
 sudo apt-get install gdal-bin libgdal-dev 
+Root:
+
 #       Check:
 ogrinfo --version
 
