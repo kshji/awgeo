@@ -333,11 +333,29 @@ Only map without hillshade and intermediate curves, nothlines angle 11: If angle
 pullauta.run.sh -a 11 
 ```
 
-<img src="../../blob/master/examples/rukko.map.png" width="50%" height="50%">Final map
+<img src="../../blob/master/examples/rukko.map.png" width="50%" height="50%"> Final map
 
-<img src="../../blob/master/examples/rukko.hillshade.png" width="50%" height="50%">Hillshade
+<img src="../../blob/master/examples/rukko.hillshade.png" width="50%" height="50%"> Hillshade with some map symbols
 
-<img src="../../blob/master/examples/rukko.hillshade.2.png" width="50%" height="50%">Hillshade with some map symbols
+<img src="../../blob/master/examples/rukko.hillshade.2.png" width="50%" height="50%"> Hillshade
+
+<img src="../../blob/master/examples/rukko.sf.png" width="50%" height="50%"> Spike free
+
+<img src="../../blob/master/examples/rukko.color.fo.2.png" width="50%" height="50%"> DEM, first-only 
+
+<img src="../../blob/master/examples/rukko.color.fo.png" width="50%" height="50%"> DEM, first-only 
+ * white - ground, no vegetation
+ * yello - low vegetation
+ * dark green - low vegetation
+ * light green - middle high trees
+ * light orange - higher
+ * read - highest trees
+
+<img src="../../blob/master/examples/rukko.vege.png" width="50%" height="50%"> Vegetation, pullautin done
+
+<img src="../../blob/master/examples/rukko.tree_height_density.png" width="50%" height="50%"> Trees height and density, low trees = dark green
+
+<img src="../../blob/master/examples/rukko.tree_height_density.middle.png" width="50%" height="50%"> Trees height and density (middle) green
 
 ## Coming ...
 
