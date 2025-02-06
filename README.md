@@ -285,6 +285,12 @@ forest_hillshade.sh
 
 pullauta.run.sh is my version to batch ***pullauta*** process.
 
+Basic use, generate all extra layers
+```sh
+# angle correction 11.0
+$AWGEO/pullauta.run.sh --all -a 11 -in lazsrcdir --out ouputdir
+```
+
 #### setup
  * mkdir ***sourcedata*** and ***pullautettu*** - you can use any dir except input and output.
  * config/pullauta.ini use some variable = dynamic template , make your edits to this version
@@ -326,6 +332,12 @@ Only map without hillshade and intermediate curves, nothlines angle 11: If angle
 ```sh
 pullauta.run.sh -a 11 
 ```
+
+<img src="../../blob/master/examples/rukko.map.png" width="50%" height="50%">Final map
+
+<img src="../../blob/master/examples/rukko.hillshade.png" width="50%" height="50%">Hillshade
+
+<img src="../../blob/master/examples/rukko.hillshade.2.png" width="50%" height="50%">Hillshade with some map symbols
 
 ## Coming ...
 
