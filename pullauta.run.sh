@@ -260,6 +260,37 @@ merge_png()
 
 
 ################################################################
+make_forest_images()
+{
+	xfunc="make_forest_images"
+	dbg "$xfunc: start"
+	Zinf="$1"
+	Zoutd="$2"
+	Zfname="$3"
+	Zlabel="$4"
+
+	# ground
+        dbg lasground64 -i "$Zinf" -wilderness -ultra_fine -o $TEMP.ground.laz
+        lasground64 -i "$Zinf" -wilderness -ultra_fine -o $TEMP.ground.laz
+	# normalize
+        dbg lasheight64 -i $TEMP.ground.laz  -replace_z -o $TEMP.normalized.laz
+        lasheight64 -i $TEMP.ground.laz  -replace_z -o $TEMP.normalized.laz
+        #
+        #dbg las2dem64 -i $TEMP.normalized.laz -spike_free 0.9 -step 0.5 -o $TEMP.normalized.tif
+        #las2dem64 -i $TEMP.normalized.laz -spike_free 0.9 -step 0.5 -o $TEMP.normalized.tif
+        dbg las2dem64 -i $TEMP.normalized.laz -first_only -step 0.5 -o $TEMP.fo.tif
+        las2dem64 -i $TEMP.normalized.laz  -first_only -step 0.5 -o $TEMP.fo.tif
+        dbg gdaldem color-relief -co WORLDFILE=YES $TEMP.fo.tif "$AWGEO/config/rgb.rainbow.txt"  "$Zoutd/$Zlabel.color.fo.png"
+        gdaldem color-relief -co WORLDFILE=YES $TEMP.fo.tif "$AWGEO/config/rgb.rainbow.txt"  "$Zoutd/$Zlabel.color.fo.png" 
+        cp -f "$Zoutd/$Zlabel.color.fo.wld" "$Zoutd/$Zlabel.color.fo.pgw"
+        rm -f "$Zoutd"/"$Zlabel".*.xml 2>/dev/null
+
+	$AWGEO/lazgetforest.sh -d $DEBUG -s "1.5" -c "0.01" -o "$Zoutd" "$Zinf"
+
+	dbg "$xfunc: end"
+}
+
+################################################################
 process_spike_free()
 {
 	# https://rapidlasso.de/generating-spike-free-digital-surface-models-from-lidar/
@@ -271,7 +302,9 @@ process_spike_free()
 		[ ! -f "$laz" ] && continue
 		fname=$(getfile "$laz")
 		Xname=$(getbase "$fname" ".laz")
+		dbg las2dem64 -i "$laz" -spike_free 0.9  -step 0.5  -hillshade  -o "$outputdir/$Xname.sf.png" 
 		las2dem64 -i "$laz" -spike_free 0.9  -step 0.5  -hillshade  -o "$outputdir/$Xname.sf.png" 2>/dev/null
+		[ -f "$AWGEO/config/rgb.rainbow.txt" ] && make_forest_images "$laz" "$outputdir" "$fname" "$Xname" 
 		# -step 0.25 not needed ...
 	done
 	dbg "$xfunc: end"

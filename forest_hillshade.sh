@@ -164,6 +164,7 @@ do
 
 	# if not exists result file or force = do it
 	(( force > 0 )) && rm -f "$outputdir/$name.hillshade.tif" 2>/dev/null
+	dbg "$name hillshade"
 	if [ ! -f "$outputdir/$name.hillshade.tif" ] ; then
 		dbg $AWGEO/hillshade.sh -i "$inf" -o "$id.tmp" -z "$z"
 		((DEBUG<2)) && $AWGEO/hillshade.sh -i "$inf" -o "$id.tmp" -z "$z"
@@ -171,8 +172,9 @@ do
 	fi
 
 	# if not exists result file or force = do it
+	dbg "$name forest"
 	(( force > 0 )) && rm -f "$outputdir/$name.forest.png" 2>/dev/null	
-	if [ -f "$outputdir/$name.forest.png" ] ; then
+	if [ ! -f "$outputdir/$name.forest.png" ] ; then
 		dbg $AWGEO/forest.sh -i "$lazf" -o "$outputdir" -d $DEBUG
 		((DEBUG<2)) && $AWGEO/forest.sh  -i "$lazf" -o "$outputdir" -d $DEBUG 
 	fi
