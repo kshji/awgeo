@@ -350,27 +350,43 @@ pullauta.run.sh -a 11
 
 Muutama esimerkki syntyvistä taustakuvista, voi hyödyntää jo ennen maastokäyntejä.
 
-<img src="../../blob/master/examples/rukko.hillshade.2.png" width="50%" height="50%"> Varjokuva maaston muoto (DEM)
+<img src="../../blob/master/examples/rukko.hillshade.2.png" width="50%" height="50%"> 
 
-<img src="../../blob/master/examples/rukko.hillshade.png" width="50%" height="50%"> Varjokuva, taustalla käyrät yms.
+Varjokuva maaston muoto (DEM)
 
-<img src="../../blob/master/examples/rukko.sf.png" width="50%" height="50%"> Pintakuvio, mukana puusto yms. Näkyy hyvin mm. ojat, ajourat, ...
+<img src="../../blob/master/examples/rukko.hillshade.png" width="50%" height="50%"> 
 
-<img src="../../blob/master/examples/rukko.color.fo.2.png" width="50%" height="50%"> DSM, mukana vain 1. piste kustakin kohdasta = puuston tiheys ja korkeus
+Varjokuva, taustalla käyrät yms.
 
-<img src="../../blob/master/examples/rukko.color.fo.png" width="50%" height="50%"> DSM, mukana vain 1. piste kustakin kohdasta = puuston tiheys ja korkeus
- * white - ground, no vegetation
- * yello - low vegetation
- * dark green - low vegetation
- * light green - middle high trees
- * light orange - higher
- * read - highest trees
+<img src="../../blob/master/examples/rukko.sf.png" width="50%" height="50%"> 
 
-<img src="../../blob/master/examples/rukko.vege.png" width="50%" height="50%"> Vegetation, pullautin done
+Pintakuvio, mukana puusto yms. Näkyy hyvin mm. ojat, ajourat, ...
 
-<img src="../../blob/master/examples/rukko.tree_height_density.png" width="50%" height="50%"> Trees height and density, low trees = dark green
+<img src="../../blob/master/examples/rukko.color.fo.2.png" width="50%" height="50%"> 
 
-<img src="../../blob/master/examples/rukko.tree_height_density.middle.png" width="50%" height="50%"> Trees height and density (middle) green
+DSM, mukana vain 1. piste kustakin kohdasta = puuston tiheys ja korkeus
+
+<img src="../../blob/master/examples/rukko.color.fo.png" width="50%" height="50%"> 
+
+DSM, mukana vain 1. piste kustakin kohdasta = puuston tiheys ja korkeus
+ * valkoinen - pohja, ei kasvillisuutta
+ * keltainen - tosi matala kasvillisuus
+ * tumman vihreä, matala kasvillisuus (taimikkokorkeus)
+ * vaalean vihreä - keskikorkea puusto, esim. kuusikko hyvin usein jää tähän korkeuteen
+ * vaalea oranssi - edellistä korkeampaa, yli 20 metristä.
+ * punainen - korkein metsä
+
+<img src="../../blob/master/examples/rukko.vege.png" width="50%" height="50%"> 
+
+Vihreä, Pullauttimen tuottama
+
+<img src="../../blob/master/examples/rukko.tree_height_density.png" width="50%" height="50%"> 
+
+Pelkkä puusto tiheydn ja pituuden mukaisesti, tumman vihreä matalin = taimikko
+
+<img src="../../blob/master/examples/rukko.tree_height_density.middle.png" width="50%" height="50%"> 
+
+Keskimmäinen kasvillisuus - nuori metsä yleensä, suunnistuskartalla ehkä vihreää. Riippuu tiheydestä.
 
 ## Tulossa
 
