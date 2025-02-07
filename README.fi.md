@@ -382,7 +382,7 @@ Vihreä, Pullauttimen tuottama
 
 <img src="../../blob/master/examples/rukko.tree_height_density.png" width="50%" height="50%"> 
 
-Pelkkä puusto tiheydn ja pituuden mukaisesti, tumman vihreä matalin = taimikko
+Pelkkä puusto tiheyden ja pituuden mukaisesti, tumman vihreä matalin = taimikko
 
 <img src="../../blob/master/examples/rukko.tree_height_density.middle.png" width="50%" height="50%"> 
 
