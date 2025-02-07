@@ -304,6 +304,8 @@ forest_hillshade.sh
 
 ***pullauta.run.sh*** on minun versioni ***pullauta*** massa-ajona isommasta alueesta = paljon LAZ-tiedostoja.
 
+Tämä versio tuottaa myös erilaisia taustakuvia etenkin kartantekijöille enemmän kuin ***pullauta*** tuottaa.
+
 #### asetukset
  * tee hakemistot ***sourcedata*** ja ***pullautettu*** - kaikki muut sallittuja paitsi ajo itse käyttää
 sisäisesti input ja output, joten käytä jotain muita hakemistonimiä
@@ -334,15 +336,41 @@ pullauta.run.sh -a 11 -i 0.625 --hillshade -z 3 --spikefree  --config $MYHOME/pu
 # or use "full set" using defaults
 # tai suorita koko oletuspaketti optiolla --all ja kerrot vain korjauskulma sekä välikäyrä
 # lähdedata kansiossa sourcedata, ja lopputulos tulee kansioon pullautettu
-pullauta.run.sh -a 11 -i 0.625 --all
+pullauta.run.sh --all -a 11 -i 0.625 
 # tai kerro mistä löytyy lähdedata ja minne laitetaan lopputulos
-pullauta.run.sh -a 11 -i 0.625 --all --in lahde/P5113L --out tulos/P5113L
+pullauta.run.sh --all -a 11 -i 0.625 --in lahde/P5113L --out tulos/P5113L
 ```
 
 Pelkkä pullautuskartta kulmalla 11:
 ```sh
 pullauta.run.sh -a 11 
 ```
+
+<img src="../../blob/master/examples/rukko.map.png" width="50%" height="50%"> Valmis kartta
+
+Muutama esimerkki syntyvistä taustakuvista, voi hyödyntää jo ennen maastokäyntejä.
+
+<img src="../../blob/master/examples/rukko.hillshade.2.png" width="50%" height="50%"> Varjokuva maaston muoto (DEM)
+
+<img src="../../blob/master/examples/rukko.hillshade.png" width="50%" height="50%"> Varjokuva, taustalla käyrät yms.
+
+<img src="../../blob/master/examples/rukko.sf.png" width="50%" height="50%"> Pintakuvio, mukana puusto yms. Näkyy hyvin mm. ojat, ajourat, ...
+
+<img src="../../blob/master/examples/rukko.color.fo.2.png" width="50%" height="50%"> DSM, mukana vain 1. piste kustakin kohdasta = puuston tiheys ja korkeus
+
+<img src="../../blob/master/examples/rukko.color.fo.png" width="50%" height="50%"> DSM, mukana vain 1. piste kustakin kohdasta = puuston tiheys ja korkeus
+ * white - ground, no vegetation
+ * yello - low vegetation
+ * dark green - low vegetation
+ * light green - middle high trees
+ * light orange - higher
+ * read - highest trees
+
+<img src="../../blob/master/examples/rukko.vege.png" width="50%" height="50%"> Vegetation, pullautin done
+
+<img src="../../blob/master/examples/rukko.tree_height_density.png" width="50%" height="50%"> Trees height and density, low trees = dark green
+
+<img src="../../blob/master/examples/rukko.tree_height_density.middle.png" width="50%" height="50%"> Trees height and density (middle) green
 
 ## Tulossa
 

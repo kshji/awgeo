@@ -288,7 +288,7 @@ pullauta.run.sh is my version to batch ***pullauta*** process.
 Basic use, generate all extra layers
 ```sh
 # angle correction 11.0
-$AWGEO/pullauta.run.sh --all -a 11 -in lazsrcdir --out ouputdir
+$AWGEO/pullauta.run.sh --all -a 11 -in mysrc/thiscase --out myresult/thiscase
 ```
 
 #### setup
@@ -318,32 +318,27 @@ pullauta.run.sh -a 11 -i 0.625 --hillshade -z 3 --spikefree  --config $MYHOME/pu
 # - config template init file: $MYHOME/pullauta.ini , remember have to be dynamic angle set
 # or use "full set" using defaults
 # inputdir=sourcedata, outputdir=pullautettu, z=3
-pullauta.run.sh -a 11 -i 0.625 --all
+pullauta.run.sh --all -a 11 -i 0.625 
 # or set dirs
-pullauta.run.sh -a 11 -i 0.625 --all --in mysrc/thiscase --out myresult/thiscase
+pullauta.run.sh --all -a 11 -i 0.625 --in mysrc/thiscase --out myresult/thiscase
 ```
 
-Only map without hillshade and intermediate curves, nothlines angle 11: If angle=0, no northlines.
-```sh
-pullauta.run.sh -a 11 
-```
-
-Only map without hillshade and intermediate curves, nothlines angle 11: If angle=0, no northlines.
+Only map without hillshade and intermediate curves, northlines angle 11: If angle=0, no northlines.
 ```sh
 pullauta.run.sh -a 11 
 ```
 
 <img src="../../blob/master/examples/rukko.map.png" width="50%" height="50%"> Final map
 
-<img src="../../blob/master/examples/rukko.hillshade.png" width="50%" height="50%"> Hillshade with some map symbols
+<img src="../../blob/master/examples/rukko.hillshade.2.png" width="50%" height="50%"> Hillshade (DEM)
 
-<img src="../../blob/master/examples/rukko.hillshade.2.png" width="50%" height="50%"> Hillshade
+<img src="../../blob/master/examples/rukko.hillshade.png" width="50%" height="50%"> Hillshade with some map symbols 
 
 <img src="../../blob/master/examples/rukko.sf.png" width="50%" height="50%"> Spike free
 
-<img src="../../blob/master/examples/rukko.color.fo.2.png" width="50%" height="50%"> DEM, first-only 
+<img src="../../blob/master/examples/rukko.color.fo.2.png" width="50%" height="50%"> DSM, first-only 
 
-<img src="../../blob/master/examples/rukko.color.fo.png" width="50%" height="50%"> DEM, first-only 
+<img src="../../blob/master/examples/rukko.color.fo.png" width="50%" height="50%"> DSM, first-only 
  * white - ground, no vegetation
  * yello - low vegetation
  * dark green - low vegetation
