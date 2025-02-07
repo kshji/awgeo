@@ -364,7 +364,7 @@ Pintakuvio, mukana puusto yms. Näkyy hyvin mm. ojat, ajourat, metsäkuviorajat,
 
 <img src="../../blob/master/examples/rukko.color.fo.2.png" width="50%" height="50%"> 
 
-DSM, mukana vain 1. piste kustakin kohdasta = puuston tiheys ja korkeus, ajourat, kuviorajat, ...
+DSM, mukana vain 1. heijastuspiste kustakin kohdasta = puuston tiheys ja korkeus, ajourat, kuviorajat, ...
 
 <img src="../../blob/master/examples/rukko.color.fo.png" width="50%" height="50%"> 
 
