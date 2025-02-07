@@ -352,7 +352,7 @@ Muutama esimerkki syntyvistä taustakuvista, voi hyödyntää jo ennen maastokä
 
 <img src="../../blob/master/examples/rukko.hillshade.2.png" width="50%" height="50%"> 
 
-Varjokuva maaston muoto (DEM)
+Varjokuva maaston muoto (DEM). Ojat, tiet, ...
 
 <img src="../../blob/master/examples/rukko.hillshade.png" width="50%" height="50%"> 
 
@@ -360,11 +360,11 @@ Varjokuva, taustalla käyrät yms.
 
 <img src="../../blob/master/examples/rukko.sf.png" width="50%" height="50%"> 
 
-Pintakuvio, mukana puusto yms. Näkyy hyvin mm. ojat, ajourat, ...
+Pintakuvio, mukana puusto yms. Näkyy hyvin mm. ojat, ajourat, metsäkuviorajat, aukot, ...
 
 <img src="../../blob/master/examples/rukko.color.fo.2.png" width="50%" height="50%"> 
 
-DSM, mukana vain 1. piste kustakin kohdasta = puuston tiheys ja korkeus
+DSM, mukana vain 1. piste kustakin kohdasta = puuston tiheys ja korkeus, ajourat, kuviorajat, ...
 
 <img src="../../blob/master/examples/rukko.color.fo.png" width="50%" height="50%"> 
 
@@ -382,7 +382,7 @@ Vihreä, Pullauttimen tuottama
 
 <img src="../../blob/master/examples/rukko.tree_height_density.png" width="50%" height="50%"> 
 
-Pelkkä puusto tiheyden ja pituuden mukaisesti, tumman vihreä matalin = taimikko
+Pelkkä puusto tiheyden ja pituuden mukaisesti, tumman vihreä matalin = taimikko. Ajourat, kuviorajat, ...
 
 <img src="../../blob/master/examples/rukko.tree_height_density.middle.png" width="50%" height="50%"> 
 
