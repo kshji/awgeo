@@ -37,6 +37,8 @@ Ja tietysti Jarkko Ryypön tuotteistamaa loistavaa Pullautinta.
   * [OCAD](https://ocad.com), Ocad kartantekijöille, kaupallinen
   * [Omapper](https://www.openorienteering.org/apps/mapper/), Omapper on ilmainen avoimen koodin cad kartantekijöille
   * [PurplePen](https://purple-pen.org), ilmainen avoimen koodin ratojen suunnittelu
+  * [WhiteBoxTools github](https://github.com/jblindsay/whitebox-tools)
+  * [WhiteboxTools](https://www.whiteboxgeo.com/manual/wbt_book/preface.html)
 
 Em. ohjelmien lisenssit löytyvät ko. ohjelmien sivuilta.
 
