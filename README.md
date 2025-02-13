@@ -29,6 +29,8 @@ My geo programs use various software, including Lastools, PDAL and GDAL.
   * [OCAD](https://ocad.com), Cad for mapping
   * [Omapper](https://www.openorienteering.org/apps/mapper/), OMapper open source for mapping
   * [PurplePen](https://purple-pen.org), free course setting software for orienteering
+  * [WhiteBoxTools github](https://github.com/jblindsay/whitebox-tools)
+  * [WhiteboxTools](https://www.whiteboxgeo.com/manual/wbt_book/preface.html)
 
 The full licence terms can be found on the individual pages of the following tools.
 
