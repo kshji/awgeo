@@ -13,10 +13,14 @@ Mm. Merenkulkulaitos ei ole oivaltanut saman idean hyötyä kansantaloudelle ja 
 itsekin saanut hyötyä syntyneistä ohjemistoista ja palveluista. Mm. Pullautin, MapAnt jne. Ilman
 avointa dataa ei olisi syntynyt erilaisia palveluja perustuen MML:n avoimeen dataan.
 
-[MML Avoin data](https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu?lang=fi).
-[Lisenssi CC 4.0](https://creativecommons.org/licenses/by/4.0/deed.fi), 
-[Maanmittauslaitos](https://www.maanmittauslaitos.fi/)
+## MML
+ * [MML Avoin data](https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu?lang=fi).
+ * [MML paikkatietokanta](https://kartta.paikkatietoikkuna.fi/),
+ * [Lisenssi CC 4.0](https://creativecommons.org/licenses/by/4.0/deed.fi), 
+ * [Maanmittauslaitos](https://www.maanmittauslaitos.fi/)
 
+
+## Jukka Inkeri - Awot
   * [Awot](https://awot.fi), yritykseni
   * [Suunnistus.info](https://suunnistus.info), suunnistussivuni
   * [Kalevan Rasti](https://kalevanrasti.fi), seurani 1983 alkaen
