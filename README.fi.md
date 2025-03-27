@@ -19,6 +19,8 @@ avointa dataa ei olisi syntynyt erilaisia palveluja perustuen MML:n avoimeen dat
  * [Lisenssi CC 4.0](https://creativecommons.org/licenses/by/4.0/deed.fi), 
  * [Maanmittauslaitos](https://www.maanmittauslaitos.fi/)
 
+## Muita lähteitä
+ * [Metsänkäyttöilmoitukset](https://metsakeskus.maps.arcgis.com/apps/MapSeries/index.html?appid=e8c03f73165b44aa8edb276e11ca2d2c)
 
 ## Jukka Inkeri - Awot
   * [Awot](https://awot.fi), yritykseni
