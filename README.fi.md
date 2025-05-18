@@ -68,6 +68,7 @@ neuvotaan tekemään paikkatiedolle sitä ja tätä ...
   * [Awesome-Geospatial](https://github.com/sacridini/Awesome-Geospatial), list of geotools
   * [Proj Widard](https://projectionwizard.org/)
   * [World Magnetic Model (WMM)](https://www.ncei.noaa.gov/products/world-magnetic-model)
+  * [Earth Explorer](https://earthexplorer.usgs.gov/)
 
 ### Muita mielenkiintoisia työkaluja
   * [Virtual DOS](https://copy.sh/v86/?profile=msdos), [Github](https://github.com/copy/v86), myös Linux, Windows98, ... aikamoista.
