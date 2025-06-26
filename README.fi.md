@@ -33,6 +33,7 @@ Oheisissa ratkaisuissa on käyttänyt pääasiassa ohjelmistoja: Lastools, PDAL 
 Ja tietysti Jarkko Ryypön tuotteistamaa loistavaa Pullautinta.
     
   * [PROJ](https://proj.org/)
+  * [EPSG](https://epsg.io/3067), maailman koordinaattiijärjestelmä
   * [GDAL](https://gdal.org/)
   * [PDAL](https://pdal.io/)
   * [Lastools](https://lastools.github.io/)
