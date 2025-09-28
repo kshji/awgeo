@@ -44,7 +44,6 @@ get_kunta()
 	mkdir -p "$TEMP"
         url="/tuotteet/kuntajako/kuntajako_10k/etrs89/gpkg/TietoaKuntajaosta_2025_10k.zip"
 	outfile="kuntajako.2025.zip"
-	outdir="kunta"
         dbg wget --no-check-certificate -O "$TEMP"/$outfile "$apihost$url?api_key=$apikey"
         wget --no-check-certificate -O "$TEMP"/$outfile "$apihost$url?api_key=$apikey"
 	unzip -ojq -d "$TEMP" "$TEMP/$outfile"
@@ -57,85 +56,17 @@ get_kunta()
 	###cp -f "$TEMP"/"$outfile" "$outdir" 2>/dev/null
 	###((DEBUG<1)) && [ -d "$TEMP" ] && rm -rf "$TEMP"
 
-
-}
-########################################################
-get_kiinteisto()
-{
-	Xarea="$1"
-        # could be more than one, select newest (sort)
-        mastertile=${Xarea:0:5}
-        subarea=${Xarea:0:3}
-        last=${Xarea:5:1}
-	# def L
-	parts="A B C D"
-	[ "$last" = "R" ] && parts="E F G H"
-	dbg "parts:$parts"
-
-	rm -rf "$TEMP" 2>/dev/null
-	mkdir -p "$TEMP"
-
-	for part in $parts
+	NOW=$PWD
+	cd $TEMP
+	for f in *.gpkg
 	do
-		file="$mastertile$part"
-        	url="/tuotteet/kiinteistorekisterikartta/avoin/karttalehdittain/tm35fin/shp/$subarea/$file.zip"
-		outfile="$Xarea.kiint.$file.shp.zip"
-        	dbg "mastertile:$mastertile file:$file $outfile url:$url"
-        	dbg wget --no-check-certificate -O "$TEMP"/$outfile "$apihost$url?api_key=$apikey"
-        	wget --no-check-certificate -O "$TEMP"/$outfile "$apihost$url?api_key=$apikey"
-		unzip -ojq -d "$TEMP" "$TEMP/$outfile"
-        	[ ! -f "$TEMP/$outfile" ] && exit 8
-		((DEBUG<1)) && rm -f "$TEMP/$outfile" 2>/dev/null
-
+		mkdir -p "$outdir" 2>/dev/null
+		cp -f "$f" "$outdir" 2>/dev/null
 	done
-
-	# merge 4 files to one file
-        XNOW="$PWD"
-        cd "$TEMP"
-
-	if ((gpkg == 1 )) ; then
-		destfile="$Xarea.kiinteistoraja.gpkg"
-		# merge shp to the gpkg file
-		# vain kiinteistorajat kiinnostavat
-		for f in *_kiinteistoraja.shp
-		do
-			if [ ! -f "$destfile" ] ; then
-				ogr2ogr -f 'GPKG' -nln kiinteistoraja "$destfile" "$f" 
-			else
-				ogr2ogr -f 'GPKG' -append -nln kiinteistoraja "$destfile" "$f" 
-			fi
-		done
-		#ogrinfo  $Xarea.kiinteistoraja.shp -sql "ALTER TABLE $Xarea.kiinteistoraja ADD COLUMN symbol integer(6)"
-		ogrinfo "$destfile" -sql "ALTER TABLE kiinteistoraja ADD COLUMN symbol text"
-		ogrinfo  "$destfile" -dialect SQLite -sql "
-          		UPDATE  kiinteistoraja
-          		SET symbol=cast(97000+LAJI AS text)
-        		"
-	else # no gpkg
-		destfile="$Xarea.kiinteistot.shp"
-		for f in *_*.shp
-		do
-			if [ ! -f "$destfile" ] ; then
-				ogr2ogr -f 'ESRI Shapefile' -nln kiinteistot "$destfile" "$f" 
-			else
-				ogr2ogr -f 'ESRI Shapefile' -append -nln kiinteistot "$destfile" "$f" 
-			fi
-		done
-		ogrinfo "$destfile" -sql "ALTER TABLE $Xarea.kiinteistot ADD COLUMN symbol text"
-		ogrinfo  "$destfile" -dialect SQLite -sql "
-          		UPDATE  kiinteistoraja
-          		SET symbol=cast(97000+LAJI AS text)
-        		"
-	fi
-	#zip "$destfile".zip "$destfile"
-	cd $XNOW
-	#cp -f "$TEMP"/"$destfile".zip "$outdir" 2>/dev/null
-	dbg cp -f "$TEMP"/"$destfile" "$outdir" 
-	mkdir -p "$outdir" 2>/dev/null
-	cp -f "$TEMP"/"$destfile" "$outdir" 2>/dev/null
 	((DEBUG<1)) && [ -d "$TEMP" ] && rm -rf "$TEMP"
-}
 
+
+}
 ######################################################################################
 # MAIN
 ######################################################################################
@@ -170,21 +101,16 @@ do
         shift
 done
 
-# files 1-n
-[ $# -lt 1 ] && usage && exit 5
-
 id=$$ # process number = unique id for tempfiles
 TEMP="$PWD/tmp/$id"
 
 mkdir -p "$outputdir" "$TEMP"
 
-avain=kunta
 outdir="$outputdir/kunta"
 mkdir -p "$outdir"
-dbg "get_kunta $avain"
-get_kunta "$avain"
+dbg "get_kunta "
+get_kunta 
 
-dbg "done:$outputdir"
+dbg "done:$outdir"
 
-#https://tiedostopalvelu.maanmittauslaitos.fi/tp/tilauslataus/tuotteet/kiinteistorekisterikartta/avoin/karttalehdittain/tm35fin/shp/N54/N5424A.zip?api_key=$apikey
 
