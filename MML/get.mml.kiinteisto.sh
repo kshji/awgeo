@@ -96,7 +96,7 @@ get_kiinteisto()
 			if [ ! -f "$destfile" ] ; then
 				ogr2ogr -f 'ESRI Shapefile' -nln kiinteistot "$destfile" "$f" 
 			else
-				or2ogr -f 'ESRI Shapefile' -append -nln kiinteistot "$destfile" "$f" 
+				ogr2ogr -f 'ESRI Shapefile' -append -nln kiinteistot "$destfile" "$f" 
 			fi
 		done
 	fi
