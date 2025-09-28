@@ -1,8 +1,6 @@
 #!/usr/local/bin/awsh
-# get.mml.kiinteisto.sh
-# $AWMML/get.mml.kiinteisto.sh -o sourcedata N5313R
-# - osaa hakea 4 tiedostoa L (ABCD) /R (EFGH) perusteella
-# -g 0|1 = default 1 = do gpkg files
+# get.mml.kunta.sh
+# $AWMML/get.mml.kunta.sh -o sourcedata 
 #
 
 BINDIR="${PRG%/*}"
@@ -37,6 +35,30 @@ dbg()
         echo "  $*" >&2
 }
 
+
+########################################################
+get_kunta()
+{
+	Xarea=kunta
+	rm -rf "$TEMP" 2>/dev/null
+	mkdir -p "$TEMP"
+        url="/tuotteet/kuntajako/kuntajako_10k/etrs89/gpkg/TietoaKuntajaosta_2025_10k.zip"
+	outfile="kuntajako.2025.zip"
+	outdir="kunta"
+        dbg wget --no-check-certificate -O "$TEMP"/$outfile "$apihost$url?api_key=$apikey"
+        wget --no-check-certificate -O "$TEMP"/$outfile "$apihost$url?api_key=$apikey"
+	unzip -ojq -d "$TEMP" "$TEMP/$outfile"
+        XNOW="$PWD"
+        cd "$TEMP"
+	cd $XNOW
+	#cp -f "$TEMP"/"$destfile".zip "$outdir" 2>/dev/null
+	###dbg cp -f "$TEMP"/"$destfile" "$outdir" 
+	mkdir -p "$outdir" 2>/dev/null
+	###cp -f "$TEMP"/"$outfile" "$outdir" 2>/dev/null
+	###((DEBUG<1)) && [ -d "$TEMP" ] && rm -rf "$TEMP"
+
+
+}
 ########################################################
 get_kiinteisto()
 {
@@ -156,13 +178,11 @@ TEMP="$PWD/tmp/$id"
 
 mkdir -p "$outputdir" "$TEMP"
 
-for kiint in $*
-do
-	outdir="$outputdir/$kiint"
-	mkdir -p "$outdir"
-	dbg "get_kiinteisto $kiint"
-	get_kiinteisto "$kiint"
-done
+avain=kunta
+outdir="$outputdir/kunta"
+mkdir -p "$outdir"
+dbg "get_kunta $avain"
+get_kunta "$avain"
 
 dbg "done:$outputdir"
 

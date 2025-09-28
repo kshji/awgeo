@@ -152,7 +152,7 @@ for metsa in $*
 do
 	dbg "get_metsa $metsa"
 	outdir="$outputdir/$metsa"
-	mkdir -p "$outputdir"
+	mkdir -p "$output"
 	get_metsa "$metsa"
 done
 

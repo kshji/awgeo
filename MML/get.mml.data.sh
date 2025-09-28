@@ -130,6 +130,7 @@ ortokuvalista()
 maastotietokantalista()
 {
 	filename="xmldata/maastotietokannat"
+	jatka=1
 	cp -f "$xmlfile" backup 2>/dev/null
 	rm -f "$xmlfile" 2>/dev/null
 # uusi 2025.05 https://tiedostopalvelu.maanmittauslaitos.fi/tp/feed/mtp/maastotietokanta/avoin
@@ -138,7 +139,7 @@ maastotietokantalista()
 	# 2025 05 muuttunut
 	url="/tp/feed/mtp/maastotietokanta/avoin?api_key=$apikey"
 	kierros=0
-	jatka=1
+	atka=1
 	next=""
 	while ((jatka>0))
 	do
@@ -152,6 +153,51 @@ maastotietokantalista()
 	done
 
 }
+
+#########################################################################
+yhdista_kuntajako()
+{
+	filename="xmldata/kuntajako"
+	all="xmldata/kuntajako.all.txt"
+	# DAT|id|/feed/entry/id||urn:path:/tuotteet/orto/etrs-tm35fin/smk_v_15000_50/2024/S43/02m/1/S4322B.jp2
+	grep "DAT|id|/feed/entry/id||.*\.zip" $filename.*.dat | \
+	awk -F '|' '
+		$3 == "/feed/entry/id" { 
+					url=$5
+					gsub(/^urn:path:/,"",url)
+					lkm=split(url,kentat,"/")
+					tiedosto=kentat[lkm]
+		 			print tiedosto,url 
+					}
+	' > $all
+}
+
+
+#########################################################################
+kuntajako()
+{
+	filename="xmldata/kuntajako"
+	jatka=1
+	cp -f "$xmlfile" backup 2>/dev/null
+	rm -f "$xmlfile" 2>/dev/null
+	# katso kaikki.txt tiedostosta mika on url
+	url="/tp/feed/mtp/kuntajako/kuntajako_10k?api_key=$apikey"
+	kierros=0
+	atka=1
+	next=""
+	while ((jatka>0))
+	do
+		wget -O "$filename.$kierros.xml" "$host/$url$next"
+		gawk -f lib/get.2.example.awk "$filename.$kierros.xml" > $filename.$kierros.dat
+		jatkumo=$(grep "ATTR|link|/feed/link|href|" $filename.$kierros.dat 2>/dev/null)
+		[ "$jatkumo" = "" ] && jatka=0 && continue
+		next=$(echo "$jatkumo" | awk -F '&' '{ print "&" $2 "&" $3 }')
+		echo "seuraava $next"
+		((kierros+=1))
+	done
+
+}
+	
 
 #########################################################################
 kaikki_palvelut()
@@ -197,13 +243,14 @@ apikeyfile="apikey.mml.txt"
 cd $AWMML
 
 mkdir -p xmldata backup 
-palvelut="kaikki_palvelut maastotietokantalista laserlista ortokuvalista yhdista_maastotietokanta yhdista_laser yhdista_ortokuva"
-palvelut="laserlista"
-palvelut="yhdista_maastotietokanta"
-palvelut="yhdista_laser"
-palvelut="ortokuvalista"
-palvelut="yhdista_ortokuva"
-palvelut="maastotietokantalista yhdista_maastotietokanta"
+palvelut="kaikki_palvelut kuntajako yhdista_kuntajako maastotietokantalista laserlista ortokuvalista yhdista_maastotietokanta yhdista_laser yhdista_ortokuva"
+#palvelut="laserlista"
+#palvelut="yhdista_maastotietokanta"
+#palvelut="yhdista_laser"
+#palvelut="ortokuvalista"
+#palvelut="yhdista_ortokuva"
+#palvelut="maastotietokantalista yhdista_maastotietokanta"
+palvelut="kuntajako yhdista_kuntajako"
 
 for p in $palvelut
 do
