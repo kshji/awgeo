@@ -57,8 +57,7 @@ get_kunta()
 	###((DEBUG<1)) && [ -d "$TEMP" ] && rm -rf "$TEMP"
 
 	NOW=$PWD
-	cd $TEMP
-	for f in *.gpkg
+	for f in $TEMP/*.gpkg
 	do
 		mkdir -p "$outdir" 2>/dev/null
 		cp -f "$f" "$outdir" 2>/dev/null
