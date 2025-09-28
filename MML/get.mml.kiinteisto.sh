@@ -2,6 +2,8 @@
 # get.mml.kiinteisto.sh
 # $AWMML/get.mml.kiinteisto.sh -o sourcedata N5313R
 # - osaa hakea 4 tiedostoa L (ABCD) /R (EFGH) perusteella
+# -g 0|1 = default 1 = do gpkg files
+#
 
 BINDIR="${PRG%/*}"
 [ "$PRG" = "$BINDIR" ] && BINDIR="." # - same dir as program
@@ -69,23 +71,27 @@ get_kiinteisto()
         XNOW="$PWD"
         cd "$TEMP"
 
-	destfile="$Xarea.kiinteistoraja.gpkg"
-	# merge shp to the gpkg file
-	# vain kiinteistorajat kiinnostavat
-	for f in *_kiinteistoraja.shp
-	do
-		if [ ! -f "$destfile" ] ; then
-			ogr2ogr -f 'GPKG' -nln kiinteistoraja "$destfile" "$f" 
-		else
-			ogr2ogr -f 'GPKG' -append -nln kiinteistoraja "$destfile" "$f" 
-		fi
-	done
-	#ogrinfo  $Xarea.kiinteistoraja.shp -sql "ALTER TABLE $Xarea.kiinteistoraja ADD COLUMN symbol integer(6)"
-	ogrinfo "$destfile" -sql "ALTER TABLE kiinteistoraja ADD COLUMN symbol text"
-	ogrinfo  "$destfile" -dialect SQLite -sql "
-          	UPDATE  kiinteistoraja
-          	SET symbol=cast(97000+LAJI AS text)
-        	"
+	if ((gpkg == 1 )) ; then
+		destfile="$Xarea.kiinteistoraja.gpkg"
+		# merge shp to the gpkg file
+		# vain kiinteistorajat kiinnostavat
+		for f in *_kiinteistoraja.shp
+		do
+			if [ ! -f "$destfile" ] ; then
+				ogr2ogr -f 'GPKG' -nln kiinteistoraja "$destfile" "$f" 
+			else
+				ogr2ogr -f 'GPKG' -append -nln kiinteistoraja "$destfile" "$f" 
+			fi
+		done
+		#ogrinfo  $Xarea.kiinteistoraja.shp -sql "ALTER TABLE $Xarea.kiinteistoraja ADD COLUMN symbol integer(6)"
+		ogrinfo "$destfile" -sql "ALTER TABLE kiinteistoraja ADD COLUMN symbol text"
+		ogrinfo  "$destfile" -dialect SQLite -sql "
+          		UPDATE  kiinteistoraja
+          		SET symbol=cast(97000+LAJI AS text)
+        		"
+	else # no gpkg
+		:
+	fi
 	#zip "$destfile".zip "$destfile"
 	cd $XNOW
 	#cp -f "$TEMP"/"$destfile".zip "$outdir" 2>/dev/null
@@ -99,6 +105,7 @@ get_kiinteisto()
 ######################################################################################
 url=""
 outputdir="sourcedata"
+gpkg=1
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -120,6 +127,7 @@ do
         case "$arg" in
                 -d) DEBUG="$2" ; shift ;;
                 -o) outputdir="$2" ; shift ;;
+		-g) gpkg="$2" ; shift ;;
                 -*) usage; exit 4 ;;
                 *) break ;;
         esac
