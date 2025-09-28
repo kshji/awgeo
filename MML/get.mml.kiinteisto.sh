@@ -104,6 +104,7 @@ get_kiinteisto()
 	cd $XNOW
 	#cp -f "$TEMP"/"$destfile".zip "$outdir" 2>/dev/null
 	dbg cp -f "$TEMP"/"$destfile" "$outdir" 
+	mkdir -p "$outdir" 2>/dev/null
 	cp -f "$TEMP"/"$destfile" "$outdir" 2>/dev/null
 	((DEBUG<1)) && [ -d "$TEMP" ] && rm -rf "$TEMP"
 }
