@@ -90,7 +90,15 @@ get_kiinteisto()
           		SET symbol=cast(97000+LAJI AS text)
         		"
 	else # no gpkg
-		:
+		destfile="$Xarea.kiinteistot.shp"
+		for f in *_*.shp
+		do
+			if [ ! -f "$destfile" ] ; then
+				ogr2ogr -f 'ESRI Shapefile' -nln kiinteistot "$destfile" "$f" 
+			else
+				or2ogr -f 'ESRI Shapefile' -append -nln kiinteistot "$destfile" "$f" 
+			fi
+		done
 	fi
 	#zip "$destfile".zip "$destfile"
 	cd $XNOW
