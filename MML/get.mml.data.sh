@@ -201,8 +201,26 @@ kuntajako()
 	done
 
 }
+
+#########################################################################
+yhdista_kiinteistorekisterikartta()
+{
+        filename="xmldata/kiinteistorek/kiintrek"
+        all="xmldata/xmldata/kiinteistorek/kiintrek.all.txt"
+        # laser.0.dat:DAT|id|/feed/entry/id||urn:path:/tuotteet/laser/automaattinen/2024/20240207_Swissphoto_Vierema_kesa/Harvennettu/Q5121D4.laz
+        # maastotietokannat.9.dat:DAT|id|/feed/entry/id||urn:path:/tuotteet/maastotietokanta/kaikki/etrs89/shp/Q3/Q34/Q3413R.shp.zip
+        grep "DAT|id|/feed/entry/id||.*\.zip" $filename.*.dat | \
+        awk -F '|' '
+                $3 == "/feed/entry/id" {
+                                        url=$5
+                                        gsub(/^urn:path:/,"",url)
+                                        lkm=split(url,kentat,"/")
+                                        tiedosto=kentat[lkm]
+                                        print tiedosto,url
+                                        }
+        ' > $all
+}
 	
-#https://tiedostopalvelu.maanmittauslaitos.fi/tp/feed/mtp/kiinteistorekisterikartta/karttalehdittain?api_key=dnj8gjuj5ivci7tsb4r6m79qmo
 #########################################################################
 kiinteistorekisterikarttalista()
 {
@@ -285,8 +303,8 @@ apikeyfile="apikey.mml.txt"
 cd $AWMML
 
 mkdir -p xmldata backup 
-palvelut="kaikki_palvelut kuntajako yhdista_kuntajako maastotietokantalista laserlista ortokuvalista yhdista_maastotietokanta yhdista_laser yhdista_ortokuva"
-palvelut+="kiinteisto_avoin kiinteistorekisterikarttalista"
+palvelutkaikki="kaikki_palvelut kuntajako yhdista_kuntajako maastotietokantalista laserlista ortokuvalista yhdista_maastotietokanta yhdista_laser yhdista_ortokuva"
+palvelutkaikki+=" kiinteisto_avoin kiinteistorekisterikarttalista yhdista_kiinteistorekisterikartta"
 #palvelut="laserlista"
 #palvelut="yhdista_maastotietokanta"
 #palvelut="yhdista_laser"
@@ -296,7 +314,31 @@ palvelut+="kiinteisto_avoin kiinteistorekisterikarttalista"
 #palvelut="kuntajako yhdista_kuntajako"
 #palvelut="kiinteisto_avoin"
 palvelut="kiinteistorekisterikarttalista"
+palvelut=""
+while [ $# -gt 0 ]
+do
+	arg="$1"
+	case "$arg" in
+		--all) palvelut="$palvelutkaikki"; break ;;
+		--kaikki) palvelut="$palvelut kaikki_palvelut"; break ;;
+		--laser) palvelut="$palvelut laserlista yhdistalaser"; break ;;
+		--laseryhd) palvelut="$palvelut yhdistalaser"; break ;;
+		--maasto) palvelut="$palvelut maastotietokantalista yhdista_maastotietokanta"; break ;;
+		--maastoyhd) palvelut="$palvelut yhdista_maastotietokanta"; break ;;
+		--orto) palvelut="$palvelut ortokuvalista yhdista_ortokuva"; break ;;
+		--ortoyhd) palvelut="$palvelut yhdista_ortokuva"; break ;;
+		--kuntajako) palvelut="$palvelut kuntajako yhdista_kuntajako"; break ;;
+		--kuntajakoyhd) palvelut="$palvelut yhdista_kuntajako"; break ;;
+		--kiinteisto) palvelut="$palvelut kiinteisto "; break ;;
+		--kiinteistorek) palvelut="$palvelut kiinteistorekisterikarttalista yhdista_kiinteistorekisterikartta "; break ;;
+		--kiinteistorekyhd) palvelut="$palvelut "; break ;;
+	esac
+	shift
+done
 
+
+echo "$palvelut"
+echo "__________________________"
 for p in $palvelut
 do
 	
