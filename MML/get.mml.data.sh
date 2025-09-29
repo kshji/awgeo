@@ -206,19 +206,21 @@ kuntajako()
 yhdista_kiinteistorekisterikartta()
 {
         filename="xmldata/kiinteistorek/kiintrek"
-        all="xmldata/xmldata/kiinteistorek/kiintrek.all.txt"
-        # laser.0.dat:DAT|id|/feed/entry/id||urn:path:/tuotteet/laser/automaattinen/2024/20240207_Swissphoto_Vierema_kesa/Harvennettu/Q5121D4.laz
-        # maastotietokannat.9.dat:DAT|id|/feed/entry/id||urn:path:/tuotteet/maastotietokanta/kaikki/etrs89/shp/Q3/Q34/Q3413R.shp.zip
-        grep "DAT|id|/feed/entry/id||.*\.zip" $filename.*.dat | \
+        all="xmldata/kiinteistorek/kiintrek.all.txt"
+	#DAT|updated|/feed/entry/updated||2025-09-28T12:01:54.975+03:00
+	#DAT|id|/feed/entry/id||urn:path:/tuotteet/kiinteistorekisterikartta/avoin/karttalehdittain/tm35fin/mif/T42/T4231B.zip
         awk -F '|' '
-                $3 == "/feed/entry/id" {
+		$1 == "DAT" && $3 == "/feed/entry/updated" {
+                                        updatedate=substr($5,1,10)
+                                        }
+                $3 == "/feed/entry/id" { # block last line
                                         url=$5
                                         gsub(/^urn:path:/,"",url)
                                         lkm=split(url,kentat,"/")
                                         tiedosto=kentat[lkm]
-                                        print tiedosto,url
+                                        print tiedosto,updatedate,url
                                         }
-        ' > $all
+        ' $filename.*.dat > $all
 }
 	
 #########################################################################
@@ -252,6 +254,7 @@ kiinteistorekisterikarttalista()
 #########################################################################
 kiinteisto_avoin()
 {
+	# mita kiinteistodataa olisi tarjolla REST
 	dir=json/kiinteisto
 	mkdir -p $dir
 	jsonfile="$dir/kiinteisto.aineistot.json"
@@ -261,6 +264,7 @@ kiinteisto_avoin()
 
 #########################################################################
 kaikki_palvelut()
+# listaa kaikki palvelut, jotka avoimessa datassa tarjolla
 {
 	xmlfile="xmldata/kaikki_palvelut.xml"
 	datfile="xmldata/kaikki_palvelut.dat"
@@ -331,7 +335,7 @@ do
 		--kuntajakoyhd) palvelut="$palvelut yhdista_kuntajako"; break ;;
 		--kiinteisto) palvelut="$palvelut kiinteisto "; break ;;
 		--kiinteistorek) palvelut="$palvelut kiinteistorekisterikarttalista yhdista_kiinteistorekisterikartta "; break ;;
-		--kiinteistorekyhd) palvelut="$palvelut "; break ;;
+		--kiinteistorekyhd) palvelut="$palvelut yhdista_kiinteistorekisterikartta"; break ;;
 	esac
 	shift
 done
