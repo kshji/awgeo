@@ -203,8 +203,9 @@ kuntajako()
 #########################################################################
 kiinteisto_avoin()
 {
-	mkdir -p xmldata/json
-	jsonfile="xmldata/json/kiinteisto.aineistot.json"
+	dir=json/kiinteisto
+	mkdir -p $dir
+	jsonfile="$dir/kiinteisto.aineistot.json"
 	echo wget -O "$jsonfile" "$host2/kiinteisto-avoin/simple-features/v3/collections?api_key=$apikey2"
 	wget -O "$jsonfile" "$host2/kiinteisto-avoin/simple-features/v3/collections?api-key=$apikey2"
 }
