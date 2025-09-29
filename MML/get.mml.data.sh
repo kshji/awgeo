@@ -9,6 +9,7 @@ PRG="${PRG##*/}"
 DEBUG=0
 
 host="https://tiedostopalvelu.maanmittauslaitos.fi"
+host2="https://avoin-paikkatieto.maanmittauslaitos.fi"
 
 #########################################################################
 laserlista()
@@ -200,6 +201,15 @@ kuntajako()
 	
 
 #########################################################################
+kiinteisto_avoin()
+{
+	mkdir -p xmldata/json
+	jsonfile="xmldata/json/kiinteisto.aineistot.json"
+	echo wget -O "$jsonfile" "$host2/kiinteisto-avoin/simple-features/v3/collections?api_key=$apikey2"
+	wget -O "$jsonfile" "$host2/kiinteisto-avoin/simple-features/v3/collections?api-key=$apikey2"
+}
+
+#########################################################################
 kaikki_palvelut()
 {
 	xmlfile="xmldata/kaikki_palvelut.xml"
@@ -244,13 +254,15 @@ cd $AWMML
 
 mkdir -p xmldata backup 
 palvelut="kaikki_palvelut kuntajako yhdista_kuntajako maastotietokantalista laserlista ortokuvalista yhdista_maastotietokanta yhdista_laser yhdista_ortokuva"
+palvelut+="kiinteisto_avoin"
 #palvelut="laserlista"
 #palvelut="yhdista_maastotietokanta"
 #palvelut="yhdista_laser"
 #palvelut="ortokuvalista"
 #palvelut="yhdista_ortokuva"
 #palvelut="maastotietokantalista yhdista_maastotietokanta"
-palvelut="kuntajako yhdista_kuntajako"
+#palvelut="kuntajako yhdista_kuntajako"
+palvelut="kiinteisto_avoin"
 
 for p in $palvelut
 do
