@@ -62,7 +62,7 @@ get_map()
         	dbg wget --no-check-certificate -O $outdir/$file.zip $apihost$url?api_key=$apikey
         	((DEBUG<2)) && wget --no-check-certificate -O "$outdir/$file.zip" "$apihost$url?api_key=$apikey"
         	[ ! -f "$outdir/$file.zip" ] && continue
-		unzip "$outdir/$file.zip" -o -d "$outdir"
+		unzip -o "$outdir/$file.zip" -d "$outdir"
 		rm -f "$outdir/$file.zip"
         	dbg "done $outdir/$file.zip"
         done
