@@ -127,6 +127,9 @@ ortokuvalista()
 
 }
 
+
+
+
 #########################################################################
 maastotietokantalista()
 {
@@ -199,6 +202,34 @@ kuntajako()
 
 }
 	
+#https://tiedostopalvelu.maanmittauslaitos.fi/tp/feed/mtp/kiinteistorekisterikartta/karttalehdittain?api_key=dnj8gjuj5ivci7tsb4r6m79qmo
+#########################################################################
+kiinteistorekisterikarttalista()
+{
+	mkdir -p xmldata/kiinteistorek 2>/dev/null
+        filename="xmldata/kiinteistorek/kiintrek"
+        jatka=1
+        cp -f "$xmlfile" backup 2>/dev/null
+        rm -f "$xmlfile" 2>/dev/null
+#https://tiedostopalvelu.maanmittauslaitos.fi/tp/feed/mtp/kiinteistorekisterikartta/karttalehdittain?api_key=dnj8gjuj5ivci7tsb4r6m79qmo
+        #url="/tp/feed/mtp/maastotietokanta/kaikki?api_key=$apikey"
+        # 2025 05 muuttunut
+        url="/tp/feed/mtp/kiinteistorekisterikartta/karttalehdittain?api_key=$apikey"
+        kierros=0
+        atka=1
+        next=""
+        while ((jatka>0))
+        do
+                wget -O "$filename.$kierros.xml" "$host/$url$next"
+                gawk -f lib/get.2.example.awk "$filename.$kierros.xml" > $filename.$kierros.dat
+                jatkumo=$(grep "ATTR|link|/feed/link|href|" $filename.$kierros.dat 2>/dev/null)
+                [ "$jatkumo" = "" ] && jatka=0 && continue
+                next=$(echo "$jatkumo" | awk -F '&' '{ print "&" $2 "&" $3 }')
+                echo "seuraava $next"
+                ((kierros+=1))
+        done
+
+}
 
 #########################################################################
 kiinteisto_avoin()
@@ -255,7 +286,7 @@ cd $AWMML
 
 mkdir -p xmldata backup 
 palvelut="kaikki_palvelut kuntajako yhdista_kuntajako maastotietokantalista laserlista ortokuvalista yhdista_maastotietokanta yhdista_laser yhdista_ortokuva"
-palvelut+="kiinteisto_avoin"
+palvelut+="kiinteisto_avoin kiinteistorekisterikarttalista"
 #palvelut="laserlista"
 #palvelut="yhdista_maastotietokanta"
 #palvelut="yhdista_laser"
@@ -263,7 +294,8 @@ palvelut+="kiinteisto_avoin"
 #palvelut="yhdista_ortokuva"
 #palvelut="maastotietokantalista yhdista_maastotietokanta"
 #palvelut="kuntajako yhdista_kuntajako"
-palvelut="kiinteisto_avoin"
+#palvelut="kiinteisto_avoin"
+palvelut="kiinteistorekisterikarttalista"
 
 for p in $palvelut
 do
