@@ -52,12 +52,24 @@ dbg()
 #######################################################
 dosql()
 {
-	cat | psql 2>>$errf >>$lf
+	cat | psql -q 2>>$errf >>$lf
 	pgstat=$?
 	(( pgstat>0 )) && err "dosql status:$pgstat" && exit 10
 }
 
 #######################################################
+table_create()
+{
+	
+	Ytable="$1"
+	Yshpfile="$2"
+	dbg "table_create:$Ytable - $Yshpfile"
+	dosql <<EOF
+SELECT * FROM $PGSCHEMA.$Ytable
+;
+EOF
+Cstat=$?
+}
 
 #######################################################
 # MAIN
@@ -99,6 +111,8 @@ do
 	Xarea=${Xlayer%_*}
 	Xtable=${Xlayer##*_}
 	dbg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
+	((cnt++))
+	((cnt < 2 )) && table_create "$Xtable" "$shpfile" 
 done 
 
 
