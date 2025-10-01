@@ -204,6 +204,8 @@ done
 [ $# -lt 1 ] && usage && exit 1
 
 log "$PRG start"
+echo "log:$lf err:$errf" >&2
+
 for Xshpfile in $*
 do
 	Xlayer=${Xshpfile%%.*}	
@@ -218,5 +220,6 @@ do
 done 
 
 log "$PRG end"
+echo "log:$lf err:$errf" >&2
 
 
