@@ -83,14 +83,15 @@ table_create()
 	Ytable="$1"
 	Yshpfile="$2"
 	dbg "table_create:$Ytable - $Yshpfile"
-	dosql <<EOF
+	dosql <<{EOF
 SELECT count(*) FROM $PGSCHEMA.$Ytable LIMIT 1
 ;
-EOF
-Cstat=$?
-dbg "table_create: end status:$Cread"
-(( Cstat == 0 )) && dbg "  table $Ytable exists" && return 0 # table exists
-dbg "  table $Ytable not exists"
+	EOF}
+	Cstat=$?
+	dbg "table_create: end status:$Cstat"
+	(( Cstat == 0 )) && dbg "  table $Ytable exists" && return 0 # table exists
+	dbg "  table $Ytable not exists"
+
 }
 
 #######################################################
