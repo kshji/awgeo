@@ -86,6 +86,7 @@ table_add_recs()
         Yshpfile="$3"
         Yarea="$4"
         dbg "table_add_recs:$Ytable - $Ylayer - $Yshpfile - $Yarea"
+	((verbose > 0 )) && return 0
 
         export PG_USE_COPY=YES
 	# to tmp db
@@ -137,6 +138,7 @@ table_create()
 	Ylayer="$2"
 	Yshpfile="$3"
 	dbg "table_create:$Ytable - $Ylayer - $Yshpfile"
+	((verbose > 0 )) && return 0
 	value=$(dosql <<EOF
 		SELECT count(*) FROM $PGSCHEMA.$Ytable LIMIT 1
 		;
@@ -206,7 +208,8 @@ do
 	Xtable=${Xlayer##*_}
 	dbg "$(timestamp)"
 	dbg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
-	((verbose > 0 )) && continue
+	((verbose > 0 && verbose < 2 )) && continue
+	# verbose >1 dbg message, not do SQL insert
 	table_create "$Xtable" "$Xlayer" "$Xshpfile" 
 	table_add_recs "$Xtable" "$Xlayer" "$Xshpfile" "$Xarea"
 done 
