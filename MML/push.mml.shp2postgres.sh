@@ -144,14 +144,16 @@ table_create()
 		;
 EOF
 )
-	dbg "table_create: check $PGSCHEMA.$Ytable $value"
+	dbg "table_create: check $PGSCHEMA.$Ytable "
+	dbg "              <$value>"
 	[ "$value"  != "" ] && dbg "  table $Ytable exists" && return 0 # table exists
 	dbg "  table $Ytable not exists"
 
 	export PG_USE_COPY=YES
 
-	dbg ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'CREATE' AS area,* FROM $Ylayer LIMIT 1" -lco FID=keyid -overwrite
-	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'CREATE' AS area,* FROM $Ylayer LIMIT 1" -lco FID=keyid -overwrite
+	dbg "  add temp table $PGSCHEMA.$Ytable using $Yshpfile"
+	dbg ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln "$PGSCHEMA.$Ytable" -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'CREATE' AS area,* FROM $Ylayer LIMIT 1" -lco FID=keyid -overwrite
+	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln "$PGSCHEMA.$Ytable" -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'CREATE' AS area,* FROM $Ylayer LIMIT 1" -lco FID=keyid -overwrite
 	Cstat=$?
 	(( Cstat > 0 )) && dbg "  table $Ytable creating not success status:$Cstat" && return 1 # can't create ???
 
