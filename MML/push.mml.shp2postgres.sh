@@ -93,7 +93,7 @@ done
 [ $# -lt 1 ] && usage && exit 1
 
 cnt=0
-fot shpfile $@
+for shpfile $@
 do
 	Xlayer=${shpfile%%.*}	
 	Xarea=${Xlayer%_*}
