@@ -40,13 +40,13 @@ timestamp()
 #######################################################
 log()
 {
-	echo "$*" >> $lf
+	echo "$(timestamp) $*" >> $lf
 }
 
 #######################################################
 err()
 {
-	echo "err: $*" >> $errf
+	echo "$(timestamp) err: $*" >> $errf
 }
 
 #######################################################
@@ -90,6 +90,7 @@ table_add_recs()
         Cstat=$?
         (( Cstat > 0 )) && dbg "  table $Ytable cwadding to the temp table not success status:$Cstat" && return 1 # can't create/add ???
 	dbg "table_add_recs: end"
+	log "table_add_recs: $PGSCHEMA.tmp_$Ytable  - $Ylayer - $Yshpfile"
 }
 
 #######################################################
@@ -115,6 +116,12 @@ EOF
 	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'CREATE' AS mapname,* FROM $Ylayer LIMIT 1" -lco FID=keyid -overwrite
 	Cstat=$?
 	(( Cstat > 0 )) && dbg "  table $Ytable creating not success status:$Cstat" && return 1 # can't create ???
+	value=$(dosql <<EOF
+		DELETE FROM $PGSCHEMA.$Ytable
+		;
+EOF
+)
+	log "table_created $Ytable - $Ylayer - $Yshpfile"
 	dbg "table_create: end"
 }
 
@@ -152,6 +159,7 @@ done
 [ $# -lt 1 ] && usage && exit 1
 
 cnt=0
+log "$PRG start"
 for shpfile in $@
 do
 	Xlayer=${shpfile%%.*}	
@@ -163,5 +171,6 @@ do
 	table_add_recs "$Xtable" "$Xlayer" "$shpfile" 
 done 
 
+log "$PRG end"
 
 
