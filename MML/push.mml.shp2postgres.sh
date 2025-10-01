@@ -159,8 +159,8 @@ EOF
 	# remove ogr2ogr pkkey and craete our own
 	value=$(dosql -t <<EOF
 		DELETE FROM $PGSCHEMA.$Ytable
-		ALTER TABLE IF EXISTS $PGSCHEMA.$Ytable DROP CONSTRAINT IF EXISTS $PGSCHEMA.$Ytable;
-		ALTER TABLE IF EXISTS $PGSCHEMA.$Ytable ADD CONSTRAINT key_$PGSCHEMA_$Ytable PRIMARY KEY (keyid, area);
+		ALTER TABLE IF EXISTS $PGSCHEMA.$Ytable DROP CONSTRAINT IF EXISTS ${Ytable};
+		ALTER TABLE IF EXISTS $PGSCHEMA.$Ytable ADD CONSTRAINT ${Ytable}_pkey PRIMARY KEY (keyid, area);
 		;
 EOF
 )
