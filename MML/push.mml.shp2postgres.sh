@@ -90,10 +90,11 @@ table_add_recs()
         dbg ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'$Yarea' AS area,* FROM $Ylayer " -lco FID=keyid -overwrite
         ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'$Yarea' AS area,* FROM $Ylayer " -lco FID=keyid -overwrite
         Cstat=$?
-        (( Cstat > 0 )) && dbg "  table $Ytable cwadding to the temp table not success status:$Cstat" && return 1 # can't create/add ???
-	dbg "table_add_recs: end"
+        (( Cstat > 0 )) && dbg "  table $Ytable adding to the temp table not success status:$Cstat" && return 1 # can't create/add ???
+	dbg "table_add_recs: add to temp done"
 	log "table_add_recs: $PGSCHEMA.tmp_$Ytable  - $Ylayer - $Yshpfile - $Yarea"
 
+	dbg "table_add_recs: to table $PGSCHEMA.$Ytable from $PGSCHEMA.tmp_$Ytable  "
 	# tmp_XXX table include loaded recs
 	# delete same id's from table = old value
 	# and then insert from tmp-table same id = new updated value
@@ -117,6 +118,9 @@ table_add_recs()
 		COMMIT;
 EOF
 )
+	log "table_add_recs: $PGSCHEMA.$Ytable  done - $Ylayer - $Yshpfile - $Yarea"
+	dbg "table_add_recs: $PGSCHEMA.$Ytable  done - $Ylayer - $Yshpfile - $Yarea"
+	dbg "table_add_recs: end $Ylayer - $Yshpfile - $Yarea"
 
 
 
