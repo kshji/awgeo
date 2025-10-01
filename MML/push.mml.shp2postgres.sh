@@ -174,6 +174,7 @@ SESID=$$
 errf=$PWD/tmp/$SESID.$PRG.err
 lf=$PWD/tmp/$SESID.$PRG.log
 PGSCHEMA=public
+verbose=0
 
 while [ $# -gt 1 ]
 do
@@ -187,6 +188,7 @@ do
 		--pgencode) export PGCLIENTENCODING="$2"; shift ;;
 		--pgschema) PGSCHEMA="$2"; shift ;;
 		--debug|-d) DEBUG="$2"; shift ;;
+		--verbose|-v) verbose="$2"; shift ;;
 		-*) usage ; exit 2 ;;
 		*) break ;; # datavalue list
 	esac
@@ -197,15 +199,16 @@ done
 [ $# -lt 1 ] && usage && exit 1
 
 log "$PRG start"
-for shpfile in $@
+for Xshpfile in $*
 do
-	Xlayer=${shpfile%%.*}	
+	Xlayer=${Xshpfile%%.*}	
 	Xarea=${Xlayer%_*}
 	Xtable=${Xlayer##*_}
 	dbg "$(timestamp)"
 	dbg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
-	table_create "$Xtable" "$Xlayer" "$shpfile" 
-	table_add_recs "$Xtable" "$Xlayer" "$shpfile" "$Xarea"
+	((verbose > 0 )) && continue
+	table_create "$Xtable" "$Xlayer" "$Xshpfile" 
+	table_add_recs "$Xtable" "$Xlayer" "$Xshpfile" "$Xarea"
 done 
 
 log "$PRG end"
