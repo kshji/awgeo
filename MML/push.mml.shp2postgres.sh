@@ -105,18 +105,16 @@ table_add_recs()
 	value=$(dosql <<EOF
 		BEGIN;
 		-- DELETE from table those ID's which are in the tmp-table
-		DELETE FROM  $PGSCHEMA.$Ytable t
-		USING $PGSCHEMA.$Ytable AS u
-		LEFT OUTER JOIN $PGSCHEMA.tmp_$Ytable d ON u.keyid=d.keyid
-		WHERE
-        		t.keyid = u.keyid
-		;
+
+		DELETE FROM $PGSCHEMA.$Ytable t
+		USING $PGSCHEMA.tmp_$Ytable tmp
+		WHERE t.keyid = tmp.id AND t.area = tmp.area;
 
 		-- ADD from tmp-table to the table and check that it's not there even why have jut deleted those ...
 		INSERT INTO $PGSCHEMA.$Ytable
 		SELECT u.* FROM  $PGSCHEMA.tmp_$Ytable  u
-		LEFT OUTER JOIN $PGSCHEMA.$Ytable t2 ON u.keyid=t2.keyid
-		WHERE t2.keyid IS NULL
+		--LEFT OUTER JOIN $PGSCHEMA.$Ytable t2 ON u.keyid=t2.keyid
+		--WHERE t2.keyid IS NULL
 		;
 		END;
 EOF
