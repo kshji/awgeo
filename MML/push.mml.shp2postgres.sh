@@ -202,7 +202,7 @@ do
 	Xlayer=${shpfile%%.*}	
 	Xarea=${Xlayer%_*}
 	Xtable=${Xlayer##*_}
-	dbg "$(timestamp}"
+	dbg "$(timestamp)"
 	dbg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
 	table_create "$Xtable" "$Xlayer" "$shpfile" 
 	table_add_recs "$Xtable" "$Xlayer" "$shpfile" "$Xarea"
