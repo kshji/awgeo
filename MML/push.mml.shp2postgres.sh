@@ -70,7 +70,6 @@ dosql()
         \pset footer off
 	$SQL
 	;" | psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER"  -q $flag "$PGDATABASE" 2>>$errf 
-EOF
 	pgstat=$?
 	return $pgstat
 	###(( pgstat>0 )) && err "dosql status:$pgstat" && exit 10
