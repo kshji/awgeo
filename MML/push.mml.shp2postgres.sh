@@ -117,7 +117,7 @@ table_add_recs()
 		LEFT OUTER JOIN $PGSCHEMA.$Ytable t2 ON u.keyid=t2.keyid
 		WHERE t2.keyid IS NULL
 		;
-		COMMIT;
+		END;
 EOF
 )
 	dbg "after sql:$value"
