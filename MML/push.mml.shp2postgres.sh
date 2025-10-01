@@ -50,6 +50,13 @@ err()
 }
 
 #######################################################
+msg()
+{
+	((MSG<1)) && return
+	echo "$*" >&2
+}
+
+#######################################################
 dbg()
 {
 	((DEBUG<1)) && return
@@ -176,6 +183,7 @@ verbose=0
 mkdir -p tmp
 chmod 1777 tmp 2>/dev/null
 SESID=$$
+MSG=1
 errf=$PWD/tmp/$SESID.$PRG.err
 lf=$PWD/tmp/$SESID.$PRG.log
 PGSCHEMA=public
@@ -193,6 +201,7 @@ do
 		--pgencode) export PGCLIENTENCODING="$2"; shift ;;
 		--pgschema) PGSCHEMA="$2"; shift ;;
 		--debug|-d) DEBUG="$2"; shift ;;
+		--message|-m) MSG="$2"; shift ;;
 		--verbose|-v) verbose="$2"; shift ;;
 		-*) usage ; exit 2 ;;
 		*) break ;; # datavalue list
@@ -204,7 +213,7 @@ done
 [ $# -lt 1 ] && usage && exit 1
 
 log "$PRG start"
-echo "log:$lf err:$errf" >&2
+msg "log:$lf err:$errf" 
 
 for Xshpfile in $*
 do
@@ -212,6 +221,7 @@ do
 	Xarea=${Xlayer%_*}
 	Xtable=${Xlayer##*_}
 	dbg "$(timestamp)"
+	msg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
 	dbg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
 	((verbose > 0 && verbose < 2 )) && continue
 	# verbose >1 dbg message, not do SQL insert
@@ -220,6 +230,6 @@ do
 done 
 
 log "$PRG end"
-echo "log:$lf err:$errf" >&2
+msg "log:$lf err:$errf" 
 
 
