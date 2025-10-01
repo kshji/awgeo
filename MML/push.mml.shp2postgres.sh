@@ -11,11 +11,13 @@
 # or give those using options
 # or set those values in the $HOME/.pgpass
 
+PRG=$0
 BINDIR="${PRG%/*}"
 [ "$PRG" = "$BINDIR" ] && BINDIR="." # - same dir as program
 PRG="${PRG##*/}"
 
 DEBUG=0
+
 
 #######################################################
 usage()
@@ -27,6 +29,12 @@ usage:$PRG [ --options ] list_of_shapefiles
 
 
 EOF
+}
+
+#######################################################
+timestamp()
+{
+	printf "%(%Y-%m-%d_%H%M%S)T" now 
 }
 
 #######################################################
@@ -52,9 +60,10 @@ dbg()
 #######################################################
 dosql()
 {
-	cat | psql -q 2>>$errf >>$lf
+	cat | psql -q 2>>$errf 
 	pgstat=$?
-	(( pgstat>0 )) && err "dosql status:$pgstat" && exit 10
+	return $pgstat
+	###(( pgstat>0 )) && err "dosql status:$pgstat" && exit 10
 }
 
 #######################################################
@@ -65,10 +74,11 @@ table_create()
 	Yshpfile="$2"
 	dbg "table_create:$Ytable - $Yshpfile"
 	dosql <<EOF
-SELECT * FROM $PGSCHEMA.$Ytable
+SELECT count(*) FROM $PGSCHEMA.$Ytable LIMIT 1
 ;
 EOF
 Cstat=$?
+(( Cstat == 0 )) && return 0 # table exists
 }
 
 #######################################################
