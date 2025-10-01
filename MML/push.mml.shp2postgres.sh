@@ -89,14 +89,16 @@ table_create()
 		;
 EOF
 	Cstat=$?
-	dbg "table_create: end status:$Cstat"
+	dbg "table_create: check $PGSCHEMA.$Ytable $Cstat"
 	(( Cstat == 0 )) && dbg "  table $Ytable exists" && return 0 # table exists
 	dbg "  table $Ytable not exists"
 
 	export PG_USE_COPY=YES
+
+	dbg ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGCHEMA.$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'CREATE' AS mapname,* FROM $Ylayer LIMIT 1" -lco FID=keyid -overwrite
 	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGCHEMA.$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'CREATE' AS mapname,* FROM $Ylayer LIMIT 1" -lco FID=keyid -overwrite
 	Cstat=$?
-	(( Cstat > 0 )) && dbg "  table $Ytable craeting not success status:$Cstat" && return 1 # can't create ???
+	(( Cstat > 0 )) && dbg "  table $Ytable creating not success status:$Cstat" && return 1 # can't create ???
 
 
 }
