@@ -104,7 +104,7 @@ table_add_recs()
 	value=$(dosql <<EOF
 		BEGIN;
 		-- DELETE from table those ID's which are in the tmp-table
-		DELETE FROM  $PGSCHEMA.$Ytable
+		DELETE FROM  $PGSCHEMA.$Ytable t
 		USING $PGSCHEMA.$Ytable AS u
 		LEFT OUTER JOIN $PGSCHEMA.tmp_$Ytable d ON u.keyid=d.keyid
 		WHERE
