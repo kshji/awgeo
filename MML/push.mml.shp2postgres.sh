@@ -94,6 +94,31 @@ table_add_recs()
 	dbg "table_add_recs: end"
 	log "table_add_recs: $PGSCHEMA.tmp_$Ytable  - $Ylayer - $Yshpfile - $Yarea"
 
+	# tmp_XXX table include loaded recs
+	# delete same id's from table = old value
+	# and then insert from tmp-table same id = new updated value
+        # this way no need to UPDATE fld by fld
+	value=$(dosql <<EOF
+		BEGIN;
+		-- DELETE from table those ID's which are in the tmp-table
+		DELETE FROM  $PGSCHEMA.$Ytable
+		USING $PGSCHEMA.$Ytable AS u
+		LEFT OUTER JOIN $PGSCHEMA.tmp_$Ytable d ON u.keyid=d.keyid
+		WHERE
+        		t.keyid = u.keyid
+		;
+
+		-- ADD from tmp-table to the table and check that it's not there even why have jut deleted those ...
+		INSERT INTO $PGSCHEMA.$Ytable
+		SELECT u.* FROM  $PGSCHEMA.tmp_$Ytable  u
+		LEFT OUTER JOIN $PGSCHEMA.$Ytable t2 ON u.keyid=t2.keyid
+		WHERE t2.keyid IS NULL
+		;
+		COMMIT;
+EOF
+)
+
+
 
 }
 
