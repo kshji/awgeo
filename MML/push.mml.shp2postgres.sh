@@ -61,9 +61,11 @@ dbg()
 dosql()
 {
 	flag=""
+	erotisn=";"
 	[ "$1" = "-t" ] && flag=" -t " && shift
 	# get sql from stdin
 	SQL=$(<&0)
+	dbg "SQL: $SQL"
 	echo "
 	\a
         \\f '$erotin'
@@ -118,6 +120,7 @@ table_add_recs()
 		COMMIT;
 EOF
 )
+	dbg "after sql:$value"
 	log "table_add_recs: $PGSCHEMA.$Ytable  done - $Ylayer - $Yshpfile - $Yarea"
 	dbg "table_add_recs: $PGSCHEMA.$Ytable  done - $Ylayer - $Yshpfile - $Yarea"
 	dbg "table_add_recs: end $Ylayer - $Yshpfile - $Yarea"
@@ -199,6 +202,7 @@ do
 	Xlayer=${shpfile%%.*}	
 	Xarea=${Xlayer%_*}
 	Xtable=${Xlayer##*_}
+	dbg "$(timestamp}"
 	dbg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
 	table_create "$Xtable" "$Xlayer" "$shpfile" 
 	table_add_recs "$Xtable" "$Xlayer" "$shpfile" "$Xarea"
