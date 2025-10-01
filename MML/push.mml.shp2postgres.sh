@@ -189,7 +189,6 @@ done
 
 [ $# -lt 1 ] && usage && exit 1
 
-cnt=0
 log "$PRG start"
 for shpfile in $@
 do
@@ -197,8 +196,7 @@ do
 	Xarea=${Xlayer%_*}
 	Xtable=${Xlayer##*_}
 	dbg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
-	((cnt++))
-	((cnt < 2 )) && table_create "$Xtable" "$Xlayer" "$shpfile" 
+	table_create "$Xtable" "$Xlayer" "$shpfile" 
 	table_add_recs "$Xtable" "$Xlayer" "$shpfile" "$Xarea"
 done 
 
