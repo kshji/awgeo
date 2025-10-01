@@ -81,16 +81,23 @@ table_create()
 {
 	
 	Ytable="$1"
-	Yshpfile="$2"
-	dbg "table_create:$Ytable - $Yshpfile"
-	dosql <<{EOF
-SELECT count(*) FROM $PGSCHEMA.$Ytable LIMIT 1
-;
-	EOF}
+	Ylayer="$2"
+	Yshpfile="$3"
+	dbg "table_create:$Ytable - $Ylayer - $Yshpfile"
+	dosql <<EOF
+		SELECT count(*) FROM $PGSCHEMA.$Ytable LIMIT 1
+		;
+EOF
 	Cstat=$?
 	dbg "table_create: end status:$Cstat"
 	(( Cstat == 0 )) && dbg "  table $Ytable exists" && return 0 # table exists
 	dbg "  table $Ytable not exists"
+
+	export PG_USE_COPY=YES
+	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGCHEMA.$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'CREATE' AS mapname,* FROM $Ylayer LIMIT 1" -lco FID=keyid -overwrite
+	Cstat=$?
+	(( Cstat > 0 )) && dbg "  table $Ytable craeting not success status:$Cstat" && return 1 # can't create ???
+
 
 }
 
@@ -135,7 +142,7 @@ do
 	Xtable=${Xlayer##*_}
 	dbg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
 	((cnt++))
-	((cnt < 2 )) && table_create "$Xtable" "$shpfile" 
+	((cnt < 2 )) && table_create "$Xtable" "$Xlayer" "$shpfile" 
 done 
 
 
