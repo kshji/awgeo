@@ -60,7 +60,17 @@ dbg()
 #######################################################
 dosql()
 {
-	cat | psql -q 2>>$errf 
+	flag=""
+	[ "$1" = "-t" ] && flag=" -t " && shift
+	# get sql from stdin
+	SQL=$(<&0)
+	cat <<EOF psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER"  -q $flag "$PGDATABASE" 2>>$errf 
+	\a
+        \\f '$erotin'
+        \pset footer off
+	$SQL
+	;
+EOF
 	pgstat=$?
 	return $pgstat
 	###(( pgstat>0 )) && err "dosql status:$pgstat" && exit 10
@@ -78,7 +88,9 @@ SELECT count(*) FROM $PGSCHEMA.$Ytable LIMIT 1
 ;
 EOF
 Cstat=$?
-(( Cstat == 0 )) && return 0 # table exists
+dbg "table_create: end status:$Cread"
+(( Cstat == 0 )) && dbg "  table $Ytable exists" && return 0 # table exists
+dbg "  table $Ytable not exists"
 }
 
 #######################################################
