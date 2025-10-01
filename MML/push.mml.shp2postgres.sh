@@ -82,16 +82,17 @@ table_add_recs()
         Ytable="$1"
         Ylayer="$2"
         Yshpfile="$3"
-        dbg "table_add_recs:$Ytable - $Ylayer - $Yshpfile"
+        Yarea="$4"
+        dbg "table_add_recs:$Ytable - $Ylayer - $Yshpfile - $Yarea"
 
         export PG_USE_COPY=YES
 	# to tmp db
-        dbg ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'$AREA' AS area,* FROM $Ylayer " -lco FID=keyid -overwrite
-        ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'$AREA' AS area,* FROM $Ylayer " -lco FID=keyid -overwrite
+        dbg ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'$Yarea' AS area,* FROM $Ylayer " -lco FID=keyid -overwrite
+        ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'$Yarea' AS area,* FROM $Ylayer " -lco FID=keyid -overwrite
         Cstat=$?
         (( Cstat > 0 )) && dbg "  table $Ytable cwadding to the temp table not success status:$Cstat" && return 1 # can't create/add ???
 	dbg "table_add_recs: end"
-	log "table_add_recs: $PGSCHEMA.tmp_$Ytable  - $Ylayer - $Yshpfile"
+	log "table_add_recs: $PGSCHEMA.tmp_$Ytable  - $Ylayer - $Yshpfile - $Yarea"
 
 
 }
