@@ -64,12 +64,12 @@ dosql()
 	[ "$1" = "-t" ] && flag=" -t " && shift
 	# get sql from stdin
 	SQL=$(<&0)
-	cat <<EOF psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER"  -q $flag "$PGDATABASE" 2>>$errf 
+	echo "
 	\a
         \\f '$erotin'
         \pset footer off
 	$SQL
-	;
+	;" | psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER"  -q $flag "$PGDATABASE" 2>>$errf 
 EOF
 	pgstat=$?
 	return $pgstat
@@ -84,13 +84,13 @@ table_create()
 	Ylayer="$2"
 	Yshpfile="$3"
 	dbg "table_create:$Ytable - $Ylayer - $Yshpfile"
-	dosql <<EOF
+	value=$(dosql <<EOF
 		SELECT count(*) FROM $PGSCHEMA.$Ytable LIMIT 1
 		;
 EOF
-	Cstat=$?
-	dbg "table_create: check $PGSCHEMA.$Ytable $Cstat"
-	(( Cstat == 0 )) && dbg "  table $Ytable exists" && return 0 # table exists
+)
+	dbg "table_create: check $PGSCHEMA.$Ytable $value"
+	[ "$value"  != "" ] && dbg "  table $Ytable exists" && return 0 # table exists
 	dbg "  table $Ytable not exists"
 
 	export PG_USE_COPY=YES
