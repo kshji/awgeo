@@ -102,7 +102,7 @@ table_add_recs()
 	# delete same id's from table = old value
 	# and then insert from tmp-table same id = new updated value
         # this way no need to UPDATE fld by fld
-	value=$(dosql <<EOF
+	value=$(dosql -t <<EOF
 		BEGIN;
 		-- DELETE from table those ID's which are in the tmp-table
 
@@ -137,7 +137,7 @@ table_create()
 	Yshpfile="$3"
 	dbg "table_create:$Ytable - $Ylayer - $Yshpfile"
 	((verbose > 0 )) && return 0
-	value=$(dosql <<EOF
+	value=$(dosql -t <<EOF
 		SELECT count(*) FROM $PGSCHEMA.$Ytable LIMIT 1
 		;
 EOF
@@ -156,8 +156,11 @@ EOF
 	(( Cstat > 0 )) && dbg "  table $Ytable creating not success status:$Cstat" && return 1 # can't create ???
 
 	# remove that 1st created line, later add all recs
-	value=$(dosql <<EOF
+	# remove ogr2ogr pkkey and craete our own
+	value=$(dosql -t <<EOF
 		DELETE FROM $PGSCHEMA.$Ytable
+		ALTER TABLE IF EXISTS $PGSCHEMA.$Ytable DROP CONSTRAINT IF EXISTS $PGSCHEMA.$Ytable;
+		ALTER TABLE IF EXISTS $PGSCHEMA.$Ytable ADD CONSTRAINT key_$PGSCHEMA_$Ytable PRIMARY KEY (keyid, area);
 		;
 EOF
 )
