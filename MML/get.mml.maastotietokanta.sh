@@ -1,12 +1,13 @@
 #!/usr/local/bin/awsh
 # get.mml.maastotietokanta.sh
-# 
+# ver 2025-10-02 a
+#
 # get.mml.maastotietokanta.sh N5424L N5424R
 #	output to dir sourcedata/tile
 #	- also done png
 #	- also convert to the gpkg version = faster to use
 # get.mml.maastotietokanta.sh -d 1 -p 0 N5424L N5424R
-# get.mml.maastotietokanta.sh -d 1 -p 0 -o outdir N5424L  N5424R
+# get.mml.maastotietokanta.sh -d 1 -p 0 -g 0 -t 0 -o outdir N5424L  N5424R
 #
 
 PRG="$0"
@@ -23,6 +24,8 @@ usage()
 usage:$PRG [ -o outdir ] [ -p 0|1 ] [ -d 0|1 ] tilename [ tilename ... ]
 	-o outdir # default is $outdir/tilename
 	-p 0|1    # get also area png, default 1
+	-g 0|1    # build gpkg version, default 1
+	-t 0|1    # 0 = outdir/tilename 1 = outdir
 	-d 0|1    # debug, default 0
 	tilenames  # list of tiles ex. P5114L P5114R
 EOF
@@ -182,6 +185,8 @@ shp2gpkg()
 url=""
 outputdir="sourcedata"
 png=1
+do_shp2gpkg=1
+tiledir=1
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -204,6 +209,8 @@ do
 		-d) DEBUG="$2" ; shift ;;
 		-o) outputdir="$2" ; shift ;;
 		-p) png="$2" ; shift ;;
+		-g) do_shp2gpkg="$2" ; shift ;;
+		-t) tiledir="$2" ; shift ;;
 		-*) usage; exit 4 ;;
 		*) break ;;
 	esac
@@ -220,7 +227,8 @@ mkdir -p "$TEMP"
 for area in $*
 do
 	[ "$area" = "" ] && continue
-	outdir="$outputdir/$area"
+	outdir="$outputdir"
+	((tiledir>0)) && outdir="$outputdir/$area"
 	rm -rf "$TEMP"
 	mkdir -p "$TEMP" "$outdir"
 	read name url x <<<$(grep "^$area.shp.zip" $AWMML/xmldata/maastotietokannat.all.txt  )
@@ -250,6 +258,7 @@ do
 		wget --no-check-certificate -O "$outdir/$area.pgw" "$apihost$pgwurl?api_key=$apikey" 
 	fi
 
+	(( do_shp2gpkg < 1 )) && continue
 	dbg shp2gpkg "$area" "$outdir/$area.shp.zip"  "$outdir"
 	shp2gpkg "$area" "$outdir/$area.shp.zip"  "$outdir" 
 
