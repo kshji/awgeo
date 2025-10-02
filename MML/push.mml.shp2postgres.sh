@@ -115,7 +115,7 @@ table_add_recs()
 
 		DELETE FROM $PGSCHEMA.$Ytable t
 		USING $PGSCHEMA.tmp_$Ytable tmp
-		WHERE t.keyid = tmp.id AND t.area = tmp.area;
+		WHERE t.keyid = tmp.keyid AND t.area = tmp.area;
 
 		-- ADD from tmp-table to the table and check that it's not there even why have jut deleted those ...
 		INSERT INTO $PGSCHEMA.$Ytable
