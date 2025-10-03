@@ -235,7 +235,7 @@ do
 	mkdir -p tmpshp
 	cd tmpshp
 
-	Xarea=${Xzipfile%%.zip*}
+	Xarea=${Xzipfile%%.shp.zip*}
 	Xshpfile="r_${Xarea}_p.shp"
 	Xlayer="r_${Xarea}_p"
 	Xtable=rakennus
