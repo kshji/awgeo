@@ -1,7 +1,15 @@
 #!/usr/local/bin/awsh
 # push.mml.shp2postgres.sh *_kiint.shp
-# Ver 2025-02-10 a
+# Ver 2025-03-10 b
 # push shp files from some dir to the postgresql database
+#
+# Haettu ensin MML kiint. data 
+#   $AWMML/get.mml.kiinteistodata.sh -l lahdedata/pk.txt -o kiintkartat -v 0
+# sitten kantaan
+#   cd kiintkartat
+#   time $AWMML/push.mml.shp2postgres.sh -v 0 -d 1 --pgdb gis --pgschema mml *_*.shp
+#
+#
 # env variable to have been set
 #export PGHOST=localhost
 #export PGPORT=5432

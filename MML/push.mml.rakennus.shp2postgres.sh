@@ -1,8 +1,20 @@
 #!/usr/local/bin/awsh
 # push.mml.rakennus.shp2postgres.sh  *.zip
-# Ver 2025-03-10 a
+# Ver 2025-03-10 b
 # push r_NNNNN_p.shp files from some dir to the postgresql database
 # r_NNNNN_p 
+#
+# Ensin haettu MML aineisto
+#   $AWMML/get.mml.karttadata.sh -l lahdedata/pk.txt -o maastotietokanta -v 0
+#
+# ja sitten kantaan talla scriptilla
+#   cd maastotietokanta
+#   $AWMML/push.mml.rakennus.shp2postgres.sh -v 0 -d 1 -m 0 --pgdb gis --pgschema mml *.shp.zip
+#
+# em. maastotietokanta kansiossa haettuna maastotietokannan tiedostoja Xnnnn.shp.zip tiedostot
+#
+#
+
 # env variable to have been set
 #export PGHOST=localhost
 #export PGPORT=5432
