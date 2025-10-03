@@ -4,24 +4,23 @@
 306.000 Aluehallintovirasto
 508.008 Valtakunta
 -1 Aluehallintovirasto
-42.200 42200 (Luokittelematon)
-42.210 42210 (Asuinrakennus, kerrosluku määrittelemätön
-42.211 42211 Asuinrakennus, 1-2 kerroksinen
-42.212 42212 Asuinrakennus, 3-n kerroksinen
-42.220 42220 Liike- tai julkinen, kerrosluku määrittelemätön
-42.221 42221 Liike- tai julkinen, 1-2 kerroksinen
-42.222 42222 Liike- tai julkinen, 3-n kerroksinen
-42.230 42230 Lomarakennus, kerrosluku määrittelemätön
-42.231 42231 Lomarakennus, 1-2 kerroksinen
-42.232 42232 Lomarakennus, 3-n kerroksinen
-42.240 42240 Teollinen rakennus, kerrosluku määrittelemätön
-42.241 42241 Teollinen rakennus, 1-2 kerroksinen
-42.242 42242 Teollinen rakennus, 3-n kerroksinen
-42.250 42250 Kirkollinen rakennus, kerrosluku määrittelemätön
-42.251 42251 Kirkollinen rakennus, 1-2 kerroksinen
-42.252 42252 Kirkollinen rakennus, 3-n kerroksinen
-502.002 42260 Muu rakennus, kerrosluku määrittelemätön
-502.002 42261 Muu rakennus, 1-2 kerroksinen
-502.002 42262 Muu rakennus, 3-n kerroksinen
-502.003 42270 Kirkko
-
+42.200 42200 
+42.210 42210
+42.211 42211
+42.212 42212
+42.220 42220
+42.221 42221
+42.222 42222
+42.230 42230
+42.231 42231
+42.232 42232
+42.240 42240
+42.241 42241
+42.242 42242
+42.250 42250
+42.251 42251
+42.252 42252
+42.260 42260
+42.261 42261
+42.262 42262
+42.270 42270
