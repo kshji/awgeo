@@ -231,7 +231,7 @@ mkdir -p tmpshp
 for Xzipfile in $*
 do
 	cd $NOW
-	unzip -qq -o "$Xzipfile" -o tmpshp
+	unzip -qq -oj -d tmpshp "$Xzipfile" 
 	mkdir -p tmpshp
 	cd tmpshp
 
