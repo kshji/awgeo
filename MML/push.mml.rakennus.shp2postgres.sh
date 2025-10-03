@@ -99,14 +99,9 @@ table_add_recs()
 
         export PG_USE_COPY=YES
 	# to tmp db
-	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "r_N5424L_p.shp" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom  \
-	-dialect postgresql \
-	-sql "SELECT CAST(fid AS BIGINT) AS keyid,'$Yarea' AS area, \
-        	syntyhetki, kuolhetki, ryhma, luokka, CAST(kohdeoso AS bigint) AS kohdeoso, korkeus \
-      		FROM $Ylayer " \
-	-lco FID=keyid  \
-	-overwrite
-        
+	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom  \
+        -dialect postgresql -sql "SELECT '$Yarea' AS area, $dbfields  FROM $Ylayer "  -lco FID=keyid  -overwrite
+
         Cstat=$?
         (( Cstat > 0 )) && dbg "  table $Ytable adding to the temp table not success status:$Cstat" && return 1 # can't create/add ???
 	dbg "table_add_recs: add to temp done"
@@ -114,22 +109,23 @@ table_add_recs()
 
 	dbg "table_add_recs: to table $PGSCHEMA.$Ytable from $PGSCHEMA.tmp_$Ytable  "
 	# tmp_XXX table include loaded recs
-	# delete same id's from table = old value
-	# and then insert from tmp-table same id = new updated value
+	# delete same geom's from table = old value
+	# and then insert from tmp-table same geom = new updated value
         # this way no need to UPDATE fld by fld
+	# no keyvalue, except geom ....
 	value=$(dosql -t <<EOF
 		BEGIN;
-		-- DELETE from table those ID's which are in the tmp-table
+		-- DELETE from table those geom are same
 
 		DELETE FROM $PGSCHEMA.$Ytable t
 		USING $PGSCHEMA.tmp_$Ytable tmp
-		WHERE t.keyid = tmp.keyid AND t.area = tmp.area;
+		WHERE t.geom = tmp.geom AND t.area = tmp.area;
 
 		-- ADD from tmp-table to the table and check that it's not there even why have jut deleted those ...
 		INSERT INTO $PGSCHEMA.$Ytable
 		SELECT u.* FROM  $PGSCHEMA.tmp_$Ytable  u
-		--LEFT OUTER JOIN $PGSCHEMA.$Ytable t2 ON u.keyid=t2.keyid
-		--WHERE t2.keyid IS NULL
+		LEFT OUTER JOIN $PGSCHEMA.$Ytable t2 ON u.geom=t2.geom
+		WHERE t2.keyid IS NULL
 		;
 		END;
 EOF
@@ -167,12 +163,8 @@ EOF
 	dbg "  add temp table $PGSCHEMA.$Ytable using $Yshpfile"
 
 	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.$Ytable -lco GEOMETRY_NAME=geom  \
-	-dialect postgresql \
-	-sql "SELECT '$Yarea' AS area, \
-        	syntyhetki, kuolhetki, ryhma, luokka, CAST(kohdeoso AS bigint) AS kohdeoso, korkeus \
-      		FROM $Ylayer LIMIT 1" \
-	-lco FID=keyid  \
-	-overwrite
+	-dialect postgresql -sql "SELECT '$Yarea' AS area, $dbfields  FROM $Ylayer LIMIT 1"  -lco FID=keyid  -overwrite
+
 	Cstat=$?
 	(( Cstat > 0 )) && dbg "  table $Ytable creating not success status:$Cstat" && return 1 # can't create ???
 
@@ -202,6 +194,8 @@ errf=$PWD/tmp/$SESID.$PRG.err
 lf=$PWD/tmp/$SESID.$PRG.log
 PGSCHEMA=public
 verbose=0
+# select only some fields, not all
+dbfields="syntyhetki, kuolhetki, ryhma, luokka, CAST(kohdeoso AS bigint) AS kohdeoso, korkeus"
 
 while [ $# -gt 1 ]
 do
@@ -251,7 +245,7 @@ do
 	((verbose > 0 && verbose < 2 )) && continue
 	# verbose >1 dbg message, not do SQL insert
 	table_create "$Xtable" "$Xlayer" "$Xshpfile" 
-	#table_add_recs "$Xtable" "$Xlayer" "$Xshpfile" "$Xarea"
+	table_add_recs "$Xtable" "$Xlayer" "$Xshpfile" "$Xarea"
 
 	cd $NOW
 	#rm -rf tmpshp 2>/dev/null
