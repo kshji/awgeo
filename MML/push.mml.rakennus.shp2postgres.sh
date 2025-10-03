@@ -168,7 +168,7 @@ EOF
 
 	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.$Ytable -lco GEOMETRY_NAME=geom  \
 	-dialect postgresql \
-	-sql "SELECT CAST(keyid AS BIGINT) AS keyid,'$Yarea' AS area, \
+	-sql "SELECT '$Yarea' AS area, \
         	syntyhetki, kuolhetki, ryhma, luokka, CAST(kohdeoso AS bigint) AS kohdeoso, korkeus \
       		FROM $Ylayer LIMIT 1" \
 	-lco FID=keyid  \
