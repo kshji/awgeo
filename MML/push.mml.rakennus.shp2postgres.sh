@@ -248,7 +248,7 @@ do
 	table_add_recs "$Xtable" "$Xlayer" "$Xshpfile" "$Xarea"
 
 	cd $NOW
-	#rm -rf tmpshp 2>/dev/null
+	rm -rf tmpshp 2>/dev/null
 done 
 
 log "$PRG end"
