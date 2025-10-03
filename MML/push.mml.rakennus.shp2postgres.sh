@@ -165,17 +165,23 @@ EOF
 	export PG_USE_COPY=YES
 
 	dbg "  add temp table $PGSCHEMA.$Ytable using $Yshpfile"
-	dbg ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln "$PGSCHEMA.$Ytable" -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'CREATE' AS area,* FROM $Ylayer LIMIT 1" -lco FID=keyid -overwrite
-	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln "$PGSCHEMA.$Ytable" -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'CREATE' AS area,* FROM $Ylayer LIMIT 1" -lco FID=keyid -overwrite
+
+	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.$Ytable -lco GEOMETRY_NAME=geom  \
+	-dialect postgresql \
+	-sql "SELECT CAST(keyid AS BIGINT) AS keyid,'$Yarea' AS area, \
+        	syntyhetki, kuolhetki, ryhma, luokka, CAST(kohdeoso AS bigint) AS kohdeoso, korkeus \
+      		FROM $Ylayer LIMIT 1" \
+	-lco FID=keyid  \
+	-overwrite
 	Cstat=$?
 	(( Cstat > 0 )) && dbg "  table $Ytable creating not success status:$Cstat" && return 1 # can't create ???
 
 	# remove that 1st created line, later add all recs
-	# remove ogr2ogr pkkey and craete our own
+	# remove ogr2ogr pkkey and create our own
 	value=$(dosql -t <<EOF
 		DELETE FROM $PGSCHEMA.$Ytable;
 		ALTER TABLE IF EXISTS $PGSCHEMA.$Ytable DROP CONSTRAINT IF EXISTS ${Ytable}_pkey;
-		ALTER TABLE IF EXISTS $PGSCHEMA.$Ytable ADD CONSTRAINT ${Ytable}_pkey PRIMARY KEY (keyid, area);
+		--ALTER TABLE IF EXISTS $PGSCHEMA.$Ytable ADD CONSTRAINT ${Ytable}_pkey PRIMARY KEY (keyid, area);
 		;
 EOF
 )
