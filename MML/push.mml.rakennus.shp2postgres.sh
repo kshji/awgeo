@@ -1,7 +1,8 @@
 #!/usr/local/bin/awsh
-# push.mml.shp2postgres.sh *_kiint.shp
-# Ver 2025-02-10 a
-# push shp files from some dir to the postgresql database
+# push.mml.rakennus.shp2postgres.sh  *.zip
+# Ver 2025-03-10 a
+# push r_NNNNN_p.shp files from some dir to the postgresql database
+# r_NNNNN_p 
 # env variable to have been set
 #export PGHOST=localhost
 #export PGPORT=5432
@@ -98,8 +99,14 @@ table_add_recs()
 
         export PG_USE_COPY=YES
 	# to tmp db
-        dbg ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'$Yarea' AS area,* FROM $Ylayer " -lco FID=keyid -overwrite
-        ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "$Yshpfile" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom -dialect postgresql -sql "SELECT CAST(id AS BIGINT) AS keyid,'$Yarea' AS area,* FROM $Ylayer " -lco FID=keyid -overwrite
+	ogr2ogr -f "PostgreSQL" PG:"dbname=$PGDATABASE user=$PGUSER" "r_N5424L_p.shp" -nln $PGSCHEMA.tmp_$Ytable -lco GEOMETRY_NAME=geom  \
+	-dialect postgresql \
+	-sql "SELECT CAST(fid AS BIGINT) AS keyid,'$Yarea' AS area, \
+        	syntyhetki, kuolhetki, ryhma, luokka, CAST(kohdeoso AS bigint) AS kohdeoso, korkeus \
+      		FROM $Ylayer " \
+	-lco FID=keyid  \
+	-overwrite
+        
         Cstat=$?
         (( Cstat > 0 )) && dbg "  table $Ytable adding to the temp table not success status:$Cstat" && return 1 # can't create/add ???
 	dbg "table_add_recs: add to temp done"
@@ -216,18 +223,32 @@ done
 log "$PRG start"
 msg "log:$lf err:$errf" 
 
-for Xshpfile in $*
+
+NOW=$PWD
+rm -rf tmpshp 2>/dev/null
+mkdir -p tmpshp
+
+for Xzipfile in $*
 do
-	Xlayer=${Xshpfile%%.*}	
-	Xarea=${Xlayer%_*}
-	Xtable=${Xlayer##*_}
+	cd $NOW
+	uzip -qq -o "$Xzipfile" -o tmpshp
+	mkdir -p tmpshp
+	cd tmpshp
+
+	Xarea=${Xzipfile%%.zip*}
+	Xshpfile="r_${Xarea}_p.shp"
+	Xlayer="r_${Xarea}_p"
+	Xtable=rakennus
 	dbg "$(timestamp)"
 	msg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
 	dbg "Xlayer:$Xlayer Xarea:$Xarea Xtable:$Xtable"
 	((verbose > 0 && verbose < 2 )) && continue
 	# verbose >1 dbg message, not do SQL insert
 	table_create "$Xtable" "$Xlayer" "$Xshpfile" 
-	table_add_recs "$Xtable" "$Xlayer" "$Xshpfile" "$Xarea"
+	#table_add_recs "$Xtable" "$Xlayer" "$Xshpfile" "$Xarea"
+
+	cd $NOW
+	rm -rf tmpshp 2>/dev/null
 done 
 
 log "$PRG end"
