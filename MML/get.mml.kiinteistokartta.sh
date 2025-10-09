@@ -3,6 +3,9 @@
 # Haetaan MML kiinteistokartta dataa, tuotos on Mapinfo formaatissa
 # haetaan karttalehti kerrallaan
 # joko 4 karttaa L/R aluekoodista tai suoraan tietty A-D tai E-H kartta
+# get.mml.kiinteistokartta.sh -o mml N5424L
+# get.mml.kiinteistokartta.sh -o mml -u 0 N5424L # not unzip
+#
 
 BINDIR="${PRG%/*}"
 [ "$PRG" = "$BINDIR" ] && BINDIR="." # - same dir as program
@@ -62,8 +65,8 @@ get_map()
         	dbg wget --no-check-certificate -O $outdir/$file.zip $apihost$url?api_key=$apikey
         	((DEBUG<2)) && wget --no-check-certificate -O "$outdir/$file.zip" "$apihost$url?api_key=$apikey"
         	[ ! -f "$outdir/$file.zip" ] && continue
-		unzip -qq -o "$outdir/$file.zip" -d "$outdir"
-		rm -f "$outdir/$file.zip"
+		((dounzip > 0 )) && unzip -qq -o "$outdir/$file.zip" -d "$outdir"
+		((dounzip > 0 )) && rm -f "$outdir/$file.zip"
         	dbg "done $outdir/$file.zip"
         done
 }
@@ -75,6 +78,7 @@ get_map()
 ######################################################################################
 url=""
 outputdir="sourcedata"
+dounzip=1
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -96,6 +100,7 @@ do
         case "$arg" in
                 -d) DEBUG="$2" ; shift ;;
                 -o) outputdir="$2" ; shift ;;
+                -u) dounzip="$2" ; shift ;;
                 -*) usage; exit 4 ;;
                 *) break ;;
         esac
