@@ -2,7 +2,8 @@
 # shpzip2gpkg.sh
 # ver 2025-10-09 a
 #
-# shpzip2gpkg.sh -d 1 -o gpkg xxx.shp.zip yyy.shp.zip
+# shpzip2gpkg.sh -d 1 -o gpkg -t 0 xxx.shp.zip yyy.shp.zip
+#   -t 0|1  tiledir or not  
 #
 # You can use ex. 
 # get.mml.maastotietokanta.sh -d 1 -p 0 -g 0 -t 0 -o mml N5424L  N5424R
@@ -98,34 +99,32 @@ countour_symbols()
 
 	dbg "countour_symbols $Cinf $Cdb"
 
+
         #ogrinfo $Cinf  $quit -sql "ALTER TABLE $Cdb ADD COLUMN SYMBOL INTEGER"
         ########################################################################
         ####-- contour begin
         # contour 20m , 5m, 2.5 m - use column KORARV
         # 0-level special case
-        ogrinfo  $Cinf   -dialect SQLite -sql " UPDATE  $Cdb SET symbol=0 WHERE (luokka=52100 OR luokka=54100) "
+        ogrinfo  $Cinf   -dialect SQLite -sql " UPDATE  $Cdb SET symbol=0 WHERE luokka IN (52100, 54100) "
         # 20m
-        dbg "20m"
-       ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+1 WHERE  CAST(KORARV AS INTEGER)*10 % 200 = 0 AND luokka=52100 AND KORARV<>0 AND symbol=0 " 
-       # 5m
-       ogrinfo  $Cinf  $quit -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA WHERE  CAST(KORARV AS INTEGER)*10 % 50 = 0 AND luokka=52100 AND  KORARV<>0 AND symbol=0 "
+        ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+1 WHERE  KORARV*10 % 200 = 0 AND luokka=52100 AND KORARV<>0 AND symbol=0 " 
+        # 5m
+        ogrinfo  $Cinf  $quit -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+2 WHERE  KORARV*10 % 50 = 0 AND luokka=52100 AND  KORARV<>0 AND symbol=0 "
         # 2.5m
-        dbg "2.5m"
-       ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+3 WHERE  CAST(KORARV AS INTEGER)*10 % 25 = 0 AND luokka=52100 AND  KORARV<>0 AND symbol=0 "
+        ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+3 WHERE  KORARV*10 % 25 = 0 AND luokka=52100 AND  KORARV<>0 AND symbol=0 "
 	# rest set if there is
-       ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA WHERE  luokka=52100 AND  symbol=0 "
+        ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+4 WHERE  luokka=52100 AND symbol=0 "
         # water area - lakes ...
         # 1.5 m
-       ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+1 WHERE  KORARV*10 = 15 AND luokka=54100  AND symbol=0 "
+        ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+1 WHERE  KORARV*10 = 15 AND luokka=54100  AND symbol=0 "
         # 3.0 m
-        dbg "3.0m"
-       ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+2 WHERE  KORARV*10 = 30 AND luokka=54100  AND symbol=0 "
+        ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+2 WHERE  KORARV*10 = 30 AND luokka=54100  AND symbol=0 "
         # 6.0 m
-       ogrinfo  $Cinf  $quit -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+3 WHERE  KORARV*10 = 60 AND luokka=54100  AND symbol=0 "
+        ogrinfo  $Cinf  $quit -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+3 WHERE  KORARV*10 = 60 AND luokka=54100  AND symbol=0 "
         # 5 m rest
-        # ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA WHERE  KORARV*10 % 50 = 0 AND luokka=54100 AND KORARV<>0 AND symbol=0 "
+        ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+4 WHERE  KORARV*10 % 50 = 0 AND luokka=54100 AND KORARV<>0 AND symbol=0 "
 	# rest set if there is 5m ...
-       ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA WHERE  luokka=54100 AND  symbol=0 "
+        ogrinfo  $Cinf $quit  -dialect SQLite -sql " UPDATE  $Cdb SET symbol=LUOKKA+5 WHERE  luokka=54100 AND  symbol=0 "
 
         ###-- countour end
         ########################################################################
@@ -279,7 +278,7 @@ shp2gpkg()
 				
 				v)
 					dbg "   " ogr2ogr -f "GPKG" "$resultfile" "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1) AS KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 				*)
 					dbg "   " ogr2ogr -f "GPKG" "$resultfile" "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
@@ -298,7 +297,7 @@ shp2gpkg()
 				
 				v)
 					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1)) AS KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 				*)
 					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
@@ -358,8 +357,7 @@ data2ocad()
                  esac
 	done
 	dbg ""
-	dbg "DXF done, cp -f *.dxf $Zdestdir"
-	[ "$destdir" != "" ] && [ "$destdir" != "." ] && cp -f *.dxf "$Zdestdir"
+	dbg "DXF done"
 }
 
 ####################################################################################
@@ -441,8 +439,10 @@ gpkg_update()
 		Xfname=$(getfile "$gpkg")
 		Xbasename=$(getbase "$Xfname" ".gpkg")
 		[ -f "$gpkg" ] && cp -f "$gpkg" "$Ydestdir" && dbg "done:$Ydestdir/$Xfname"
-		cp -f *.dxf  "$Ydestdir" 2>/dev/null
 	done
+
+	((makeocad > 0 )) && cp -f "$TEMP"/*.dxf  "$Ydestdir" 2>/dev/null
+
 	cp -f $AWGEO/config/FIshp2ISOM2017.v2.crt $AWGEO/config/awot_ocadisom2017_mml.v2.ocd "$Ydestdir" 2>/dev/null
 	dbg "      done"
 
