@@ -45,8 +45,9 @@ get_kiinteisto()
         mastertile=${Xarea:0:5}
         subarea=${Xarea:0:3}
         last=${Xarea:5:1}
-	# def L
-	parts="A B C D"
+
+	parts="$last"  # only one needed, not all 4 (A-H)
+	[ "$last" = "L" ] && parts="A B C D"
 	[ "$last" = "R" ] && parts="E F G H"
 	dbg "parts:$parts"
 
@@ -60,7 +61,7 @@ get_kiinteisto()
 		outfile="$Xarea.kiint.$file.shp.zip"
         	dbg "mastertile:$mastertile file:$file $outfile url:$url"
         	dbg wget --no-check-certificate -O "$TEMP"/$outfile "$apihost$url?api_key=$apikey"
-        	wget --no-check-certificate -O "$TEMP"/$outfile "$apihost$url?api_key=$apikey"
+        	wget $quit --no-check-certificate -O "$TEMP"/$outfile "$apihost$url?api_key=$apikey"
 		unzip -ojq -d "$TEMP" "$TEMP/$outfile"
         	[ ! -f "$TEMP/$outfile" ] && exit 8
 		((DEBUG<1)) && rm -f "$TEMP/$outfile" 2>/dev/null
@@ -84,8 +85,8 @@ get_kiinteisto()
 			fi
 		done
 		#ogrinfo  $Xarea.kiinteistoraja.shp -sql "ALTER TABLE $Xarea.kiinteistoraja ADD COLUMN symbol integer(6)"
-		ogrinfo "$destfile" -sql "ALTER TABLE kiinteistoraja ADD COLUMN symbol text"
-		ogrinfo  "$destfile" -dialect SQLite -sql "
+		ogrinfo "$destfile" $quit -sql "ALTER TABLE kiinteistoraja ADD COLUMN symbol text"
+		ogrinfo  "$destfile" $quit -dialect SQLite -sql "
           		UPDATE  kiinteistoraja
           		SET symbol=cast(97000+LAJI AS text)
         		"
@@ -94,13 +95,13 @@ get_kiinteisto()
 		for f in *_*.shp
 		do
 			if [ ! -f "$destfile" ] ; then
-				ogr2ogr -f 'ESRI Shapefile' -nln kiinteistot "$destfile" "$f" 
+				ogr2ogr -f 'ESRI Shapefile' $quit -nln kiinteistot "$destfile" "$f" 
 			else
-				ogr2ogr -f 'ESRI Shapefile' -append -nln kiinteistot "$destfile" "$f" 
+				ogr2ogr -f 'ESRI Shapefile' $quit -append -nln kiinteistot "$destfile" "$f" 
 			fi
 		done
-		ogrinfo "$destfile" -sql "ALTER TABLE $Xarea.kiinteistot ADD COLUMN symbol text"
-		ogrinfo  "$destfile" -dialect SQLite -sql "
+		ogrinfo "$destfile" $quit -sql "ALTER TABLE $Xarea.kiinteistot ADD COLUMN symbol text"
+		ogrinfo  "$destfile" $quit -dialect SQLite -sql "
           		UPDATE  kiinteistoraja
           		SET symbol=cast(97000+LAJI AS text)
         		"
@@ -120,6 +121,8 @@ get_kiinteisto()
 url=""
 outputdir="sourcedata"
 gpkg=1
+quit=" -q "
+tledir=1
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -142,6 +145,7 @@ do
                 -d) DEBUG="$2" ; shift ;;
                 -o) outputdir="$2" ; shift ;;
 		-g) gpkg="$2" ; shift ;;
+		-t) tiledir="$2" ; shift ;;
                 -*) usage; exit 4 ;;
                 *) break ;;
         esac
@@ -151,6 +155,8 @@ done
 # files 1-n
 [ $# -lt 1 ] && usage && exit 5
 
+
+((DEBUG>0)) && quit=" "
 id=$$ # process number = unique id for tempfiles
 TEMP="$PWD/tmp/$id"
 
@@ -158,7 +164,8 @@ mkdir -p "$outputdir" "$TEMP"
 
 for kiint in $*
 do
-	outdir="$outputdir/$kiint"
+	outdir="$outputdir"
+	(( tiledir> 0 )) && outdir="$outputdir/$kiint"
 	mkdir -p "$outdir"
 	dbg "get_kiinteisto $kiint"
 	get_kiinteisto "$kiint"

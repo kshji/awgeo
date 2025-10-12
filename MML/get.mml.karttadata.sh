@@ -18,6 +18,7 @@ mitka=""
 odir=maastokartat
 verbose=0
 DEBUG=0
+tilename=""
 
 while [ $# -gt 1 ]
 do
@@ -26,6 +27,7 @@ do
 		-l) mitka="$2" ; shift ;;
 		-o) odir="$2" ; shift ;;
 		-v) verbose=$2 ; shift ;;
+		-t) tilename=$2 ; shift ;;
 		-d) DEBUG="$2" ; shift ;;
 	esac
 	shift

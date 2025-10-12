@@ -80,6 +80,7 @@ url=""
 outputdir="sourcedata"
 dounzip=1
 quit=" -q "
+tiledir=1
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -102,6 +103,7 @@ do
                 -d) DEBUG="$2" ; shift ;;
                 -o) outputdir="$2" ; shift ;;
                 -u) dounzip="$2" ; shift ;;
+                -t) tiledir="$2" ; shift ;;
                 -*) usage; exit 4 ;;
                 *) break ;;
         esac

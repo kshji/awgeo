@@ -47,9 +47,11 @@ get_metsa()
         # could be more than one, select newest (sort)
         mastertile=${Xarea:0:5}
         last=${Xarea:5:1}
-	# def L
-	parts="A B C D"
+	# 
+	parts="$last"  # only one needed, not all 4 (A-H)
+	[ "$last" = "L" ] && parts="A B C D"
 	[ "$last" = "R" ] && parts="E F G H"
+	dbg "    parts:$parts outdir:$outdir"
 
 	rm -rf "$TEMP" 2>/dev/null
         mkdir -p "$TEMP"
@@ -59,7 +61,7 @@ get_metsa()
 		file="$mastertile$part"
         	url="/Metsankayttoilmoitukset/Karttalehti/MKI_$file.zip"
 		outfile="$Xarea.metsa.$file.gpkg.zip"
-        	dbg "mastertile:$mastertile file:$file $outfile url:$url"
+        	dbg "      mastertile:$mastertile file:$file $outfile url:$url"
         	dbg wget --no-check-certificate -O "$outdir/$outfile" "$metsaurl$url?api_key=$apikey"
         	wget $quit --no-check-certificate -O "$TEMP/$outfile" "$metsaurl$url?api_key=$apikey"
 		unzip -ojq -d "$TEMP" "$TEMP/$outfile"
@@ -118,7 +120,7 @@ startyear=$(date +'%Y')
 ((startyear=startyear-3)) # default last 3 years
 dounzip=1
 quit=" -q "
-tilename=""
+tiledir=1
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -142,7 +144,7 @@ do
                 -o) outputdir="$2" ; shift ;;
                 -y) startyear="$2" ; shift ;;
 		-u) dounzip="$2" ; shift ;;
-		-t) tilename="$2" ; shift ;;
+		-t) tiledir="$2" ; shift ;;
                 -*) usage; exit 4 ;;
                 *) break ;;
         esac
@@ -161,8 +163,8 @@ mkdir -p "$TEMP" "$outputdir"
 for metsa in $*
 do
 	dbg "get_metsa $metsa"
-	outdir="$outputdir/$metsa"
-	[ "$tilename" != "" ] && outdir="$outputdir/$tilename"
+	outdir="$outputdir"
+	((tiledir>0)) && outdir="$outputdir/$metsa"
 	mkdir -p "$outputdir" "$outdir"
 	get_metsa "$metsa"
 done
