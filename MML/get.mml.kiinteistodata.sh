@@ -58,7 +58,7 @@ do
 		onjo="$odir/${AREA}_kiinteistoraja.shp"
 		[ -f "$onjo" ] && echo "oli jo $onjo" >&2 && continue
 		echo "$(date) $AREA" >> "$lf"
-		$AWMML/get.mml.kiinteistokartta.sh -o "$odir" "$AREA"
+		$AWMML/get.mml.kiinteistokartta.sh -o "$odir" -t 0 "$AREA"
 	done
 done < "$mitka"
 

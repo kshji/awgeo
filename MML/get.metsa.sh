@@ -1,7 +1,7 @@
 #!/usr/local/bin/awsh
 # get.metsa.sh
 # metsahallitus metsankayttoilmoitukset
-# $AWMML/get.metsa.sh -y "2020" -o "metsa" -t haknimi N5424L      # => metsa/haknimi
+# $AWMML/get.metsa.sh -y "2020" -o "metsa" -t 0 N5424L      # => metsa
 # $AWMML/get.metsa.sh -y "2020" -o "metsa"  N5424L 		  # => metsa/N5424L
 # $AWMML/get.metsa.sh -y "2020" -o "metsa"  N5424A N5424B	  # => metsa/N5424L
 

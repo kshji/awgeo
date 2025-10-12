@@ -1,8 +1,11 @@
 #!/usr/local/bin/awsh
 # get.mml.kiinteisto.sh
-# $AWMML/get.mml.kiinteisto.sh -o sourcedata N5313R
+# $AWMML/get.mml.kiinteisto.sh -o datadir N5313R N2 ...  # => datadir/N5313R
+# $AWMML/get.mml.kiinteisto.sh -o datadir -t 0 N5313R N2 ... # => datadir
+#
 # - osaa hakea 4 tiedostoa L (ABCD) /R (EFGH) perusteella
 # -g 0|1 = default 1 = do gpkg files
+# -t 0|1 = default 1 = save to tilename subdir
 #
 
 BINDIR="${PRG%/*}"
