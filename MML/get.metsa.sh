@@ -1,6 +1,7 @@
 #!/usr/local/bin/awsh
 # get.metsa.sh
 # metsahallitus metsankayttoilmoitukset
+# $AWMML/get.metsa.sh -y "2020" -o "metsa"  "N5424L"
 
 BINDIR="${PRG%/*}"
 [ "$PRG" = "$BINDIR" ] && BINDIR="." # - same dir as program
@@ -113,6 +114,7 @@ url=""
 outputdir="sourcedata"
 startyear=$(date +'%Y')
 ((startyear=startyear-3)) # default last 3 years
+dounzip=1
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -135,6 +137,7 @@ do
                 -d) DEBUG="$2" ; shift ;;
                 -o) outputdir="$2" ; shift ;;
                 -y) startyear="$2" ; shift ;;
+		-u) dounzip="$2" ; shift ;;
                 -*) usage; exit 4 ;;
                 *) break ;;
         esac
@@ -152,7 +155,7 @@ for metsa in $*
 do
 	dbg "get_metsa $metsa"
 	outdir="$outputdir/$metsa"
-	mkdir -p "$output"
+	mkdir -p "$output" "$outdir"
 	get_metsa "$metsa"
 done
 
