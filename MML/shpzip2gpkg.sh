@@ -2,6 +2,7 @@
 # shpzip2gpkg.sh
 # ver 2025-10-09 a
 #
+# shpzip2gpkg.sh -d 1 -t 0 -o somedir6 -a -10.6 N5424L.shp.zip  N5424?.zip
 # shpzip2gpkg.sh -d 1 -o gpkg -t 0 xxx.shp.zip yyy.shp.zip
 #   -t 0|1  tiledir or not  
 #
@@ -128,6 +129,22 @@ countour_symbols()
 
         ###-- countour end
         ########################################################################
+}
+
+#########################################################################
+update_some_symbols_s()
+{
+	# update_some_symbols_s "$destfile" "$table"
+	# update symbol table some symbol 
+        Xfile="$1"
+        Xdb="$2"
+	dbg "update_some_symbols_s BEGIN $Xfile $Xdb"
+
+	# pienet avokalliot, pisteina - erottava aluekallioista
+	dbg "   " ogrinfo  "$Xfile"  $quit  -dialect SQLite -sql " UPDATE  $Xdb SET symbol=34101 WHERE symbol=34100 "
+	ogrinfo  "$Xfile"  $quit  -dialect SQLite -sql " UPDATE  $Xdb SET symbol=34101 WHERE symbol=34100 "
+
+	dbg "update_some_symbols_s END "
 }
 
 #########################################################################
@@ -318,15 +335,32 @@ shp2gpkg()
 ####################################################################################
 data2ocad()
 {
-	#data2ocad "$gpkg" "$Ytilename" "$Ydestdir"
-	Zinf="$1"
-	Ztilename="$2"
-	Zdestdir="$3"
+	# data2ocad -f "$destfile" -t "$Ytilename" -o "$Ydestdir" 
+	Zinf=""
+	Ztilename=""
+	Zdestdir=""
 	# loop tables v,t,s,p, palstatunnus, kiinteistoraja, ... 
 	# tables s,t,palstatunnus => DXF
 
-
+	while [ $# -gt 0 ]
+	do
+        	arg="$1"
+        	case "$arg" in
+                	-t) Ztilename="$2" ; shift ;;
+                	-o) Zdestdir="$2" ; shift ;;
+                	-f) Zinf="$2" ; shift ;;
+		esac
+		shift
+	done
 	dbg "data2ocad $Zinf $Ztilename $Zdestdir"
+
+	usagestr="data2ocad usage: -f inoutfile -t tilename -o outdir "
+	[ "$Ztilename" = "" ] && err "$usagestr" && return 1
+	[ "$Zdestdir" = "" ] && err "$usagestr" && return 1
+	[ "$Zinf" = "" ] && err "$usagestr" && return 1
+	[ ! -f "$Zinf" = "" ] && err "can't read $Zinf" && return 1
+
+
 	dbg "          dir:$PWD"
 
 	dbg "             $AWGEO/gptk2csv.sh $Zinf $Ztilename" 
@@ -363,10 +397,29 @@ data2ocad()
 ####################################################################################
 gpkg_update()
 {
+	# gpkg_update -t "$tilename" -o "$outdir" -a "$angle"
 	# init table changes
-	dbg "GPKG update tables ..."
-	Ytilename="$1"
-	Ydestdir="$2"
+	dbg "GPKG update tables ... in dir $PWD"
+	Ytilename=""
+	Ydestdir=""
+	Yangle=""
+
+	while [ $# -gt 0 ]
+	do
+        	arg="$1"
+        	case "$arg" in
+                	-t) Ytilename="$2" ; shift ;;
+                	-o) Ydestdir="$2" ; shift ;;
+                	-a) Yangle="$2" ; shift ;;
+		esac
+		shift
+	done
+	dbg "         tilename:$Ytilename destdir:$Ydestdir angle:$Yangle "
+
+	[ "$Ytilename" = "" ] && err "gpkg_update usage: -t tilename -o outdir [ -a angle ]" && return 1
+	[ "$Ydestdir" = "" ] && err "gpkg_update usage: -t tilename -o outdir [ -a angle ]" && return 1
+	# angle could be empty, 0, 0.0 or some value
+	[ "$Yangle" = "" ] && Yangle=0	
 
 	for destfile in *.gpkg
 	do
@@ -394,9 +447,10 @@ gpkg_update()
 				s)  # symbol = POINT
 					ogrinfo  "$destfile" $quit   -dialect SQLite -sql "
           					UPDATE  $tablename
-                					SET ANGLE=CAST(SUUNTA*1.0/10000.0/3.14159*180.0  AS  TEXT(100) )
+                					SET ANGLE=CAST(SUUNTA*1.0/10000.0/3.14159*180.0 + $Yangle AS  TEXT(100) )
           					WHERE SUUNTA IS NOT NULL
         					"
+					update_some_symbols_s "$destfile" "$tablename"
 					;;
 				t|palstatunnus) # TEXT
 					ogrinfo  "$destfile" $quit  -dialect SQLite -sql "
@@ -406,7 +460,7 @@ gpkg_update()
         				"
 					ogrinfo  "$destfile"  $quit   -dialect SQLite -sql "
           					UPDATE  $tablename
-                					SET ANGLE=CAST(SUUNTA*1.0/10000.0/3.14159*180.0  AS  TEXT(100) )
+                					SET ANGLE=CAST(SUUNTA*1.0/10000.0/3.14159*180.0 + $Yangle AS  TEXT(100) )
           					WHERE SUUNTA IS NOT NULL
         					"
 					;;
@@ -421,7 +475,9 @@ gpkg_update()
 		done
 
 		[ -f "$gpkg" ] && ((makeocad > 0 )) && cp -f "$destfile" "$Xbasename.full.gpkg" && dbg "done:$Xbasename.full.gpkg"
-		((makeocad > 0)) && data2ocad "$destfile" "$Ytilename" "$Ydestdir"
+
+		# make dxf from text and symbol, handle angle
+		((makeocad > 0)) && data2ocad -f "$destfile" -t "$Ytilename" -o "$Ydestdir" 
 
 		dbg "   GPKG update $destfile table:$tablename done"
 		dbg ""
@@ -443,7 +499,8 @@ gpkg_update()
 
 	((makeocad > 0 )) && cp -f "$TEMP"/*.dxf  "$Ydestdir" 2>/dev/null
 
-	cp -f $AWGEO/config/FIshp2ISOM2017.v2.crt $AWGEO/config/awot_ocadisom2017_mml.v2.ocd "$Ydestdir" 2>/dev/null
+	cp -f $AWGEO/config/FIshp2ISOM2017.v2.crt "$Ydestdir" 2>/dev/null
+	cp -f $AWGEO/config/awot_ocadisom2017_mml.v2.ocd "$Ydestdir"/"$Ytilename".ocd 2>/dev/null
 	dbg "      done"
 
 	(( DEBUG<1)) && rm -rf "$TEMP" 2>/dev/null
@@ -461,6 +518,7 @@ id=$$
 quit=" -q "
 tilename=""
 makeocad=1
+angle=0
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -481,6 +539,7 @@ do
 	arg="$1"
 	case "$arg" in
 		-d) DEBUG="$2" ; shift ;;
+		-a|--angle) angle="$2" ; shift ;;
 		-o|--outputdir) outputdir="$2" ; shift ;;
 		-i|--id) id="$2" ; shift ;;
 		-t|--tile) tiledir=$2; shift ;;
@@ -503,6 +562,9 @@ NOW=$PWD
 ((DEBUG>1)) && quit=" "
 
 zipcnt=0
+
+# shape to gpkg
+
 for zipf in $*
 do
 
@@ -531,11 +593,9 @@ do
 	shp2gpkg "$zipf" "$outdir" "$dir" "$zipfile" "$tilename"
 done
 
-# update gpkg db
+# update gpkg db and make dxf
 dbg "gpkg_update ..."
-gpkg_update "$tilename" "$outdir"
+gpkg_update -t "$tilename" -o "$outdir" -a "$angle"
 
 dbg "done:$outdir"
 
-#https://tiedostopalvelu.maanmittauslaitos.fi/tp/tilauslataus/tuotteet/peruskarttarasteri_jhs180/painovari/1m/etrs89/png/$osa1/$osa2/$alue.png?$tokenvar=$token"
-#https://tiedostopalvelu.maanmittauslaitos.fi/tp/tilauslataus/tuotteet/maastotietokanta/kaikki/etrs89/shp/P5/P53/P5313L.shp.zip?api_key=$token
