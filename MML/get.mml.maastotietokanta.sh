@@ -91,19 +91,19 @@ update_some_symbols_v()
         #update_some_symbols_v "merge_$t.shp"
         :
         # rantaviiva
-        ogrinfo  "$Xfile"   -dialect SQLite -sql "
+        ogrinfo  "$Xfile"   $quit -dialect SQLite -sql "
           UPDATE  $Xdb
           SET symbol=42300
           WHERE kartoglk=36200
         "
         # kuvioraja
-        ogrinfo  "$Xfile"   -dialect SQLite -sql "
+        ogrinfo  "$Xfile"   $quit -dialect SQLite -sql "
           UPDATE  $Xdb
           SET symbol=30212
           WHERE kartoglk=39110
         "
         # ei nayteta kumpaakaan kuviorajaa tiettyjen alueiden reunalla (suo yms)
-        ogrinfo  "$Xfile"   -dialect SQLite -sql "
+        ogrinfo  "$Xfile"   $quit -dialect SQLite -sql "
           UPDATE  $Xdb
           SET symbol=0
           WHERE symbol IN (30211,30212) AND kartoglk IN (32111,32112,32500,32900,34100,34300,34700,35300,35400,35411,35412,35421,35422,38300,38600,38700)        "
@@ -135,10 +135,10 @@ shp2gpkg()
 		dbg "db:$db Xarea:$Xarea label:$label label3:$label3 shp:$shp"
 		if [ ! -f "$resultfile"  ] ; then # create
         		dbg ogr2ogr -f "GPKG" "$resultfile" "$shp" -nln "$db" 
-        		ogr2ogr -f "GPKG" "$resultfile" "$shp" -nln "$db" 2>/dev/null
+        		ogr2ogr -f "GPKG" "$resultfile" "$shp" $quit -nln "$db" 2>/dev/null
 		else # append
         		dbg ogr2ogr -f "GPKG" "$resultfile" -append -update "$shp" -nln "$db" 
-        		ogr2ogr -f "GPKG" "$resultfile" -append -update "$shp" -nln "$db" 2>/dev/null
+        		ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp" -nln "$db" 2>/dev/null
 		fi
 	done 
 
@@ -148,15 +148,15 @@ shp2gpkg()
 		
 		str=$(getbase "$destfile" ".gpkg")
 		tablename=${str##*.}
-		ogrinfo "$destfile" -sql "ALTER TABLE $tablename ADD COLUMN symbol integer"
-		ogrinfo "$destfile" -sql "ALTER TABLE $tablename ADD COLUMN angle character(254)"
+		ogrinfo "$destfile" $quit -sql "ALTER TABLE $tablename ADD COLUMN symbol integer"
+		ogrinfo "$destfile" $quit -sql "ALTER TABLE $tablename ADD COLUMN angle character(254)"
 
-		ogrinfo  "$destfile" -dialect SQLite -sql "
+		ogrinfo  "$destfile" $quit -dialect SQLite -sql "
                 	UPDATE  $tablename
                 	SET symbol=luokka
                 	"
 		# update angle
-		ogrinfo  "$destfile"   -dialect SQLite -sql "
+		ogrinfo  "$destfile"   $quit -dialect SQLite -sql "
           		UPDATE  $tablename
                 		SET angle=CAST(SUUNTA*1.0/10000.0/3.14159*180.0  AS  character(254) )
           		WHERE SUUNTA IS NOT NULL
@@ -187,6 +187,7 @@ outputdir="sourcedata"
 png=1
 do_shp2gpkg=1
 tiledir=1
+quit=" -q "
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -224,6 +225,8 @@ mkdir -p "$outputdir"
 TEMP="tmp/$id"
 mkdir -p "$TEMP"
 
+((DEBUG>0)) && quit=" "
+
 for area in $*
 do
 	[ "$area" = "" ] && continue
@@ -233,9 +236,9 @@ do
 	mkdir -p "$TEMP" "$outdir"
 	read name url x <<<$(grep "^$area.shp.zip" $AWMML/xmldata/maastotietokannat.all.txt  )
 	dbg "name:$name url:$url"
-	dbg wget --no-check-certificate -O "$outdir/$area.shp.zip" "$apihost$url?api_key=$apikey" 
+	dbg wget $quit --no-check-certificate -O "$outdir/$area.shp.zip" "$apihost$url?api_key=$apikey" 
 	#echo wget --no-check-certificate -O "$outdir/$area.shp.zip" "$apihost$url?api_key=$apikey"  > tmp.$area.wget
-	wget --no-check-certificate -O "$outdir/$area.shp.zip" "$apihost$url?api_key=$apikey" 
+	wget $quit --no-check-certificate -O "$outdir/$area.shp.zip" "$apihost$url?api_key=$apikey" 
 	dbg "done $outdir/$area.shp.zip"
 
 	[ ! -f "$outdir/$area.shp.zip" ] && continue
@@ -252,10 +255,10 @@ do
 		pgwurl=${xpgwurl//|//}
 		dbg "png:$pngurl"
 		dbg "pwf:$pgwurl"
-		dbg wget --no-check-certificate -O "$outdir/$area.png" "$apihost$pngurl?api_key=$apikey" 
-		wget --no-check-certificate -O "$outdir/$area.png" "$apihost$pngurl?api_key=$apikey" 
-		dbg wget --no-check-certificate -O "$outdir/$area.pgw" "$apihost$pgwurl?api_key=$apikey" 
-		wget --no-check-certificate -O "$outdir/$area.pgw" "$apihost$pgwurl?api_key=$apikey" 
+		dbg wget $quit --no-check-certificate -O "$outdir/$area.png" "$apihost$pngurl?api_key=$apikey" 
+		wget $quit --no-check-certificate -O "$outdir/$area.png" "$apihost$pngurl?api_key=$apikey" 
+		dbg wget $quit --no-check-certificate -O "$outdir/$area.pgw" "$apihost$pgwurl?api_key=$apikey" 
+		wget $quit --no-check-certificate -O "$outdir/$area.pgw" "$apihost$pgwurl?api_key=$apikey" 
 	fi
 
 	(( do_shp2gpkg < 1 )) && continue
