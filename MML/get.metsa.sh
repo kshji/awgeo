@@ -1,7 +1,9 @@
 #!/usr/local/bin/awsh
 # get.metsa.sh
 # metsahallitus metsankayttoilmoitukset
-# $AWMML/get.metsa.sh -y "2020" -o "metsa"  "N5424L"
+# $AWMML/get.metsa.sh -y "2020" -o "metsa" -t haknimi N5424L      # => metsa/haknimi
+# $AWMML/get.metsa.sh -y "2020" -o "metsa"  N5424L 		  # => metsa/N5424L
+# $AWMML/get.metsa.sh -y "2020" -o "metsa"  N5424A N5424B	  # => metsa/N5424L
 
 BINDIR="${PRG%/*}"
 [ "$PRG" = "$BINDIR" ] && BINDIR="." # - same dir as program
@@ -59,7 +61,7 @@ get_metsa()
 		outfile="$Xarea.metsa.$file.gpkg.zip"
         	dbg "mastertile:$mastertile file:$file $outfile url:$url"
         	dbg wget --no-check-certificate -O "$outdir/$outfile" "$metsaurl$url?api_key=$apikey"
-        	wget --no-check-certificate -O "$TEMP/$outfile" "$metsaurl$url?api_key=$apikey"
+        	wget $quit --no-check-certificate -O "$TEMP/$outfile" "$metsaurl$url?api_key=$apikey"
 		unzip -ojq -d "$TEMP" "$TEMP/$outfile"
         	[ ! -f "$TEMP/$outfile" ] && exit 8
 		((DEBUG<1)) && rm -f "$TEMP/$outfile" 2>/dev/null
@@ -85,10 +87,10 @@ get_metsa()
 	destfile="$Xarea.$tablename.gpkg"
 	#ogrmerge.py -skipfailures -single -nln forestusedeclaration  -o merged.gpkg M*.gpkg 2>/dev/null
 	dbg ogrmerge.py -f 'GPKG' -skipfailures -single -nln "$tablename" -o $Xarea.metsa.gpkg M*.gpkg   
-	ogrmerge.py -f 'GPKG' -skipfailures -single -nln "$tablename" -o $Xarea.metsa.gpkg M*.gpkg   2>/dev/null
+	ogrmerge.py -f 'GPKG' $quit -skipfailures -single -nln "$tablename" -o $Xarea.metsa.gpkg M*.gpkg   2>/dev/null
 
-	ogrinfo "$destfile" -sql "ALTER TABLE $tablename ADD COLUMN symbol text" 
-        ogrinfo  "$destfile" -dialect SQLite -sql "
+	ogrinfo "$destfile" $quit -sql "ALTER TABLE $tablename ADD COLUMN symbol text" 
+        ogrinfo  "$destfile" $quit -dialect SQLite -sql "
                 UPDATE  $tablename
                 SET symbol=cast(98000+cuttingrealizationpractice AS text)
 		WHERE standarrivaldate>='$startyear-01-01'
@@ -115,6 +117,8 @@ outputdir="sourcedata"
 startyear=$(date +'%Y')
 ((startyear=startyear-3)) # default last 3 years
 dounzip=1
+quit=" -q "
+tilename=""
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -138,6 +142,7 @@ do
                 -o) outputdir="$2" ; shift ;;
                 -y) startyear="$2" ; shift ;;
 		-u) dounzip="$2" ; shift ;;
+		-t) tilename="$2" ; shift ;;
                 -*) usage; exit 4 ;;
                 *) break ;;
         esac
@@ -147,6 +152,8 @@ done
 # files 1-n
 [ $# -lt 1 ] && usage && exit 5
 
+
+(( DEBUG > 0 )) && quit=" "
 id=$$ # process number = unique id for tempfiles
 TEMP="$PWD/tmp/$id"
 mkdir -p "$TEMP" "$outputdir"
@@ -155,7 +162,8 @@ for metsa in $*
 do
 	dbg "get_metsa $metsa"
 	outdir="$outputdir/$metsa"
-	mkdir -p "$output" "$outdir"
+	[ "$tilename" != "" ] && outdir="$outputdir/$tilename"
+	mkdir -p "$outputdir" "$outdir"
 	get_metsa "$metsa"
 done
 
