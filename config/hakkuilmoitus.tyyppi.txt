@@ -1,0 +1,27 @@
+symboli lahdedatassa gptk symbol: 98100 + 
+cuttingrealizationpractice	1	Ylispuiden poisto
+cuttingrealizationpractice	2	Ensiharvennus
+cuttingrealizationpractice	3	Harvennushakkuu
+cuttingrealizationpractice	4	Kaistalehakkuu
+cuttingrealizationpractice	5	Avohakkuu
+cuttingrealizationpractice	6	Verhopuuhakkuu
+cuttingrealizationpractice	7	Suojuspuuhakkuu
+cuttingrealizationpractice	8	Siemenpuuhakkuu
+cuttingrealizationpractice	9	Erityishakkuu, maankäyttömuodon muutokseen johtava.
+cuttingrealizationpractice	10	Asutukseen hakkuu, paperi-ilmoitus, vanha koodi.
+cuttingrealizationpractice	11	Erityishakkuu, Metsälain 5b §:n mukainen
+cuttingrealizationpractice	12	Poimintaluonteinen kasvatushakkuu
+cuttingrealizationpractice	13	Kasvatushakkuu, paperi-ilmoitukset.
+cuttingrealizationpractice	14	Muu hakkuu tai toimenpide
+cuttingrealizationpractice	15	Ojalinjaksi hakkuu, paperi-ilmoitus, vanha koodi.
+cuttingrealizationpractice	16	Pelloksi hakkuu, paperi-ilmoitus, vanha koodi.
+cuttingrealizationpractice	17	Pienaukkohakkuu
+cuttingrealizationpractice	18	Tielinjaksi hakkuu, paperi-ilmoitus, vanha koodi.
+cuttingrealizationpractice	19	Uudistamishakkuu, paperi-ilmoitukset.
+cuttingrealizationpractice	20	Myrskytuhoalue, kasvatushakkuu
+cuttingrealizationpractice	21	Myrskytuhoalue, uudistamishakkuu
+cuttingrealizationpractice	22	Hyönteistuhoalue, uudistamishakkuu
+cuttingrealizationpractice	23	Hyönteistuhoalue, kasvatushakkuu
+cuttingrealizationpractice	24	Muu metsätuhoalue, kasvatushakkuu
+cuttingrealizationpractice	25	Muu metsätuhoalue, uudistamishakkuu
+
