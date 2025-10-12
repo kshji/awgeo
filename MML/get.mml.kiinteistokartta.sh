@@ -52,7 +52,7 @@ get_map()
         parts="$last"  # only one needed, not all 4 (A-H)
         [ "$last" = "L" ] && parts="A B C D"
         [ "$last" = "R" ] && parts="E F G H"
-        dbg "parts:$parts outdir:$outdir"
+        dbg "    parts:$parts outdir:$outdir"
 
 
         for part in $parts
@@ -61,8 +61,8 @@ get_map()
         	dbg grep "^$file.zip" $AWMML/xmldata/kiinteistorek/kiintrek.all.txt
 		# could be more than one, select newest (sort)
         	read name moddate url x <<<$(grep "^$file.zip" $AWMML/xmldata/kiinteistorek/kiintrek.all.txt | sort  -t "/" -nrk 5,5  )
-        	dbg "name:$name url:$url"
-        	dbg wget --no-check-certificate -O $outdir/$file.zip $apihost$url?api_key=$apikey
+        	dbg "    name:$name url:$url"
+        	dbg "    " wget $quit --no-check-certificate -O $outdir/$file.zip $apihost$url?api_key=$apikey
         	((DEBUG<2)) && wget --no-check-certificate -O "$outdir/$file.zip" "$apihost$url?api_key=$apikey"
         	[ ! -f "$outdir/$file.zip" ] && continue
 		((dounzip > 0 )) && unzip -qq -o "$outdir/$file.zip" -d "$outdir"
@@ -79,6 +79,7 @@ get_map()
 url=""
 outputdir="sourcedata"
 dounzip=1
+quit=" -q "
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -109,6 +110,8 @@ done
 
 # files 1-n
 [ $# -lt 1 ] && usage && exit 5
+
+((DEBUG>0)) && quit=" "
 
 mkdir -p "$outputdir"
 
