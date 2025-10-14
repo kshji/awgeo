@@ -158,13 +158,10 @@ dxf_symbol()
 
         cat <<ENDBLOCK
 POINT
- 5
 100
 AcDbEntity
   8
 $Xluokka
-100
-AcDbMText
  10
 $Xlat
  20
@@ -182,6 +179,7 @@ csvin=""
 dxfout="out.dxf"
 dxftype=""
 DEBUG=0
+export LC_NUMERIC=C
 
 while [ $# -gt 0 ]
 do
@@ -219,6 +217,7 @@ dxf_begin
 
 dxf_block_begin
 
+
 mmtextcnt=27
 while IFS=";" read line
 do
@@ -240,10 +239,11 @@ do
 	read x lat lon <<<$GEOMETRY
 	IFS="$oifs"
 	((DEBUG>1)) && dbg "     $lat $lon" >&2
+	ANGLE2=$(printf "%.2f" $ANGLE)
 	case "$dxftype" in
-		t) dxf_text "$SYMBOL" "$ANGLE" "$lat" "$lon" "$TEXT" "$mmtextcnt"
+		t) dxf_text "$SYMBOL" "$ANGLE2" "$lat" "$lon" "$TEXT" "$mmtextcnt"
 		   ;;
-		s) dxf_symbol "$SYMBOL" "$ANGLE" "$lat" "$lon" "$mmtextcnt"
+		s) dxf_symbol "$SYMBOL" "$ANGLE2" "$lat" "$lon" "$mmtextcnt"
 		   ;;
 	esac
 	((mmtextcnt ++))
