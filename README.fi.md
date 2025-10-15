@@ -281,8 +281,8 @@ python3 rotate.angle.py source.tif  kulma rotated.tif
 # kulma on +/- asteita
 ```
 
-### Poista geokoordinaatuiosto GeoTIFF tiedostosta, lopputulos pelkkä TIF-kuva
-Geodata tarvitaan poistaa GeoTIFF tiedosta, tarvitaan tavalline TIF kuvatiedosto ilman paikkatietoa.
+### Poista geokoordinaatisto GeoTIFF tiedostosta, lopputulos pelkkä TIF-kuva
+Geodata tarvitaan poistaa GeoTIFF tiedosta, tarvitaan tavallinen TIF kuvatiedosto ilman paikkatietoa.
 
 ```sh
 gdal_translate -of GTiff -co PROFILE=BASELINE input.tif output.tif
