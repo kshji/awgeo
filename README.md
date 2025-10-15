@@ -1,7 +1,6 @@
 # AwGeo - geo- and mappingtools
 
-<img src="../../blob/master/examples/result1.png" width="50%" height="50%">
-<img src="../../blob/master/examples/awot_mml2ocad.png" width="50%" height="50%">
+<img src="../../blob/master/examples/result1.png" width="50%" height="50%"><img src="../../blob/master/examples/awot_mml2ocad.png" width="30%" height="30%">
 
 [Sama ohje suomeksi](../../blob/master/README.fi.md)
 
