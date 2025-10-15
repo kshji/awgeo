@@ -1,6 +1,7 @@
 # AwGeo - Apuvälineitä paikkatiedon käsittelyyn ja kartoitukseen 
 
 <img src="../../blob/master/examples/result1.png" width="50%" height="50%">
+<img src="../../blob/master/examples/awot_mml2ocad.png" width="50%" height="50%">
 
 Olen jokseenkin kokenut suunnistuksen toimija. Nuorempana kilpailijana ihan tosissaan treenaten ja kilpaillen.
 Sittemmin yhtenä vetäjistä Kalevan Rastin huippusuunnistuksessa (199?-2009). Ocadin kanssa vuodesta 1993 alkaen.
