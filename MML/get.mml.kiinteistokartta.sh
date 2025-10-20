@@ -5,6 +5,7 @@
 # joko 4 karttaa L/R aluekoodista tai suoraan tietty A-D tai E-H kartta
 # get.mml.kiinteistokartta.sh -o mml N5424L
 # get.mml.kiinteistokartta.sh -o mml -u 0 N5424L # not unzip
+# get.mml.kiinteistokartta.sh -o mml -u 0 --mapname somelabel N5424L # not unzip
 #
 
 BINDIR="${PRG%/*}"
@@ -20,6 +21,7 @@ usage()
         cat <<EOF >&2
 usage:$PRG [ -o outdir ] [ -d 0|1 ] tilename [ tilename ... ]
         -o outdir # default is $outputdir/tilename
+	--mapname mapnamestr # default is nothing
         -d 0|1    # debug, default 0
         tilenames  # list of tiles ex. P5114A P5114B
 EOF
@@ -63,7 +65,7 @@ get_map()
         	read name moddate url x <<<$(grep "^$file.zip" $AWMML/xmldata/kiinteistorek/kiintrek.all.txt | sort  -t "/" -nrk 5,5  )
         	dbg "    name:$name url:$url"
         	dbg "    " wget $quit --no-check-certificate -O $outdir/$file.zip $apihost$url?api_key=$apikey
-        	((DEBUG<2)) && wget --no-check-certificate -O "$outdir/$file.zip" "$apihost$url?api_key=$apikey"
+        	((DEBUG<2)) && wget $quit --no-check-certificate -O "$outdir/$file.zip" "$apihost$url?api_key=$apikey"
         	[ ! -f "$outdir/$file.zip" ] && continue
 		((dounzip > 0 )) && unzip -qq -o "$outdir/$file.zip" -d "$outdir"
 		((dounzip > 0 )) && rm -f "$outdir/$file.zip"
@@ -80,6 +82,7 @@ url=""
 outputdir="sourcedata"
 dounzip=1
 quit=" -q "
+mapname=""
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -102,6 +105,8 @@ do
                 -d) DEBUG="$2" ; shift ;;
                 -o) outputdir="$2" ; shift ;;
                 -u) dounzip="$2" ; shift ;;
+                -m|--mapname) mapname="$2" ; shift ;;
+                -t) xstr="$2" ; shift ;;  # not using in this script
                 -*) usage; exit 4 ;;
                 *) break ;;
         esac

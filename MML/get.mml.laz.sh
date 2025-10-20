@@ -1,5 +1,6 @@
 #!/usr/local/bin/awsh
-# get.mml.laz.sh
+# $AWMML/get.mml.laz.sh
+# $AWMML/get.mml.laz.sh N5424L  # outputdir/N5424L dir include laz-files
 
 BINDIR="${PRG%/*}"
 [ "$PRG" = "$BINDIR" ] && BINDIR="." # - same dir as program

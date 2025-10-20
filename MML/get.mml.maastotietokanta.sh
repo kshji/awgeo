@@ -8,6 +8,7 @@
 #	- also convert to the gpkg version = faster to use
 # get.mml.maastotietokanta.sh -d 1 -p 0 N5424L N5424R
 # get.mml.maastotietokanta.sh -d 1 -p 0 -g 0 -t 0 -o outdir N5424L  N5424R
+# get.mml.maastotietokanta.sh -d 1 -p 0 -g 0 -t 0 -o outdir --mapname somename N5424L  N5424R
 #
 
 PRG="$0"
@@ -26,6 +27,7 @@ usage:$PRG [ -o outdir ] [ -p 0|1 ] [ -d 0|1 ] tilename [ tilename ... ]
 	-p 0|1    # get also area png, default 1
 	-g 0|1    # build gpkg version, default 1
 	-t 0|1    # 0 = outdir/tilename 1 = outdir
+	--mapname mapnamelabel # default nothing
 	-d 0|1    # debug, default 0
 	tilenames  # list of tiles ex. P5114L P5114R
 EOF
@@ -188,6 +190,7 @@ png=1
 do_shp2gpkg=1
 tiledir=1
 quit=" -q "
+mapname=""
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -212,6 +215,7 @@ do
 		-p) png="$2" ; shift ;;
 		-g) do_shp2gpkg="$2" ; shift ;;
 		-t) tiledir="$2" ; shift ;;
+		-m|--mapname) mapname="$2" ; shift ;;
 		-*) usage; exit 4 ;;
 		*) break ;;
 	esac

@@ -1,9 +1,11 @@
 #!/usr/local/bin/awsh
 # get.metsa.sh
 # metsahallitus metsankayttoilmoitukset
-# $AWMML/get.metsa.sh -y "2020" -o "metsa" -t 0 N5424L      # => metsa
+# $AWMML/get.metsa.sh -y "2020"  N5424L 		  # => sourcedata/N5424L
+# $AWMML/get.metsa.sh -y "2020" -o "metsa" -t 0 N5424L      # => metsa   = not use tile subdir
 # $AWMML/get.metsa.sh -y "2020" -o "metsa"  N5424L 		  # => metsa/N5424L
 # $AWMML/get.metsa.sh -y "2020" -o "metsa"  N5424A N5424B	  # => metsa/N5424L
+# $AWMML/get.metsa.sh -y "2020" -o "metsa"  --mapname "jokunimi" N5424A N5424B	  # => metsa/N5424L
 
 BINDIR="${PRG%/*}"
 [ "$PRG" = "$BINDIR" ] && BINDIR="." # - same dir as program
@@ -18,6 +20,7 @@ usage()
         cat <<EOF >&2
 usage:$PRG [ -o outdir ] [ -d 0|1 ] tilename [ tilename ... ]
         -o outdir # default is $outdir
+        --mapname mapname # default is nothing
         -d 0|1    # debug, default 0
         tilenames  # list of tiles ex. P5114A P5114B
 EOF
@@ -47,6 +50,11 @@ get_metsa()
         # could be more than one, select newest (sort)
         mastertile=${Xarea:0:5}
         last=${Xarea:5:1}
+	masterarea=$Xarea
+	case "$last" in
+		A|B|C|D) masterarea="${mastertile}L" ;;
+		E|F|G|H) masterarea="${mastertile}R" ;;
+	esac
 	# 
 	parts="$last"  # only one needed, not all 4 (A-H)
 	[ "$last" = "L" ] && parts="A B C D"
@@ -86,10 +94,11 @@ get_metsa()
 
 
 	tablename="metsa" # rename forestusedeclaration to metsa
+	#destfile="$masterarea.$tablename.gpkg"
 	destfile="$Xarea.$tablename.gpkg"
 	#ogrmerge.py -skipfailures -single -nln forestusedeclaration  -o merged.gpkg M*.gpkg 2>/dev/null
-	dbg ogrmerge.py -f 'GPKG' -skipfailures -single -nln "$tablename" -o $Xarea.metsa.gpkg M*.gpkg   
-	ogrmerge.py -f 'GPKG' $quit -skipfailures -single -nln "$tablename" -o $Xarea.metsa.gpkg M*.gpkg   2>/dev/null
+	dbg ogrmerge.py -f 'GPKG' $quit -skipfailures -single -nln "$tablename" -o "$destfile" M*.gpkg   2>/dev/null
+	ogrmerge.py -f 'GPKG' $quit -skipfailures -single -nln "$tablename" -o "$destfile" M*.gpkg   2>/dev/null
 
 	ogrinfo "$destfile" $quit -sql "ALTER TABLE $tablename ADD COLUMN symbol text" 
         ogrinfo  "$destfile" $quit -dialect SQLite -sql "
@@ -97,11 +106,16 @@ get_metsa()
                 SET symbol=cast(98000+cuttingrealizationpractice AS text)
 		WHERE standarrivaldate>='$startyear-01-01'
                 "
-	#dbg zip "$outdir"/$Xarea.metsa.gpkg.zip $Xarea.metsa.gpkg
-	#zip $Xarea.metsa.gpkg.zip $Xarea.metsa.gpkg
+        ogrinfo  "$destfile" $quit -dialect SQLite -sql "
+                UPDATE  $tablename
+                SET symbol=cast(98000+cuttingrealizationpractice AS text)
+		WHERE standarrivaldate>='$startyear-01-01'
+                "
+	# ei tarvita - no needed
+	ogrinfo  "$destfile" $quit -sql "DELETE FROM $tablename WHERE symbol='' OR symbol IS NULL"
 
 	cd $XNOW
-	#cp -f "$TEMP"/$Xarea.metsa.gpkg.zip "$outdir" 2>/dev/null
+	#cp -f "$TEMP"/"$destfile" "$outdir" 2>/dev/null
 	dbg cp -f "$TEMP"/"$destfile" "$outdir" 
 	cp -f "$TEMP"/"$destfile" "$outdir" 2>/dev/null
 	((DEBUG<1)) && [ -d "$TEMP" ] && rm -rf "$TEMP"
@@ -121,6 +135,7 @@ startyear=$(date +'%Y')
 dounzip=1
 quit=" -q "
 tiledir=1
+mapname=""
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -145,6 +160,7 @@ do
                 -y) startyear="$2" ; shift ;;
 		-u) dounzip="$2" ; shift ;;
 		-t) tiledir="$2" ; shift ;;
+		-m|--mapname) mapname="$2" ; shift ;;
                 -*) usage; exit 4 ;;
                 *) break ;;
         esac
@@ -164,9 +180,19 @@ for metsa in $*
 do
 	dbg "get_metsa $metsa"
 	outdir="$outputdir"
-	((tiledir>0)) && outdir="$outputdir/$metsa"
+	roottile=${metsa:0:5}
+	tiledirectory=$metsa
+	# ei yriteta niputtaa. Jos pyytaa jokaisen erikseen, niin annetaan jokainen  erikseen
+	# ainoastaan kohdehakemisto roottile eli jos pyydetaan A, B, C tai D niin hak. on L ja E,F,G, H se on R
+	# noudattaa maastokartan tilejakoa
+	last=${metsa:5:1}
+	case "$last"  in
+                A|B|C|D) tiledirectory="${roottile}L" ;;
+                E|F|G|H) tiledirectory="${roottile}R" ;;
+        esac
+	((tiledir>0)) && outdir="$outputdir/$tiledirectory"
 	mkdir -p "$outputdir" "$outdir"
-	get_metsa "$metsa"
+	get_metsa "$metsa" "$outdir"
 done
 
 dbg "done:$outputdir"
