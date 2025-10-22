@@ -1,19 +1,18 @@
 #!/usr/local/bin/awsh
 # mml2ocad.sh
-#
+# ver 2025-10-21
 # Copyright 2025 Karjalan ATK-Awot Oy
 # Jukka Inkeri
 # https://github.com/kshji/awgeo
 # https://awot.fi
 #
-# Convert MML SHP files to the DXF files for importing to the Ocad
+# $AWGEODEV/mml2ocad.sh --angle -10.6 -a N5424L
+# $AWGEODEV/mml2ocad.sh --angle -10.6 -a N5424L -o mmlkoe  # output to dir mmlkoe/N5424L
+# $AWGEODEV/mml2ocad.sh --angle -10.6 -a N5424L -m mapname -o mmlkoe  # output to dir mmlkoe/N5424L
 #
-# $AWGEO/get.mmlshp2ocad.sh -a P5313L
-# - input default: dir sourcedata/P5313L include P5313L.shp.zip or if not, it will get if you have $AWMML defined
-# - output default: mml/P5313L
 #
 # You can set in ja out dirs
-# mml2ocad.sh -y 2022 -a P5313L -i sourcedata/ -o myoutput/5313L
+# mml2ocad.sh -y 2022 -a N5424L -i sourcedata -o mml/N5424L
 #
 # Do all:
 # mml2ocad.sh -y 2022 -a 5313L
@@ -21,6 +20,13 @@
 # - make dxf
 # - all input are in the sourcedata
 # - all result in the mml/area
+#
+# After this cmd you can process lidar data ex.
+# $AWGEO/pullauta.run.sh all --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
+#
+# after those steps:
+#    - MML data dir: mml/N5424L
+#    - pullautin data dir: pullautettu/N5424L
 #
 
 PRG="$0"
@@ -34,18 +40,34 @@ DEBUG=0
 dbg()
 {
         ((DEBUG<1)) && return
-        echo "$PRG dbg: $*" 
+        echo "$PRG dbg: $*"  >&2
+}
+
+#########################################################################
+err()
+{
+        ((DEBUG<1)) && return
+        echo "$PRG err: $*"  >&2
+}
+
+#########################################################################
+msg()
+{
+        ((DEBUG>0)) && return
+        echo "$*"  >&2
 }
 
 #########################################################################
 usage()
 {
  echo "
-        usage:$0 -a arealabel angle [ -i inputdir ] [ -o outputdir ] [ -d 0|1 ]
+        usage:$0 -a arealabel [ --angle ] [ -m mapname ] [ -i inputdir ] [ -o outputdir ] [ -d 0|1 ]
         -o destdir , default is mml/arealabel
 	-i inputdir, include arealabel.shp.zip, default is $inputdir
 	-s save temp files, default 0
 	-c crtfile, default is $crtfile
+	--tiledir 0|1   , subdir using tilename or not
+	-m mapname # add extra element to the output files
         -d 0|1 , debug, def 0
         " >&2
 }
@@ -55,6 +77,8 @@ get_metsa()
 {
 	Xarea="$1"
 	Xin="$2"
+	dbg "get_metsa BEGIN Xarea:$Xarea Xin:$Xin"
+	#Xmapname="$3"
 	#Xin=${Xin%/*}
 	# remove area label from dir
 	Xin=${Xin/\/${Xarea}/}
@@ -62,8 +86,14 @@ get_metsa()
 	[ ! -f $AWMML/get.metsa.sh ] && echo "no program $AWMML/get.metsa.sh" >&2 exit 10
 	[ "$Xin" = "" ] && echo "not set inputdir" >&2 && return 1
 	[ "$Xarea" = "" ] && echo "not set areacode" >&2 && return 1
+	#((tiledir>0)) && Xin="$Xin"/"$Xarea"
 	mkdir -p "$Xin"
-	$AWMML/get.metsa.sh -y "$year" -o "$Xin"  "$Xarea"
+	#dbg $AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" --mapname "$Xmapname" "$Xarea"
+	#msg $AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" --mapname "$Xmapname" "$Xarea"
+	#$AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" --mapname "$Xmapname" "$Xarea"
+	msg $AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" "$Xarea"
+	dbg $AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" "$Xarea"
+	$AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" "$Xarea"
 }
 
 #########################################################################
@@ -71,15 +101,21 @@ get_mml_kiinteisto()
 {
 	Xarea="$1"
 	Xin="$2"
+	Xmapname="$3"
 	#Xin=${Xin%/*}
 	# remove area label from dir
 	Xin=${Xin/\/${Xarea}/}
 	[ "$AWMML" = "" ] && echo "no \$AWMML env variable">&2 && exit 9
-	[ ! -f $AWMML/get.mml.kiinteisto.sh ] && echo "no program $AWMML/get.kiinteisto.sh" >&2 exit 10
+	[ ! -f $AWMML/get.mml.kiinteistokartta.sh ] && echo "no program $AWMML/get.kiinteisto.sh" >&2 exit 10
 	[ "$Xin" = "" ] && echo "not set inputdir" >&2 && return 1
 	[ "$Xarea" = "" ] && echo "not set areacode" >&2 && return 1
+	Xoutdir="$Xin"
+	((tiledir>0)) && Xoutdir="$Xin"/"$Xarea"
 	mkdir -p "$Xin"
-	$AWMML/get.mml.kiinteisto.sh -o "$Xin"  "$Xarea"
+	#$AWMML/get.mml.kiinteisto.sh -o "$Xin"  "$Xarea"
+	dbg "$AWMML/get.mml.kiinteistokartta.sh -u 0 -o $Xoutdir  $Xarea"
+	msg "$AWMML/get.mml.kiinteistokartta.sh -u 0 -o $Xoutdir  $Xarea"
+	$AWMML/get.mml.kiinteistokartta.sh -u 0 -o "$Xoutdir"  --mapname "$Xmapname" "$Xarea"
 }
 
 #########################################################################
@@ -88,6 +124,7 @@ get_mml_shp()
 	# get_mml_shp "$arealabel" "$inputdir"
 	Xarea="$1"
 	Xin="$2"
+	Xmapname="$3"
 	#Xin=${Xin%/*}
 	# remove area label from dir
 	Xin=${Xin/\/${Xarea}/}
@@ -96,7 +133,10 @@ get_mml_shp()
 	[ "$Xin" = "" ] && echo "not set inputdir" >&2 && return 1
 	[ "$Xarea" = "" ] && echo "not set areacode" >&2 && return 1
 	mkdir -p "$Xin"
-	$AWMML/get.mml.maastotietokanta.sh -o "$Xin"  "$Xarea"
+	####$AWMML/get.mml.maastotietokanta.sh -o "$Xin"  "$Xarea"
+	dbg "$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t $tiledir -o $Xin  $Xarea"
+	msg "$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t $tiledir -o $Xin  $Xarea"
+	$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t "$tiledir" -o "$Xin"  --mapname "$Xmapname" "$Xarea"
 }
 #########################################################################
 # MAIN
@@ -105,28 +145,33 @@ get_mml_shp()
 DXF_ENCODING=LATIN1
 export DXF_ENCODING
 
-crtfile=$AWGEO/config/FIshp2ISOM2017.crt
-ocdtemplate="$AWGEO/config/awot_ocadisom2017_mml.ocd"
+crtfile=$AWGEO/config/FIshp2ISOM2017.v2.crt
+ocdtemplate="$AWGEO/config/awot_ocadisom2017_mml.v2.ocd"
 outputdir=""
 arealabel=""
 inputdir=""
 save=0
 year=$(date +'%Y')
+tiledir=1
+
 (( year=year-3 )) # default 3 years
 
-angle="11.0"
+angle="0"
+mapname=""
 
 while [ $# -gt 0 ]
 do
 	arg="$1"
 	case "$arg" in
 		-d) DEBUG="$2" ; shift ;;
+		--angle) angle="$2" ; shift ;;
 		-a) arealabel="$2" ; shift
-			angle="$3" ; shift
                         [ "$outputdir" = "" ] && outputdir="mml/$arealabel"
                         [ "$inputdir" = "" ] && inputdir="sourcedata/$arealabel"
                         ;;
                 -o) outputdir="$2" ; shift ;;
+		--tiledir) tiledir="$2" ; shift ;;
+		-m|--mapname) mapname="$2" ; shift ;;
                 -t) ocdtemplate="$2" ; shift ;;
                 -y) year="$2" ; shift ;;
 		-s) save=1 ;;
@@ -136,12 +181,15 @@ do
 	shift
 done
 
+# mapname used only to make outfiles to outdir !!!
+[ "$mapname" != "" ] && mapname="$mapname."
+
 datadir="data/$arealabel"
 dbg "inputdir:$inputdir datadir:$datadir outputdir:$outputdir"
 [ "$arealabel" = "" ] && usage && exit 1
-[ "$inputdir" = "" ] && usage && exit 2
-[ ! -d "$inputdir" = "" ] && usage && exit 2
-[ ! -f "$crtfile" ] && echo "no crtfile:$crtfile" >&2 && exit 4
+#[ "$inputdir" = "" ] && usage && exit 2
+#[ ! -d "$inputdir" = "" ] && usage && exit 2
+#[ ! -f "$crtfile" ] && echo "no crtfile:$crtfile" >&2 && exit 4
 
 dbg mkdir -p "$inputdir" "$outputdir"
 mkdir -p "$inputdir" "$outputdir"
@@ -149,56 +197,31 @@ mkdir -p "$inputdir" "$outputdir"
 ((DEBUG>2)) && exit 0
 # get mml shp, if not already exists
 # even it's new version, source is shp.zip
-[ ! -f "$inputdir/$arealabel.shp.zip" ] && get_mml_shp "$arealabel" "$inputdir"
+[ ! -f "$inputdir/$arealabel.shp.zip" ] && get_mml_shp "$arealabel" "$inputdir" #"$mapname"
 # not lucky ...
 [ ! -f "$inputdir/$arealabel.shp.zip" ] && echo "no input file:$inputdir/$arealabel.shp.zip" >&2 && exit 5
 
 # get mml kiinteisto, if not already exists
-[ ! -f "$inputdir/$arealabel.kiinteistoraja.gpkg" ] && get_mml_kiinteisto "$arealabel" "$inputdir"
+# ei ole nykyisin ikina ...
+[ ! -f "$inputdir/$arealabel.kiinteistoraja.gpkg" ] && get_mml_kiinteisto "$arealabel" "$inputdir" #"$mapname"
 # get metsa, if not already exists
-[ ! -f "$inputdir/$arealabel.metsa.gpkg" ] && get_metsa "$arealabel" "$inputdir"
+[ ! -f "$inputdir/$arealabel.metsa.gpkg" ] && get_metsa "$arealabel" "$inputdir" #"$mapname"
 
 # if we have also area map from MML, copy to the output
-[ -f "$inputdir/$arealabel.png" ] && cp -f "$inputdir/$arealabel.png" "$outputdir/$arealabel.png" 2>/dev/null
-[ -f "$inputdir/$arealabel.pgw" ] && cp -f "$inputdir/$arealabel.pgw" "$outputdir/$arealabel.pgw" 2>/dev/null
+[ -f "$inputdir/$arealabel.png" ] && cp -f "$inputdir/$arealabel.png" "$outputdir/$mapname$arealabel.png" 2>/dev/null
+[ -f "$inputdir/$arealabel.pgw" ] && cp -f "$inputdir/$arealabel.pgw" "$outputdir/$mapname$arealabel.pgw" 2>/dev/null
 
-# remove old files if exists
-#rm -rf "$datadir" 2>/dev/null
 
-# org method was SHP => DXF
-# new method is gtkp => DXF
-#
-#
-# if exists then new version 
-gpkg_v_file="$inputdir/$arealabel.v.gpkg"
-
-if [ ! -f "$gpkg_v_file" ] ;then # old shp version
-	dbg "no $gpkg_v_file, use shp.zip"
-	$AWGEO/init_shp.sh -d $DEBUG -a "$arealabel" -o "$datadir" -i "$inputdir"  -d "$DEBUG"
-	mkdir -p "$datadir"
-	$AWGEO/shp2ocad.sh -a  "$arealabel" -i "$datadir" -o "$outputdir" -d "$DEBUG"
-else # new gpkg
-	dbg "we have new gpkg format $gpkg_v_file"
-fi
-
-saveflag=""
-((save>0)) && saveflag=" -s "
-
-# other materials? gpkg format rest of data
-# kiinteisto, metsa, maastotietokanta new format, ...
-# $AWGEO/gpkg2ocad.sh -a N5424L -i sourcedata -o mml/N5424L -d 1 -s
-$AWGEO/gpkg2ocad.sh -a  "$arealabel" -i "$inputdir" -o "$outputdir" -d "$DEBUG" $saveflag
-
-if (( save<1 )) ; then
-	# no save
-        rm -rf "$datadir" 2>/dev/null
-fi
-
+masterarea=${arealabel:0:4}
+# process input to output
+dbg "$AWGEODEV/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG $inputdir/${masterarea}*.*"
+msg "$AWGEODEV/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG $inputdir/${masterarea}*.*"
+$AWGEODEV/shpzip2gpkg.sh -t 0 -o "$outputdir" -a "$angle" -n "$arealabel" --mapname "$mapname" -d "$DEBUG" "$inputdir"/"${masterarea}"*.* 
 
 dbg "crtfile:$crtfile" 
 dbg "ocdtemplate:$ocdtemplate" 
 [ -f "$crtfile" ] && cp -f "$crtfile" "$outputdir" 2>/dev/null
-[ -f "$ocdtemplate" ] && cp -f "$ocdtemplate" "$outputdir"/$arealabel.mml.ocd 2>/dev/null
+[ -f "$ocdtemplate" ] && cp -f "$ocdtemplate" "$outputdir"/$mapname$arealabel.ocd 2>/dev/null
 
 echo "shp inputfiles dir:$inputdir"
 echo "gpkg inputfiles dir:$inputdir"
