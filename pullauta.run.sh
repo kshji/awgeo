@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # pullauta.run.sh
-VER=2025-10-19a
+VER=2025-10-22a
 #
 # Karjalan ATK-Awot Oy
 # Jukka Inkeri
@@ -20,6 +20,10 @@ VER=2025-10-19a
 # - northlineangle 11, intermediate curve 0.625
 #
 # $AWGEO/pullauta.run.sh --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
+#    also dem, spikefree, hillshade, ...:
+# $AWGEO/pullauta.run.sh all --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
+#
+# debug:
 # $AWGEO/pullauta.run.sh --in src/piha --out tulos/piha -a 10.6 -i 1.25 -z 3 -d 1
 #
 # Full AwGeo set:
@@ -489,6 +493,7 @@ press_enter()
 	echo -n "Enter:"
 	read Enter
 }
+
 ################################################################
 pullauta_this_set()
 {
@@ -496,7 +501,7 @@ pullauta_this_set()
 	 xfunc="pullauta_this_set"
 	 Xtilename="$1"
 	 dbg "$xfunc: start tilename:$Xtilename outdir:$outdir outputdir:$outputdir"
-	 # ex. outdir: tulos/piha  outputdir:output
+	 # ex. outdir: tulos/piha  outputdir usually:output
 
 	
 
@@ -524,8 +529,6 @@ pullauta_this_set()
          (( spikefree > 0 )) && process_spike_free
 
          (( mergepng > 0 )) && merge_png "$outputdir"
-	 # buildings:
-         #(( mergeblock > 0 )) && merge_block "$outputdir"
 
          # mv pullauta results to the user outdir
 	 dbg "   " rm -f "$outputdir"/"*basemap.*"   # not needed
@@ -542,7 +545,7 @@ pullauta_this_set()
 	 # return back to dir after merge
 	 mv -f "$outputdir"/.save/*.dxf "$outputdir" 2>/dev/null
 	 rm -rf "$outputdir"/.save 2>/dev/null
-	 ((DEBUG>1) && ls -1 $outputdir
+	 ((DEBUG>1)) && ls -1 $outputdir
 	 msg "________________________________________________"
          mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
 	 
