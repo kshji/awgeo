@@ -70,6 +70,19 @@
 -1 52103
 -1 52104
 -1 52210
+101.000 contour
+102.000 contour_index
+103.000 contour_intermed
+101.005 depression
+102.005 depression_index
+103.008 depression_intermed
+103.009 1010
+103.009 cont
+109.005 dotknoll
+109.006 uglydotknoll
+111.003 udepression
+111.004 uglyudepression
+-1 kayrat end
 524.000 45800
 530.000 45710
 523.000 45700
@@ -177,6 +190,10 @@
 203.101 34500
 -1 Jyrkanne
 -1 34400
+201.008 cliff4
+201.008 cliff3
+202.008 cliff2
+202.008 cliff1
 213.000 34300
 208.001 34200
 -1 Avokalliot
