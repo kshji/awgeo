@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # pullauta.run.sh
-VER=2025-10-22a
+VER=2025-10-22b
 #
 # Karjalan ATK-Awot Oy
 # Jukka Inkeri
@@ -21,7 +21,10 @@ VER=2025-10-22a
 #
 # $AWGEO/pullauta.run.sh --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
 #    also dem, spikefree, hillshade, ...:
-# $AWGEO/pullauta.run.sh all --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
+# $AWGEO/pullauta.run.sh --all --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
+#
+# use only laz, not shp
+#   --onlylaz or --noshp
 #
 # debug:
 # $AWGEO/pullauta.run.sh --in src/piha --out tulos/piha -a 10.6 -i 1.25 -z 3 -d 1
@@ -600,8 +603,8 @@ get_pullauta()
         mkdir -p "$inputdir" "$outputdir" "$outdir"
 
 	# copy source data to the pullautin input dir
-	# cp if exists ...
-        cp -f "$indir"/*.shp.zip "$inputdir" 2>/dev/null
+	# cp if exists ... and we like to use it
+        ((onlylaz < 1 )) && cp -f "$indir"/*.shp.zip "$inputdir" 2>/dev/null
 
 	# process all laz files using prosnum block size!! = concurrent process/tasks
 	tilename=""
@@ -675,6 +678,7 @@ contoursonly=0
 vegeonly=0
 greenshade=0.12  # 0.10 - 0.15 , 0.10 less green, 0.15 more green
 parse_config_only=0
+onlylaz=0
 
 
 while [ $# -gt 0 ]
@@ -694,6 +698,7 @@ do
 		--onlycountours) contoursonly=1 ;;
 		--onlyvege) vegeonly=1 ;;
 		--greenlevel) greenshade=$2 ; shift ;;
+		--onlylaz|--noshp) onlylaz=1 ; shift ;;
 		--vegererun ) vegererun=1 ;;
 		-s|--hillshade) hillshade=1 ;;
 		--spikefree) spikefree=1 ;;
