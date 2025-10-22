@@ -341,12 +341,16 @@ pullauta.run.sh -a 11
 <img src="../../blob/master/examples/rukko.sf.png" width="50%" height="50%"> Spike free
 
 <img src="../../blob/master/examples/rukko.color.fo.png" width="50%" height="50%"> DSM, first-only 
+
+<img src="../../blob/master/examples/rukko.color.fo2.png" width="50%" height="50%"> DSM, first-only 
+
  * white - ground, no vegetation
  * yello - low vegetation
  * dark green - low vegetation
  * light green - middle high trees
  * light orange - higher
  * read - highest trees
+
 
 <img src="../../blob/master/examples/rukko.vege.png" width="50%" height="50%"> Vegetation, pullautin done
 
