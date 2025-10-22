@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 # pullauta.run.sh
-VER=2024-11-29a
+VER=2025-10-19a
 #
 # Karjalan ATK-Awot Oy
 # Jukka Inkeri
 # https://github.com/kshji/awgeo
 # https://awot.fi
 # pullauttelija@awot.fi
+#
+# This script use new pullautin
+# https://github.com/rphlo/karttapullautin
+#
 #
 # default inputdatadir = sourcedata
 # default outputdatadir = pullautettu
@@ -15,25 +19,26 @@ VER=2024-11-29a
 # pullauta.run.sh -a 11 -i 0.625 -z 3
 # - northlineangle 11, intermediate curve 0.625
 #
-# pullauta.run.sh --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
+# $AWGEO/pullauta.run.sh --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
+# $AWGEO/pullauta.run.sh --in src/piha --out tulos/piha -a 10.6 -i 1.25 -z 3 -d 1
 #
 # Full AwGeo set:
-# pullauta.run.sh -a 11 -i 0.625 --hillshade -z 3 --spikefree 
+# $AWGEO/pullauta.run.sh -a 11 -i 0.625 --hillshade -z 3 --spikefree 
 #
 # or use option --all to process all features
 #
-# pullauta.run.sh --all -a 11 -i 1.25 --in inputdatadir --out outputdatadir
+# $AWGEO/pullauta.run.sh --all -a 11 -i 1.25 --in inputdatadir --out outputdatadir
 # - northlineangle 11, intermediate curve 0.625, hillshade using z=3
 # - also make spike free (sf.png) - generating spike free digital surface model
-# pullauta.run.sh --all -a 11 -i 1.25
+# $AWGEO/pullauta.run.sh --all -a 11 -i 1.25
 #
-# pullauta.run.sh --onlyhillshade  -s  -z 3
+# $AWGEO/pullauta.run.sh --onlyhillshade  -s  -z 3
 # - run only hillshade after basic run - use temp files
 #
-# pullauta.run.sh --onlyintermediate -i 0.625
+# $AWGEO/pullauta.run.sh --onlyintermediate -i 0.625
 # - run only intermediate curves (0.625 m) after basic run - use temp files
 #
-#  pullauta.run.sh -p
+#  $AWGEO/pullauta.run.sh -p
 #  - copy only pullauta.ini to the this directory
 #
 # config.pullauta.ini have to be:
@@ -45,6 +50,18 @@ VER=2024-11-29a
 # - result dir pullautettu
 # mkdir -p sourcedata pullautettu # before 1st run
 #
+############################
+# Before pullauta
+# Need to get MML shp and lidardata
+#
+# Get MML data and make Ocadfiles
+# $AWMMLDEV/mml2ocad.sh -y 2022 -a 5432L
+#
+#
+#
+#
+############################
+
 PRG="$0"
 BINDIR="${PRG%/*}"
 [ "$PRG" = "$BINDIR" ] && BINDIR="." # - same dir as program
@@ -55,9 +72,9 @@ PRG="${PRG##*/}"
 # set defaults
 angle=0
 DEBUG=0
-configfile=$AWGEO/config/pullauta.ini
-[ -f config/pullauta.ini ] && configfile=config/pullauta.ini
-intermediate_curve=""
+configfile=$AWGEO/config/pullauta.template.ini
+[ -f config/pullauta.template.ini ] && configfile=config/pullauta.ini
+intermediate_curve="0"  # new version, def is 0 in the config
 only_intermediate_curve=0
 only_hillshade=0
 hillshade=0
@@ -106,6 +123,12 @@ step()
 status()
 {
         echo "-status:$*" >&2
+}
+
+########################################################
+msg()
+{
+        echo "$*" >&2
 }
 
 ########################################################
@@ -177,10 +200,11 @@ clean_temp()
 
 	i=1
 	# if we have already data and like to make intermediate curve, then no clean
-	(( only_intermediate_curve > 0 )) && return
+	##(( only_intermediate_curve > 0 )) && return
+	## previous not usable anymore
 	rm -rf temp* 2>/dev/null
 	rm -r $outputdir/* 2>/dev/null
-	rm -f *.tif header*.xyz laz*.txt pullautus_depr*.* pullautus?.png temp*.xyz ziplist*.txt list*.txt 2>/dev/null
+	rm -f merged*.* *.tif header*.xyz laz*.txt pullautus_depr*.* pullautus?.png temp*.xyz temp*.xyz.bin ziplist*.txt list*.txt 2>/dev/null 
 }
 
 
@@ -316,7 +340,7 @@ process_spike_free()
 process_hillshade()
 {
 
-	xfunc="process_intermediate_curves"
+	xfunc="process_hillshade"
 	dbg "$xfunc: start"
 	for laz in $inputdir/*.laz
 	do
@@ -340,7 +364,15 @@ make_vege()
 	# make only one laz!!!
 	rm -rf temp 2>/dev/null
 	mkdir -p temp
-	cp -f temp$Xi/*.xyz temp
+	# new pullautin do xyz.bin, not xyz
+	for xyz in temp$Xi/*.xyz.bin
+	do
+		xyzfile=${xyz##*/}
+        	xyzbasename=${xyzfile%.bin}
+		pullauta internal2xyz "$xyz" $temp/$xyzbasename.xyz
+	done	
+	# old pullautin, new next line do nothing
+	cp -f temp$Xi/*.xyz temp 2>/dev/null
 	pullauta makevege
 	mv -f temp/vegetation.png temp$Xi/vegetation.png
 	mv -f temp/vegetation.pgw temp$Xi/vegetation.pgw
@@ -394,6 +426,9 @@ process_rerun_vege()
 ################################################################
 process_intermediate_curves()
 {
+	return
+	# not anymore, base pullautin process do it
+
 	# pullautin make basecurves but not run smootjoin for those curves
 	Zcurve="$1"
 	xfunc="process_intermediate_curves"
@@ -449,39 +484,77 @@ process_shp()
 }
 
 ################################################################
+press_enter()
+{
+	echo -n "Enter:"
+	read Enter
+}
+################################################################
 pullauta_this_set()
 {
 	 # make pullauta
 	 xfunc="pullauta_this_set"
-	 dbg "$xfunc: start"
+	 Xtilename="$1"
+	 dbg "$xfunc: start tilename:$Xtilename outdir:$outdir outputdir:$outputdir"
+	 # ex. outdir: tulos/piha  outputdir:output
+
+	
 
          # clean previous output
-         rm -rf "$outputdir" pullautus*.png pullautus*.pgw temp/* temp?/* 2>/dev/null
-	 rm -f *.xyz 2>/dev/null
+         #rm -rf "$outputdir" pullautus*.png pullautus*.pgw temp/* temp?/* 2>/dev/null
+         rm -rf pullautus*.png pullautus*.pgw temp/* temp?/* 2>/dev/null
+	 rm -f *.xyz *.xyz.bin 2>/dev/null
+	 ((DEBUG>1)) && ls "$outputdir" && press_enter
          mkdir -p "$outputdir"
 	 
 	 #((DEBUG>0)) && ls "$inputdir" && echo -n "Continue:" && read continue || echo -n "Continue:" && read continue
+	
+	 # pullauta process threated, temp[1-n] subdir and result locate is $outputdir = merged in this set
+	 # need to copy to the my result file
          pullauta
 
          # do add on
          # The map can also have what is called an intermediate curve between the curve
-         [ "$intermediate_curve" != "" ] && process_intermediate_curves "$intermediate_curve"
+	 # not anymore in the new pullautin, vbase process include it in the config file
+	 # basemapinterval=0 or 1.25 or 0.625 or ....
+         ###[ "$intermediate_curve" != "" ] && process_intermediate_curves "$intermediate_curve"
 
          (( hillshade>0 )) && process_hillshade
 
          (( spikefree > 0 )) && process_spike_free
 
          (( mergepng > 0 )) && merge_png "$outputdir"
+	 # buildings:
+         #(( mergeblock > 0 )) && merge_block "$outputdir"
 
          # mv pullauta results to the user outdir
+	 dbg "   " rm -f "$outputdir"/"*basemap.*"   # not needed
+	 rm -f "$outputdir"/*basemap.*   # not needed
+	 mkdir -p "$outputdir"/.save
+	 # not merge this
+	 mv -f "$outputdir"/*contours03*.dxf* "$outputdir"/.save 2>/dev/null
+	 # rest files merge
+	 ((DEBUG>1)) && press_enter
+	 pullauta dxfmerge
+	 # currentdir include lot of merged file, but merged.dxf include all
+	 msg "DXF merge tehty : $outputdir"
+	 cp merged.dxf $outputdir/"$Xtilename.all.dxf"
+	 # return back to dir after merge
+	 mv -f "$outputdir"/.save/*.dxf "$outputdir" 2>/dev/null
+	 rm -rf "$outputdir"/.save 2>/dev/null
+	 ((DEBUG>1) && ls -1 $outputdir
+	 msg "________________________________________________"
          mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
-	 # some datafiles to subdir
+	 
+	 # some datafiles to subdir - all dxf except all.dxf
 	 mkdir -p "$outdir/addon" 
-	 mv -f "$outdir"/*_undergrowth.* "$outdir/addon" 2>/dev/null
-	 mv -f "$outdir"/*_dotknolls.* "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*_undergrowth.dxf "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*_dotknolls.dxf "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*_contours.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_contours_0*.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_contours_1*.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_contours03*.dxf "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*.bin "$outdir/addon" 2>/dev/null
 
          # make clean to the next process block input
 	 # output not removed, posible to run pullauta again ex. change vege
@@ -519,7 +592,6 @@ get_pullauta()
         dbg "$proc  lazfiles:$lazfiles"
 	
 
-        count=0
         dbg "result dir:$outdir concurrent process:$prosnum"
         rm -rf "$inputdir" "$outputdir"  2>/dev/null
         mkdir -p "$inputdir" "$outputdir" "$outdir"
@@ -529,8 +601,20 @@ get_pullauta()
         cp -f "$indir"/*.shp.zip "$inputdir" 2>/dev/null
 
 	# process all laz files using prosnum block size!! = concurrent process/tasks
+	tilename=""
+	subdir=$(last_slash "$outdir")
+	[ "$subdir" = "." -o "$subdir" = "" ] && subdir="all"
+	tilename=${subdir##*/}
+	dbg " - tilename: $tilename"
+
+        count=0
         for Xa in $lazfiles
         do
+		lazfile=$(getfile "$Xa")
+		lazbase=$(getbase "$lazfile" ".laz")
+		#((count==0)) && tilename="$lazbase"
+		#dbg "   $Xa $count $tilename"
+		
                 # build input
                 if ((count < prosnum )) ; then
                         dbg "$proc   $PWD"
@@ -539,10 +623,11 @@ get_pullauta()
                 fi
                 if ((count >= prosnum )) ; then # max. files -> process
                         count=0
+			#tilename="$lazbase"
          		rm -rf "$outputdir" 2>/dev/null
          		mkdir -p "$outputdir" "$outputdir"
 			dbg "Next pullauta set, dir:$PWD"
-			pullauta_this_set
+			pullauta_this_set  "$tilename"
          		rm -rf "$inputdir" 2>/dev/null
          		mkdir -p "$inputdir" "$outputdir"
         		cp -f "$indir"/*.shp.zip "$inputdir"
@@ -550,8 +635,8 @@ get_pullauta()
         done
 
 	# pullauta last set if not yet done
-	(( count>0 && DEBUG>0 )) && dbg "Next pullauta, dir:$PWD"
-	(( count>0 )) && pullauta_this_set
+	(( count>0 && DEBUG>0 )) && dbg "Next pullauta, dir:$PWD $tilename:$tilename"
+	(( count>0 )) && pullauta_this_set "$tilename"
 
 	# some files to use data in the Ocad
 	cp -f $AWGEO/config/*.crt "$outdir" 2>/dev/null
