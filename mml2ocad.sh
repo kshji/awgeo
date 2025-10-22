@@ -6,9 +6,9 @@
 # https://github.com/kshji/awgeo
 # https://awot.fi
 #
-# $AWGEODEV/mml2ocad.sh --angle -10.6 -a N5424L		   # outputdir sourcedata/N5424L
-# $AWGEODEV/mml2ocad.sh --angle -10.6 -a N5424L -o mmlkoe  # output to dir mmlkoe/N5424L
-# $AWGEODEV/mml2ocad.sh --angle -10.6 -a N5424L -m mapname -o mmlkoe  # output to dir mmlkoe/N5424L
+# $AWGEO/mml2ocad.sh --angle -10.6 -a N5424L		   # outputdir sourcedata/N5424L
+# $AWGEO/mml2ocad.sh --angle -10.6 -a N5424L -o mmlkoe  # output to dir mmlkoe/N5424L
+# $AWGEO/mml2ocad.sh --angle -10.6 -a N5424L -m mapname -o mmlkoe  # output to dir mmlkoe/N5424L
 #
 #
 # You can set in ja out dirs
