@@ -46,6 +46,8 @@ Ja tietysti Jarkko Ryypön tuotteistamaa loistavaa Pullautinta.
   * [PurplePen](https://purple-pen.org), ilmainen avoimen koodin ratojen suunnittelu
   * [WhiteBoxTools github](https://github.com/jblindsay/whitebox-tools)
   * [WhiteboxTools](https://www.whiteboxgeo.com/manual/wbt_book/preface.html)
+  * [Karttapullautin 2 Tiles](https://github.com/grst/karttapullautin2tiles)
+  * [Karttapullautin-web](https://github.com/antbern/karttapullautin-web)
 
 Em. ohjelmien lisenssit löytyvät ko. ohjelmien sivuilta.
 

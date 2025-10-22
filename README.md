@@ -32,6 +32,9 @@ My geo programs use various software, including Lastools, PDAL and GDAL.
   * [PurplePen](https://purple-pen.org), free course setting software for orienteering
   * [WhiteBoxTools github](https://github.com/jblindsay/whitebox-tools)
   * [WhiteboxTools](https://www.whiteboxgeo.com/manual/wbt_book/preface.html)
+  * [Karttapullautin 2 Tiles](https://github.com/grst/karttapullautin2tiles)
+  * [Karttapullautin-web](https://github.com/antbern/karttapullautin-web)
+
 
 The full licence terms can be found on the individual pages of the following tools.
 
