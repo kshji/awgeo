@@ -114,6 +114,7 @@ ENDBLOCK
 #############################################
 dxf_text()
 {
+	# not check text attributes from src, use fixed
 	# dxf_text "$LUOKKA" "$ANGLE" "$lat" "$lon"
 	Xluokka="$1"
 	Xangle="$2"
