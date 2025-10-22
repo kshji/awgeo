@@ -6,7 +6,7 @@
 # https://github.com/kshji/awgeo
 # https://awot.fi
 #
-# $AWGEODEV/mml2ocad.sh --angle -10.6 -a N5424L
+# $AWGEODEV/mml2ocad.sh --angle -10.6 -a N5424L		   # outputdir sourcedata/N5424L
 # $AWGEODEV/mml2ocad.sh --angle -10.6 -a N5424L -o mmlkoe  # output to dir mmlkoe/N5424L
 # $AWGEODEV/mml2ocad.sh --angle -10.6 -a N5424L -m mapname -o mmlkoe  # output to dir mmlkoe/N5424L
 #
@@ -22,7 +22,7 @@
 # - all result in the mml/area
 #
 # After this cmd you can process lidar data ex.
-# $AWGEO/pullauta.run.sh all --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
+# $AWGEO/pullauta.run.sh all --in sourcedata/N5424L --out pullautettu/N5424L -a -10.6 -i 0.625 -z 3
 #
 # after those steps:
 #    - MML data dir: mml/N5424L
