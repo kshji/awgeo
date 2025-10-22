@@ -39,6 +39,7 @@ dbg()
 ######################################################################################
 url=""
 outputdir="sourcedata"
+quit=" -q "
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -60,7 +61,7 @@ while [ $# -gt 0 ]
 do
         arg="$1"
         case "$arg" in
-                -d) DEBUG="$2" ; shift ;;
+                -d) DEBUG="$2" ; quit=" "; shift ;;
                 -o) outputdir="$2" ; shift ;;
                 -*) usage; exit 4 ;;
                 *) break ;;
@@ -120,8 +121,8 @@ do
 		area="$masterarea$mtk"
 		outdir="$outputdir/$area"
 		mkdir -p "$outdir"
-		dbg wget --no-check-certificate -O "$outdir/$laser.laz" "$apihost$url?api_key=$apikey" 
-		wget --no-check-certificate -O "$outdir/$laser.laz" "$apihost$url?api_key=$apikey" 
+		dbg wget $quit --no-check-certificate -O "$outdir/$laser.laz" "$apihost$url?api_key=$apikey" 
+		wget $quit --no-check-certificate -O "$outdir/$laser.laz" "$apihost$url?api_key=$apikey" 
 		dbg "done $outdir/$laser.laz"	
 	done
 done
