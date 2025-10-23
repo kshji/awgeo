@@ -76,8 +76,13 @@ pip3 install --upgrade pip
 # GDAL install include PROJ
 # Official stable UbuntuGIS packages.
 sudo add-apt-repository ppa:ubuntugis/ppa
+# Ubuntu 24.04 LTS noble, need update file
+# /etc/apt/sources.list.d/ubuntugis-ubuntu-ppa-noble.sources
+# change noble to jammy (previous Ubuntu relase, work fine)
+
 sudo apt-get update
-sudo apt-get install gdal-bin libgdal-dev 
+sudo apt-get upgrade
+sudo apt-get install gdal-bin libgdal-dev libgdal-data
 Root:
 
 #       Check:
@@ -107,8 +112,8 @@ Solutions is usually to find correct libproj = latest and then soft link to the 
 ```sh
 # User env
 #       - look version using: ogrinfo --version
-#       - in this example version is 3.3.2
-       pip install GDAL==3.3.2
+#       - in this example version is 3.8.4
+       pip install GDAL==3.8.4
        pip install pygdal=="3.3.2.*"
        pip install laspy[laszip]
        pip install scipy numpy
