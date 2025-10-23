@@ -372,7 +372,7 @@ data2ocad()
 	dbg "          dir:$PWD"
 
 	dbg "             $AWGEO/gpkg2csv.sh $Zinf $Ztilename" 
-	$AWGEO/gpkg2csv.sh -d $DEBUG "$Zinf" "$Ztilename"  
+	$AWGEO/gpkg2csv.sh -d "$DEBUG" "$Zinf" "$Ztilename"  
 	# result 0-n csv files  $Ztilename.table.csv AND $Ztilename.table.symbols.csv
 	
 	dbg "data2ocad  CSV2DXF $Ztilename $Zinf"
@@ -584,6 +584,7 @@ tilename=""
 makeocad=1
 angle=0
 mapname=""
+DEBUG=0
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
