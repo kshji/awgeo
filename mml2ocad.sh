@@ -214,9 +214,9 @@ mkdir -p "$inputdir" "$outputdir"
 
 masterarea=${arealabel:0:4}
 # process input to output
-dbg "$AWGEODEV/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG $inputdir/${masterarea}*.*"
-msg "$AWGEODEV/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG $inputdir/${masterarea}*.*"
-$AWGEODEV/shpzip2gpkg.sh -t 0 -o "$outputdir" -a "$angle" -n "$arealabel" --mapname "$mapname" -d "$DEBUG" "$inputdir"/"${masterarea}"*.* 
+dbg "$AWMML/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG $inputdir/${masterarea}*.*"
+msg "$AWMML/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG $inputdir/${masterarea}*.*"
+$AWMML/shpzip2gpkg.sh -t 0 -o "$outputdir" -a "$angle" -n "$arealabel" --mapname "$mapname" -d "$DEBUG" "$inputdir"/"${masterarea}"*.* 
 
 dbg "crtfile:$crtfile" 
 dbg "ocdtemplate:$ocdtemplate" 

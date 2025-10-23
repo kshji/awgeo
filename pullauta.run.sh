@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # pullauta.run.sh
-VER=2025-10-22b
+VER=2025-10-23a
 #
 # Karjalan ATK-Awot Oy
 # Jukka Inkeri
@@ -474,6 +474,33 @@ process_intermediate_curves()
 }
 
 ################################################################
+aw_merge_dxf()
+{
+	#aw_merge_dxf merged.aw.dxf c2 c3 contours dotknolls basemap
+	#aw_merge_dxf merged.aw.dxf contours basemap
+	Mout="$1"
+	# rm if out exists
+	# can't merge point and polygons ...
+	rm -f "$Mout" "$Mout.shp" 2>/dev/null
+	shift
+	append=""
+	for Dxf in $*
+	do
+		rm -f "$Mout.tmp.shp" 2>/dev/null
+		ogr2ogr -skipfailures -f 'ESRI Shapefile' "$Mout.tmp.shp" "merged_$Dxf.dxf" 
+		ogr2ogr -skipfailures -f 'ESRI Shapefile' $append "$Mout.shp" "$Mout.tmp.shp"
+		append="  -update -append "
+	done
+	ogr2ogr  -skipfailures -f DXF "$Mout" "$Mout.shp" 2>/dev/null
+	rm -f "$Mout.shp" "$Mout.tmp.shp" 2>/dev/null
+	return
+	#for Dxf in $*
+	#do
+		#ogr2ogr -skipfailures -f 'ESRI Shapefile' $append "$Mout.shp" "merged_$Dxf.dxf" 2>/dev/null
+		#append="  -update -append "
+	#done
+}
+################################################################
 process_shp()
 {
 
@@ -503,6 +530,10 @@ pullauta_this_set()
 	 # make pullauta
 	 xfunc="pullauta_this_set"
 	 Xtilename="$1"
+	 Xcnt="$2"
+	 [ "$Xcnt" = "" ] && Xcnt=1
+	 ((Xcnt < 2 )) &&  Xcnt=""
+	 
 	 dbg "$xfunc: start tilename:$Xtilename outdir:$outdir outputdir:$outputdir"
 	 # ex. outdir: tulos/piha  outputdir usually:output
 
@@ -512,6 +543,7 @@ pullauta_this_set()
          #rm -rf "$outputdir" pullautus*.png pullautus*.pgw temp/* temp?/* 2>/dev/null
          rm -rf pullautus*.png pullautus*.pgw temp/* temp?/* 2>/dev/null
 	 rm -f *.xyz *.xyz.bin 2>/dev/null
+	 rm -f merged* 2>/dev/null
 	 ((DEBUG>1)) && ls "$outputdir" && press_enter
          mkdir -p "$outputdir"
 	 
@@ -519,7 +551,9 @@ pullauta_this_set()
 	
 	 # pullauta process threated, temp[1-n] subdir and result locate is $outputdir = merged in this set
 	 # need to copy to the my result file
-         pullauta
+
+         [ "$pulaw" = "" ] && pullauta || pullauta.aw
+
 
          # do add on
          # The map can also have what is called an intermediate curve between the curve
@@ -534,17 +568,26 @@ pullauta_this_set()
          (( mergepng > 0 )) && merge_png "$outputdir"
 
          # mv pullauta results to the user outdir
-	 dbg "   " rm -f "$outputdir"/"*basemap.*"   # not needed
-	 rm -f "$outputdir"/*basemap.*   # not needed
+	 dbg "   " rm -f "$outputdir"/"*detected.*"   # not needed
+	 rm -f "$outputdir"/*detected.*   # not needed
 	 mkdir -p "$outputdir"/.save
 	 # not merge this
 	 mv -f "$outputdir"/*contours03*.dxf* "$outputdir"/.save 2>/dev/null
 	 # rest files merge
 	 ((DEBUG>1)) && press_enter
-	 pullauta dxfmerge
+	 [ "$pulaw" = "" ] && pullauta dxfmerge  || pullauta.aw dxfmerge
 	 # currentdir include lot of merged file, but merged.dxf include all
 	 msg "DXF merge tehty : $outputdir"
-	 cp merged.dxf $outputdir/"$Xtilename.all.dxf"
+	 cp merged.dxf "$outputdir"/"$Xtilename.all$Xcnt.dxf"
+	 # next lines are only bug fix
+	 #cp merged_contours.dxf $outputdir/"$Xtilename._contours.all$Xcnt.dxf"
+	 #cp merged_basemap.dxf "$outputdir"/"$Xtilename.basemap.all$Xcnt.dxf"
+	 # aw fix for merge all: can't put all together
+	 #aw_merge_dxf merged.aw.dxf c2 c3 contours dotknolls basemap
+	 # process awot merge only if pullauta can't do full merge
+	 [ "$pulaw" = "" ] && aw_merge_dxf merged.aw.dxf contours basemap
+	 [ "$pulaw" = "" ] &&cp -f merged.aw.dxf "$outputdir"/"$Xtilename.contours.all$Xcnt.dxf" 2>/dev/null
+
 	 # return back to dir after merge
 	 mv -f "$outputdir"/.save/*.dxf "$outputdir" 2>/dev/null
 	 rm -rf "$outputdir"/.save 2>/dev/null
@@ -556,10 +599,17 @@ pullauta_this_set()
 	 mkdir -p "$outdir/addon" 
 	 mv -f "$outdir"/*_undergrowth.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_dotknolls.dxf "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*_c?g.dxf "$outdir/addon" 2>/dev/null
+	 # basemap = 1.25/0.625 countours
+	 mv -f "$outdir"/*_basemap.dxf "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*_detected.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_contours.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_contours_0*.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_contours_1*.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_contours03*.dxf "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*_undergrowth.p?? "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*.laz.p?? "$outdir/addon" 2>/dev/null
+	 mv -f "$outdir"/*.laz_depr.p?? "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*.bin "$outdir/addon" 2>/dev/null
 
          # make clean to the next process block input
@@ -570,6 +620,12 @@ pullauta_this_set()
 	 dbg "$xfunc: end"
 }
 
+# x=123_456_789
+# echo ${x##*_} # last  789
+# echo ${x#*_}  # not 1st 456_789
+# echo ${x%%_*} # 1st 123
+# echo ${x%_*}  # not last 123_456
+
 ################################################################
 get_pullauta()
 {
@@ -577,7 +633,7 @@ get_pullauta()
         # icurve
         [ "$angle" = "" ] && angle=11
         [ "$icurve" = "" ] && icurve=0.625
-	xfunc="pullauta"
+	xfunc="get_pullauta"
         dbg "$xfunc starting angle:$angle icurve:$icurve"
 
         # need to read pullauta.ini max. process
@@ -585,12 +641,18 @@ get_pullauta()
         [ ! -f "$pullautaini" ] && err "Can't read $pullautaini" && return 1
 
         prosnum=$(grep "^processes.*=.*" "$pullautaini" 2>/dev/null)
+	prosnum=${prosnum##*=} # last fld, sep. =
         batch=$(grep "^batch.*=.*1" "$pullautaini" 2>/dev/null)
 
         [ "$batch" = "" ] && err "$pullautaini have to be batch=1" && exit 1
 
+	table=${LAYER##*_} # last
+	table=${LAYER#*_} # not last
+    	Xarea=${LAYER%%_*} # 1st
+    	Xarea=${LAYER%_*} # not last
         prosnum=${prosnum// /}   # remove spaces
         [ "$prosnum" = "" ] && prosnum=1  # single
+	dbg "$xfunc prosnum:$prosnum"
 
 
 	read lazfiles <<<$(echo $indir/*.laz)
@@ -614,17 +676,19 @@ get_pullauta()
 	dbg " - tilename: $tilename"
 
         count=0
+	setcnt=0
+
         for Xa in $lazfiles
         do
 		lazfile=$(getfile "$Xa")
 		lazbase=$(getbase "$lazfile" ".laz")
 		#((count==0)) && tilename="$lazbase"
-		#dbg "   $Xa $count $tilename"
+		dbg "       $Xa $setcnt $count $tilename"
 		
                 # build input
                 if ((count < prosnum )) ; then
-                        dbg "$proc   $PWD"
-                        cp -f $Xa "$inputdir"
+                        dbg "       $count:" cp -f $Xa "$inputdir"
+                        cp -f $Xa "$inputdir" 2>/dev/null
                         ((count+=1))
                 fi
                 if ((count >= prosnum )) ; then # max. files -> process
@@ -632,8 +696,9 @@ get_pullauta()
 			#tilename="$lazbase"
          		rm -rf "$outputdir" 2>/dev/null
          		mkdir -p "$outputdir" "$outputdir"
-			dbg "Next pullauta set, dir:$PWD"
-			pullauta_this_set  "$tilename"
+			dbg "  Next pullauta set, dir:$PWD"
+			((setcnt++))
+			pullauta_this_set  "$tilename" "$setcnt"
          		rm -rf "$inputdir" 2>/dev/null
          		mkdir -p "$inputdir" "$outputdir"
         		cp -f "$indir"/*.shp.zip "$inputdir"
@@ -642,7 +707,10 @@ get_pullauta()
 
 	# pullauta last set if not yet done
 	(( count>0 && DEBUG>0 )) && dbg "Next pullauta, dir:$PWD $tilename:$tilename"
-	(( count>0 )) && pullauta_this_set "$tilename"
+	if (( count>0 )) ; then
+		((setcnt++)) 
+		pullauta_this_set "$tilename" "$setcnt"
+	fi
 
 	# some files to use data in the Ocad
 	cp -f $AWGEO/config/*.crt "$outdir" 2>/dev/null
@@ -698,7 +766,7 @@ do
 		--onlycountours) contoursonly=1 ;;
 		--onlyvege) vegeonly=1 ;;
 		--greenlevel) greenshade=$2 ; shift ;;
-		--onlylaz|--noshp) onlylaz=1 ; shift ;;
+		--onlylaz|--noshp) onlylaz=1 ;;
 		--vegererun ) vegererun=1 ;;
 		-s|--hillshade) hillshade=1 ;;
 		--spikefree) spikefree=1 ;;
@@ -730,6 +798,16 @@ mkdir -p "$outdir"
 # special: re-run vege - don't clean temp and copy ini template
 (( vegererun>0 )) && process_rerun_vege 
 (( vegererun>0 )) && exit
+
+# pullauta excute
+# org. pullauta merge dxf without indermedia curves (apukäyrä)
+# pullauta.aw merge all
+# so, look have we aw-version to use or not
+# where is format is pullauta.aw: /usr/local/bin/pullauta.aw
+# loc is empty if it's not
+pulaw=$(whereis pullauta.aw)
+pulaw=${pulaw##*:}
+# if empty => no aw version
 
 # pullauta process ...
 # 
