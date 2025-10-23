@@ -716,6 +716,8 @@ get_pullauta()
 	cp -f $AWGEO/config/*.v2.crt "$outdir" 2>/dev/null
 	cp -f $AWGEO/config/*.v2.ocd "$outdir" 2>/dev/null
 
+	((DEBUG<1)) && rm -rf merged_*.dxf* merged.dxf* pullautus*.p?? temp*.xyz* temp temp? output/* 2>/dev/null
+
 	dbg "$xfunc: end"
 }
 
