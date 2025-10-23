@@ -1,4 +1,4 @@
-#!/usr/bin/awsh
+#!/usr/local/bin/awsh
 # gpkg2csv.sh
 # v. 2025-10-10
 # gpkg2csv.sh input.gpkg
