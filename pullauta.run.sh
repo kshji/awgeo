@@ -713,8 +713,8 @@ get_pullauta()
 	fi
 
 	# some files to use data in the Ocad
-	cp -f $AWGEO/config/*.crt "$outdir" 2>/dev/null
-	cp -f $AWGEO/config/*.ocd "$outdir" 2>/dev/null
+	cp -f $AWGEO/config/*.v2.crt "$outdir" 2>/dev/null
+	cp -f $AWGEO/config/*.v2.ocd "$outdir" 2>/dev/null
 
 	dbg "$xfunc: end"
 }
