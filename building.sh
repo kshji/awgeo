@@ -1,4 +1,4 @@
-#!/usr/bin/awsh
+#!/usr/local/bin/awsh
 # building.sh  
 # ver 2025-10-20
 # Copyright 2025 Karjalan ATK-Awot Oy
