@@ -371,8 +371,8 @@ data2ocad()
 
 	dbg "          dir:$PWD"
 
-	dbg "             $AWGEO/gptk2csv.sh $Zinf $Ztilename" 
-	$AWGEO/gptk2csv.sh -d $DEBUG "$Zinf" "$Ztilename"  
+	dbg "             $AWGEO/gpkg2csv.sh $Zinf $Ztilename" 
+	$AWGEO/gpkg2csv.sh -d $DEBUG "$Zinf" "$Ztilename"  
 	# result 0-n csv files  $Ztilename.table.csv AND $Ztilename.table.symbols.csv
 	
 	dbg "data2ocad  CSV2DXF $Ztilename $Zinf"

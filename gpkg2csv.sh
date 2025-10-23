@@ -1,7 +1,7 @@
 #!/usr/bin/awsh
-# gptk2csv.sh
+# gpkg2csv.sh
 # v. 2025-10-10
-# gptk2csv.sh input.gpkg
+# gpkg2csv.sh input.gpkg
 # csv have to include field SYMBOL
 
 PRG="$0"
