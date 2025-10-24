@@ -1,2 +1,4 @@
 # where is AwGeo scripts?
 AWGEO=/home/user/awgeo
+AWOCD="$AWGEO/config/awot_ocadisom2017_mml.ocd"
+AWCRT="$AWGEO/config/FI*.crt"
