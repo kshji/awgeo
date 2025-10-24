@@ -46,7 +46,7 @@ dbg()
 #########################################################################
 err()
 {
-        ((DEBUG<1)) && return
+        #((DEBUG<1)) && return
         echo "$PRG err: $*"  >&2
 }
 
@@ -145,8 +145,22 @@ get_mml_shp()
 DXF_ENCODING=LATIN1
 export DXF_ENCODING
 
-crtfile=$AWGEO/config/FIshp2ISOM2017.v2.crt
-ocdtemplate="$AWGEO/config/awot_ocadisom2017_mml.v2.ocd"
+# if set, save
+AWGEOSAVE="$AWGEO"
+# set AWGEO
+awgeoinifile="awgeo.ini"
+[ ! -f "$awgeoinifile" ] && awgeoinifile="config/awgeo.ini"
+[ ! -f "$awgeoinifile" ] && awgeoinifile="$AWGEO/config/awgeo.ini"
+[ ! -f "$awgeoinifile" ] && err "no awgeo.ini file dir: . or ./config or $AWGEO/config" >&2 && exit 2
+. "$awgeoinifile" 2>/dev/null
+[ "$AWGEOSAVE" != "" ] && AWGEO="$AWGEOSAVE"
+export AWGEO
+[ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 3
+
+crtfile="$AWGEO/config/FI*shp2ISOM2017.crt"
+ocdtemplate="$AWGEO/config/awot_ocadisom2017_mml.ocd"
+[ "$AWCRT" != "" ] && crtfile="$AWCRT"
+[ "$AWOCD" != "" ] && ocdtemplate="$AWOCD"
 outputdir=""
 arealabel=""
 inputdir=""
@@ -186,15 +200,15 @@ done
 
 datadir="data/$arealabel"
 dbg "inputdir:$inputdir datadir:$datadir outputdir:$outputdir"
-[ "$arealabel" = "" ] && usage && exit 1
-#[ "$inputdir" = "" ] && usage && exit 2
-#[ ! -d "$inputdir" = "" ] && usage && exit 2
+[ "$arealabel" = "" ] && usage && exit 4
+#[ "$inputdir" = "" ] && usage && exit 4
+#[ ! -d "$inputdir" = "" ] && usage && exit 4
 #[ ! -f "$crtfile" ] && echo "no crtfile:$crtfile" >&2 && exit 4
 
 dbg mkdir -p "$inputdir" "$outputdir"
 mkdir -p "$inputdir" "$outputdir"
 
-((DEBUG>2)) && exit 0
+((DEBUG>2)) && exit 9
 # get mml shp, if not already exists
 # even it's new version, source is shp.zip
 [ ! -f "$inputdir/$arealabel.shp.zip" ] && get_mml_shp "$arealabel" "$inputdir" #"$mapname"
@@ -220,7 +234,9 @@ $AWMML/shpzip2gpkg.sh -t 0 -o "$outputdir" -a "$angle" -n "$arealabel" --mapname
 
 dbg "crtfile:$crtfile" 
 dbg "ocdtemplate:$ocdtemplate" 
-[ -f "$crtfile" ] && cp -f "$crtfile" "$outputdir" 2>/dev/null
+#[ -f "$crtfile" ] && cp -f "$crtfile" "$outputdir" 2>/dev/null
+# crtfile 1-n, it's possible
+cp -f $crtfile "$outputdir" 2>/dev/null
 [ -f "$ocdtemplate" ] && cp -f "$ocdtemplate" "$outputdir"/$mapname$arealabel.ocd 2>/dev/null
 
 echo "shp inputfiles dir:$inputdir"
