@@ -20,6 +20,8 @@ VER=2025-10-23a
 # - northlineangle 11, intermediate curve 0.625
 #
 # $AWGEO/pullauta.run.sh --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
+# give some label for every file, use --mapname
+# $AWGEO/pullauta.run.sh --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3 --mapname somename
 #    also dem, spikefree, hillshade, ...:
 # $AWGEO/pullauta.run.sh --all --in sourcedata/N5424L --out pullautettu/N5424L -a 11 -i 0.625 -z 3
 #
@@ -251,16 +253,19 @@ merge_png()
 	dbg "$xfunc: start"
 	xnow=$PWD
 	mergename=""
+	[ "$mapname" != "" ] && mergename=${mapname%.*}
 
 	# mergename = shpnames ...
-	cd "$inputdir"	
-	for img in *.shp.zip
-	do
-		[ "$img" = "*.shp.zip" ] && continue
-		label=$(getbase "$img" ".shp.zip")
-		mergename="$mergename$label"
-	done
-	cd $xnow
+	if [ "$mergename" = "" ] ; then # there wasn't any shp.zip, then use laz
+		cd "$inputdir"	
+		for img in *.shp.zip
+		do
+			[ "$img" = "*.shp.zip" ] && continue
+			label=$(getbase "$img" ".shp.zip")
+			mergename="$mergename$label"
+		done
+		cd $xnow
+	fi
 
 	# if not shp's then use laz_depr.png names
 	if [ "$mergename" = "" ] ; then # there wasn't any shp.zip, then use laz
@@ -551,7 +556,7 @@ pullauta_this_set()
 	
 	 # pullauta process threated, temp[1-n] subdir and result locate is $outputdir = merged in this set
 	 # need to copy to the my result file
-
+	 dbg "  pulaw:$pulaw"
          [ "$pulaw" = "" ] && pullauta || pullauta.aw
 
 
@@ -586,14 +591,20 @@ pullauta_this_set()
 	 #aw_merge_dxf merged.aw.dxf c2 c3 contours dotknolls basemap
 	 # process awot merge only if pullauta can't do full merge
 	 [ "$pulaw" = "" ] && aw_merge_dxf merged.aw.dxf contours basemap
-	 [ "$pulaw" = "" ] &&cp -f merged.aw.dxf "$outputdir"/"$Xtilename.contours.all$Xcnt.dxf" 2>/dev/null
+	 [ "$pulaw" = "" ] && cp -f merged.aw.dxf "$outputdir"/"$Xtilename.contours.all$Xcnt.dxf" 2>/dev/null
 
 	 # return back to dir after merge
 	 mv -f "$outputdir"/.save/*.dxf "$outputdir" 2>/dev/null
 	 rm -rf "$outputdir"/.save 2>/dev/null
 	 ((DEBUG>1)) && ls -1 $outputdir
 	 msg "________________________________________________"
-         mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
+         #mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
+	 for f in "$outputdir"/*.*
+	 do
+		filename=${f##*/}
+         	dbg "     " mv -f "$f" "$outdir"/"$mapname$filename" 
+         	mv -f "$f" "$outdir"/"$mapname$filename" 2>/dev/null
+	 done
 	 
 	 # some datafiles to subdir - all dxf except all.dxf
 	 mkdir -p "$outdir/addon" 
@@ -669,12 +680,6 @@ get_pullauta()
         ((onlylaz < 1 )) && cp -f "$indir"/*.shp.zip "$inputdir" 2>/dev/null
 
 	# process all laz files using prosnum block size!! = concurrent process/tasks
-	tilename=""
-	subdir=$(last_slash "$outdir")
-	[ "$subdir" = "." -o "$subdir" = "" ] && subdir="all"
-	tilename=${subdir##*/}
-	dbg " - tilename: $tilename"
-
         count=0
 	setcnt=0
 
@@ -713,8 +718,12 @@ get_pullauta()
 	fi
 
 	# some files to use data in the Ocad
-	cp -f $AWGEO/config/*.v2.crt "$outdir" 2>/dev/null
-	cp -f $AWGEO/config/*.v2.ocd "$outdir" 2>/dev/null
+	[ "$AWCRT" != "" ] && cp -f $AWCRT "$outdir" 2>/dev/null
+	[ "$AWCRT" = "" ] && cp -f $AWGEO/config/FI*.crt "$outdir" 2>/dev/null
+
+	OcdTemplate="$AWOCD"
+	[ "$OcdTemplate" = "" ] && OcdTemplate="$AWGEO/config/awot_ocadisom2017_mml.ocd"
+	[ -f "$OcdTemplate" ] && cp -f "$OcdTemplate" "$outdir"/"$mapname""$tilename".ocd 2>/dev/null
 
 	((DEBUG<1)) && rm -rf merged_*.dxf* merged.dxf* pullautus*.p?? temp*.xyz* temp temp? output/* 2>/dev/null
 
@@ -726,15 +735,15 @@ get_pullauta()
 ################################################################
 # parse cmdline options
 
-
-if [ "AWGEO" = "" ] ; then
-	# set AWGEO
-	awgeoinifile="awgeo.ini"
-	[ -f "$awgeoinifile" ] && awgeoinifile="config/awgeo.ini"
-	[ -f "$awgeoinifile" ] && awgeoinifile="$AWGEO/config/awgeo.ini"
-	[ -f "$awgeoinifile" ] && err "no awgeo.ini file dir: . or ./config or $AWGEO/config" >&2 && exit 2
-	. "$awgeoinifile"
-fi
+# if set, save
+AWGEOSAVE="$AWGEO"
+# set AWGEO
+awgeoinifile="awgeo.ini"
+[ ! -f "$awgeoinifile" ] && awgeoinifile="config/awgeo.ini"
+[ ! -f "$awgeoinifile" ] && awgeoinifile="$AWGEO/config/awgeo.ini"
+[ ! -f "$awgeoinifile" ] && err "no awgeo.ini file dir: . or ./config or $AWGEO/config" >&2 && exit 2
+. "$awgeoinifile" 2>/dev/null
+[ "$AWGEOSAVE" != "" ] && AWGEO="$AWGEOSAVE"
 export AWGEO
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 
@@ -749,6 +758,8 @@ vegeonly=0
 greenshade=0.12  # 0.10 - 0.15 , 0.10 less green, 0.15 more green
 parse_config_only=0
 onlylaz=0
+mapname=""
+mergepng=0
 
 
 while [ $# -gt 0 ]
@@ -764,6 +775,7 @@ do
 		-i|--curve) intermediate_curve="$2" ; shift ;;
 		#--onlyintermediate ) only_intermediate_curve=1 ; ((step+=1));;
 		-d|--debug) DEBUG="$2" ; shift ;;
+		--mapname) mapname="$2" ; shift ;;
 		#--onlyhillshade ) only_hillshade=1 ;  hillshade=1 ; ((step+=1));;
 		--onlycountours) contoursonly=1 ;;
 		--onlyvege) vegeonly=1 ;;
@@ -800,6 +812,14 @@ mkdir -p "$outdir"
 # special: re-run vege - don't clean temp and copy ini template
 (( vegererun>0 )) && process_rerun_vege 
 (( vegererun>0 )) && exit
+
+# mapname used only to make outfiles to outdir !!!
+[ "$mapname" != "" ] && mapname="$mapname."
+tilename=""
+subdir=$(last_slash "$outdir")
+[ "$subdir" = "." -o "$subdir" = "" ] && subdir="all"
+tilename=${subdir##*/}
+dbg " - tilename: $tilename mapname:$mapname"
 
 # pullauta excute
 # org. pullauta merge dxf without indermedia curves (apukäyrä)
