@@ -91,9 +91,9 @@ get_metsa()
 	#dbg $AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" --mapname "$Xmapname" "$Xarea"
 	#msg $AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" --mapname "$Xmapname" "$Xarea"
 	#$AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" --mapname "$Xmapname" "$Xarea"
-	msg $AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" "$Xarea"
-	dbg $AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" "$Xarea"
-	$AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" "$Xarea"
+	msg $AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" -d "$DEBUG" "$Xarea"
+	dbg $AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" -d "$DEBUG" "$Xarea"
+	$AWMML/get.metsa.sh -y "$year" -o "$Xin"  -t "$tiledir" -d "$DEBUG" "$Xarea"
 }
 
 #########################################################################
@@ -113,9 +113,9 @@ get_mml_kiinteisto()
 	((tiledir>0)) && Xoutdir="$Xin"/"$Xarea"
 	mkdir -p "$Xin"
 	#$AWMML/get.mml.kiinteisto.sh -o "$Xin"  "$Xarea"
-	dbg "$AWMML/get.mml.kiinteistokartta.sh -u 0 -o $Xoutdir  $Xarea"
-	msg "$AWMML/get.mml.kiinteistokartta.sh -u 0 -o $Xoutdir  $Xarea"
-	$AWMML/get.mml.kiinteistokartta.sh -u 0 -o "$Xoutdir"  --mapname "$Xmapname" "$Xarea"
+	dbg "$AWMML/get.mml.kiinteistokartta.sh -u 0 -o $Xoutdir  -d "$DEBUG" $Xarea"
+	msg "$AWMML/get.mml.kiinteistokartta.sh -u 0 -o $Xoutdir  -d "$DEBUG" $Xarea"
+	$AWMML/get.mml.kiinteistokartta.sh -u 0 -o "$Xoutdir"  --mapname "$Xmapname" -d "$DEBUG" "$Xarea"
 }
 
 #########################################################################
@@ -134,9 +134,9 @@ get_mml_shp()
 	[ "$Xarea" = "" ] && echo "not set areacode" >&2 && return 1
 	mkdir -p "$Xin"
 	####$AWMML/get.mml.maastotietokanta.sh -o "$Xin"  "$Xarea"
-	dbg "$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t $tiledir -o $Xin  $Xarea"
-	msg "$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t $tiledir -o $Xin  $Xarea"
-	$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t "$tiledir" -o "$Xin"  --mapname "$Xmapname" "$Xarea"
+	dbg "$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t $tiledir -o $Xin  --mapname "$Xmapname"-d "$DEBUG" $Xarea"
+	msg "$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t $tiledir -o $Xin  --mapname "$Xmapname"-d "$DEBUG" $Xarea"
+	$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t "$tiledir" -o "$Xin"  --mapname "$Xmapname" -d "$DEBUG" "$Xarea"
 }
 #########################################################################
 # MAIN
@@ -144,6 +144,9 @@ get_mml_shp()
 
 DXF_ENCODING=LATIN1
 export DXF_ENCODING
+
+EPSG=""
+[ -f "$AWMML/epsg.cfg" ] && . "$AWMML"/epsg.cfg 
 
 # if set, save
 AWGEOSAVE="$AWGEO"
@@ -228,9 +231,9 @@ mkdir -p "$inputdir" "$outputdir"
 
 masterarea=${arealabel:0:4}
 # process input to output
-dbg "$AWMML/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG $inputdir/${masterarea}*.*"
-msg "$AWMML/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG $inputdir/${masterarea}*.*"
-$AWMML/shpzip2gpkg.sh -t 0 -o "$outputdir" -a "$angle" -n "$arealabel" --mapname "$mapname" -d "$DEBUG" "$inputdir"/"${masterarea}"*.* 
+dbg "$AWMML/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG -e "$EPSG" $inputdir/${masterarea}*.*"
+msg "$AWMML/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG -e "$EPSG" $inputdir/${masterarea}*.*"
+$AWMML/shpzip2gpkg.sh -t 0 -o "$outputdir" -a "$angle" -n "$arealabel" --mapname "$mapname" -d "$DEBUG" -e "$EPSG" "$inputdir"/"${masterarea}"*.* 
 
 dbg "crtfile:$crtfile" 
 dbg "ocdtemplate:$ocdtemplate" 
