@@ -26,6 +26,7 @@ laserlista()
                 wget -O "$filename.$kierros.xml" "$host/$url$next"
                 gawk -f lib/get.2.example.awk "$filename.$kierros.xml" > $filename.$kierros.dat
                 jatkumo=$(grep "ATTR|link|/feed/link|href|" $filename.$kierros.dat 2>/dev/null)
+		echo "jatkumo:$jatkumo"
                 [ "$jatkumo" = "" ] && jatka=0 && continue
                 next=$(echo "$jatkumo" | awk -F '&' '{ print "&" $2 "&" $3 }')
                 echo "seuraava $next"
@@ -325,8 +326,8 @@ do
 	case "$arg" in
 		--all) palvelut="$palvelutkaikki"; break ;;
 		--kaikki) palvelut="$palvelut kaikki_palvelut"; break ;;
-		--laser) palvelut="$palvelut laserlista yhdistalaser"; break ;;
-		--laseryhd) palvelut="$palvelut yhdistalaser"; break ;;
+		--laser) palvelut="$palvelut laserlista yhdista_laser"; break ;;
+		--laseryhd) palvelut="$palvelut yhdista_laser"; break ;;
 		--maasto) palvelut="$palvelut maastotietokantalista yhdista_maastotietokanta"; break ;;
 		--maastoyhd) palvelut="$palvelut yhdista_maastotietokanta"; break ;;
 		--orto) palvelut="$palvelut ortokuvalista yhdista_ortokuva"; break ;;

@@ -295,17 +295,17 @@ shp2gpkg()
 			dbg "  - create $resultfile "
 			case "$Xtype" in
 				palstatunnus|t|s)  # s ei kayttoa tekstilla, mutta menkoon samassa ...
-					dbg "   " ogr2ogr -f "GPKG" "$resultfile" "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "   " ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 				
 				v)
-					dbg "   " ogr2ogr -f "GPKG" "$resultfile" "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1) AS KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "   " ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1) AS KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 				*)
-					dbg "   " ogr2ogr -f "GPKG" "$resultfile" "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "   " ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 			esac
 		else # append
@@ -314,17 +314,17 @@ shp2gpkg()
         		#ogr2ogr -f "GPKG" "$resultfile" -append -update "$shp" -nln "$db" 2>/dev/null
 			case "$Xtype" in
 				palstatunnus|t|s) 
-					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 				
 				v)
-					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1)) AS KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1)) AS KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 				*)
-					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 			esac
 		fi
@@ -584,6 +584,7 @@ tilename=""
 makeocad=1
 angle=0
 mapname=""
+EPSG=""
 DEBUG=0
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
@@ -597,6 +598,9 @@ apikeyfile="apikey.mml.txt"
 [ ! -f "$apikeyfile" ] && err "no apikeyfile: apikey.mml.txt dir: . or $BINDIR or $AWGEO/config or $AWMML" && exit 2
 . $apikeyfile
 
+EPSG=""
+[ -f "$AWMML/epsg.cfg" ] && . "$AWMML"/epsg.cfg 
+
 [ "$apikey" = "" ] && err "no apikey?" && exit 2
 [ "$apihost" = "" ] && err "no apihost?" && exit 3
 
@@ -605,6 +609,7 @@ do
 	arg="$1"
 	case "$arg" in
 		-d) DEBUG="$2" ; shift ;;
+		-e) EPSG="$2" ; shift ;;
 		-a|--angle) angle="$2" ; shift ;;
 		-o|--outputdir) outputdir="$2" ; shift ;;
 		-i|--id) id="$2" ; shift ;;

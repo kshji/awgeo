@@ -18,6 +18,8 @@ PRG="${PRG##*/}"
 
 DEBUG=0
 
+
+
 ########################################################
 usage()
 {
@@ -136,11 +138,11 @@ shp2gpkg()
 		resultfile=$Xarea.$chrN.gpkg
 		dbg "db:$db Xarea:$Xarea label:$label label3:$label3 shp:$shp"
 		if [ ! -f "$resultfile"  ] ; then # create
-        		dbg ogr2ogr -f "GPKG" "$resultfile" "$shp" -nln "$db" 
-        		ogr2ogr -f "GPKG" "$resultfile" "$shp" $quit -nln "$db" 2>/dev/null
+        		dbg ogr2ogr -f "GPKG" "$resultfile" $EPSG  "$shp" -nln "$db" 
+        		ogr2ogr -f "GPKG" "$resultfile" $EPSG  "$shp" $quit -nln "$db" 2>/dev/null
 		else # append
-        		dbg ogr2ogr -f "GPKG" "$resultfile" -append -update "$shp" -nln "$db" 
-        		ogr2ogr -f "GPKG" "$resultfile" $quit -append -update "$shp" -nln "$db" 2>/dev/null
+        		dbg ogr2ogr -f "GPKG" "$resultfile" $EPSG  -append -update "$shp" -nln "$db" 
+        		ogr2ogr -f "GPKG" "$resultfile" $EPSG  $quit -append -update "$shp" -nln "$db" 2>/dev/null
 		fi
 	done 
 
@@ -202,6 +204,10 @@ apikeyfile="apikey.mml.txt"
 [ ! -f "$apikeyfile" ] && apikeyfile="$AWMML/apikey.mml.txt"
 [ ! -f "$apikeyfile" ] && err "no apikeyfile: apikey.mml.txt dir: . or $BINDIR or $AWGEO/config or $AWMML" && exit 2
 . $apikeyfile
+
+EPSG=""
+[ -f "$AWMML/epsg.cfg" ] && . "$AWMML"/epsg.cfg 
+
 
 [ "$apikey" = "" ] && err "no apikey?" && exit 2
 [ "$apihost" = "" ] && err "no apihost?" && exit 3
