@@ -167,8 +167,8 @@ do
 	(( force > 0 )) && rm -f "$outputdir/$name.hillshade.tif" 2>/dev/null
 	dbg "$name hillshade"
 	if [ ! -f "$outputdir/$name.hillshade.tif" ] ; then
-		dbg $AWGEO/hillshade.sh -i "$inf" -o "$outf" -z "$z"
-		((DEBUG<2)) && $AWGEO/hillshade.sh -i "$inf" -o "$outf" -z "$z"
+		dbg $AWGEO/hillshade.sh -i "$inf" -o "$outf" -z "$z" -d "$DEBUG"
+		((DEBUG<2)) && $AWGEO/hillshade.sh -i "$inf" -o "$outf" -z "$z" -d "$DEBUG"
 		stat=$?
 		((stat>0)) && err "hillshade exit error:$stat" && exit 1
 		((DEBUG<2)) && cp -f "$inf" "$outputdir/$name.hillshade.tif" 2>/dev/null
@@ -178,7 +178,7 @@ do
 	dbg "$name forest"
 	(( force > 0 )) && rm -f "$outputdir/$name.forest.png" 2>/dev/null	
 	if [ ! -f "$outputdir/$name.forest.png" ] ; then
-		dbg $AWGEO/forest.sh -i "$lazf" -o "$outputdir" -d $DEBUG
+		dbg $AWGEO/forest.sh -i "$lazf" -o "$outputdir" -d $DEBUG 
 		((DEBUG<2)) && $AWGEO/forest.sh  -i "$lazf" -o "$outputdir" -d $DEBUG 
 	fi
 	rm -f "tmp/$id.tmp.*" 2>/dev/null
