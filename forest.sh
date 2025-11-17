@@ -163,7 +163,7 @@ if [ -f "$AWGEO/config/rgb.rainbow.txt" ] ; then
 	las2dem64 -i $TEMP.normalized.laz  -first_only -step 0.5 -o $TEMP.fo.tif
 	dbg gdaldem color-relief -co WORLDFILE=YES $TEMP.fo.tif "$AWGEO/config/rgb.rainbow.txt"  "$outputdir/$name.color.fo.png"
 	gdaldem color-relief -co WORLDFILE=YES $TEMP.fo.tif "$AWGEO/config/rgb.rainbow.txt"  "$outputdir/$name.color.fo.png"
-        cp -f "$outputdir/$name.fo.wld" "$outputdir/$name.fo.pgw"
+        cp -f "$outputdir/$name.color.fo.wld" "$outputdir/$name.color.fo.pgw"
 	rm -f "$outputdir"/"$name".*.xml 2>/dev/null
 	
 fi

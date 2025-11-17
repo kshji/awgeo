@@ -159,16 +159,19 @@ do
 	fname=$(getfile "$lazf")
 	name=$(getbase "$fname" .laz)
 	dbg "  file:$lazf fname:$fname name:$name outputdir:$outputdir"
-	cp -f "$lazf" $id.tmp.laz
-	inf="$id.tmp.laz"
+	inf="tmp/$id.tmp.laz"
+	cp -f "$lazf" "$inf"
+	outf="tmp/$id.tmp"
 
 	# if not exists result file or force = do it
 	(( force > 0 )) && rm -f "$outputdir/$name.hillshade.tif" 2>/dev/null
 	dbg "$name hillshade"
 	if [ ! -f "$outputdir/$name.hillshade.tif" ] ; then
-		dbg $AWGEO/hillshade.sh -i "$inf" -o "$id.tmp" -z "$z"
-		((DEBUG<2)) && $AWGEO/hillshade.sh -i "$inf" -o "$id.tmp" -z "$z"
-		((DEBUG<2)) && cp -f "$id.tmp.tif" "$outputdir/$name.hillshade.tif" 2>/dev/null
+		dbg $AWGEO/hillshade.sh -i "$inf" -o "$outf" -z "$z"
+		((DEBUG<2)) && $AWGEO/hillshade.sh -i "$inf" -o "$outf" -z "$z"
+		stat=$?
+		((stat>0)) && err "hillshade exit error:$stat" && exit 1
+		((DEBUG<2)) && cp -f "$inf" "$outputdir/$name.hillshade.tif" 2>/dev/null
 	fi
 
 	# if not exists result file or force = do it
@@ -178,7 +181,7 @@ do
 		dbg $AWGEO/forest.sh -i "$lazf" -o "$outputdir" -d $DEBUG
 		((DEBUG<2)) && $AWGEO/forest.sh  -i "$lazf" -o "$outputdir" -d $DEBUG 
 	fi
-	rm -f "$id.tmp.*" 2>/dev/null
+	rm -f "tmp/$id.tmp.*" 2>/dev/null
 done
 status "done, $outputdir/*.hillshade.tif"
 
