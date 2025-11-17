@@ -107,6 +107,38 @@ clear_result()
 }
 
 ################################################################
+getdir()
+{
+        Yinf="$1"
+        Ypath="${Yinf%/*}"
+        [ "$Ypath" = "$Yinf" ] && Ypath="."
+        echo "$Ypath"
+}
+
+################################################################
+getfile()
+{
+        Yinf="$1"
+        echo "${Yinf##*/}"
+}
+
+################################################################
+getext()
+{
+        Yinf="$1"
+        echo "${Yinf##*.}"
+}
+
+################################################################
+getbasename()
+{
+        Yinf="$1"
+        Yext="$2"
+        echo "${Yinf%${Yext}*}"
+}
+
+
+################################################################
 make_json_ground()
 {
 # pdal json 
@@ -127,10 +159,10 @@ cat <<JSON
         {
                 "type":"filters.smrf",
                 "ignore": "Classification[7:7]",
-                "slope": 0.10,
-                "window": 18,
-                "threshold": 0.5,
-                "scalar":1.25
+                "slope": $Gslope,
+                "window": $Gwindow,
+                "threshold": $Gthreshold,
+                "scalar": $Gscalar
          },
          {
                 "type":"filters.range",
@@ -141,6 +173,12 @@ cat <<JSON
 JSON
 
 }
+
+# default
+              #  "slope": 0.10,
+              #  "window": 18,
+              #  "threshold": 0.5,
+              #  "scalar":1.25
 
 ################################################################
 make_json_tiff()
@@ -179,6 +217,11 @@ set_def()
         alt=60
         z=3
         alg=Horn
+
+	Gslope=0.10
+        Gwindow=18
+        Gthreshold=0.5
+        Gscalar=1.25
 }
 
 ################################################################
@@ -209,6 +252,7 @@ id=$$ # process number = unique id for tempfiles
 TEMP="tmp/$id"
 groundfilter="$TEMP.ground_filter.json"
 laz2tiff="$TEMP.laz2tif.json"
+resdir=""
 
 
 outaddon=".hillshade"
@@ -227,14 +271,25 @@ do
 		-v) echo "$PRG Ver:$VER" >&2 ;;
 		-h) usage ; exit 1 ;;
 		-s) save="$2" ; shift;;
+		--slope) Gslope="$2" ; shift ;;
+        	--window) Gwindow="$2" ; shift ;;
+		--threshold) Gthreshold="$2" ; shift ;;
+		--scalar) Gscalar="$2" ; shift ;;
 		-*) usage ; exit 1 ;;
 	esac
 	shift
 done
 
+dbg "$PRG: BEGIN"
 [ "$inf" = "" ] && usage && exit 1
-name=$(basename "$inf" .laz)
+Zdir=$(getdir "$inf")
+Zfile=$(getfile "$inf")
+name=$(getbasename "$Zfile" .laz)
 [ "$result" = "" ] && result="$name"
+
+Ddir=$(getdir "$result")
+Dresult=$(getfile "$result")
+dbg "Ddir:$Ddir Dresult:$Dresult"
 
 status groundfilter $groundfilter
 status laz2tiff $laz2tiff
@@ -245,32 +300,41 @@ clear_result
 
 step make ground
 #[ "$ground" = 1 ] && status "ground $inf" && pdal translate "$inf" "$result".ground.laz --json ground_filter.json  2>/dev/null
-[ "$ground" = 1 -a "$DEBUG" -gt 0 ] && dbg dbg:pdal translate "$inf" "$result".ground.laz --json $groundfilter  
-[ "$ground" = 1 ] && status "ground $inf" && pdal translate "$inf" "$result".ground.laz --json $groundfilter  2>/dev/null
-[ "$ground" = 0 ] && cp -f  "$inf" "$result".ground.laz
-[ ! -f "$result".ground.laz ] && err "no file: "$result".ground.laz" && exit 3
+[ "$ground" = 1 -a "$DEBUG" -gt 0 ] && dbg dbg:pdal translate "$inf" "$Ddir/$Dresult".ground.laz --json $groundfilter  
+[ "$ground" = 1 ] && status "ground $inf" && pdal translate "$inf" "$Ddir/$Dresult".ground.laz --json $groundfilter  2>/dev/null
+[ "$ground" = 0 ] && cp -f  "$inf" "$Ddir/$Dresult".ground.laz
+[ ! -f "$Ddir/$Dresult".ground.laz ] && err "no file: $Ddir/$Dresult.ground.laz" && exit 3
 
 step make tiff
+dbg "destination dir Ddir:$Ddir destination file Dresult:$Dresult"
 dbg dbg:laz2tif "$result".ground.laz "$result".ground.tif 
-laz2tif "$result".ground.laz "$TEMP.$result".ground.tif 
+laz2tif "$Ddir/$Dresult".ground.laz "$TEMP.$Dresult".ground.tif 
 
-[ ! -f "$TEMP.$result".ground.tif ] && err "nofile $TEMP.$result.ground.tif" && exit 4
+[ ! -f "$TEMP.$Dresult".ground.tif ] && err "nofile $TEMP.$Dresult.ground.tif" && exit 4
 step make result file
 #dbg dbg:gdaldem hillshade -co compress=lzw -s $s -compute_edges -az $az -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  
 #gdaldem hillshade -co compress=lzw -s $s -compute_edges -az $az -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  2>/dev/null
-dbg gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  
-gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result"${outaddon}.tif  2>/dev/null
+#dbg gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$result".ground.tif "$result".tif  
+##dbg gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" $TEMP.$Dresult.ground.tif $Ddir/$Dresult${outaddon}.tif  
+##gdaldem hillshade -co compress=lzw -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$Dresult".ground.tif "$Ddir/$Dresult"${outaddon}.tif  2>/dev/null
+# changed output format ftrom tif to png
+Dhillshadefile="$Ddir/$Dresult"${outaddon}.png
+dbg gdaldem hillshade -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" $TEMP.$Dresult.ground.tif "$Dhillshadefile"
+gdaldem hillshade -s $s -compute_edges -multidirectional -alt $alt -z $z -alg "$alg" "$TEMP.$Dresult".ground.tif "$Dhillshadefile" 2>/dev/null
 step done
 
-[ ! -f "$result"${outaddon}.tif ] && err "nofile $result.tif" && exit 5
+[ ! -f "$Dhillshadefile" ] && err "nofile Dhillshadefile" && exit 5
 
-((save>0)) && mv -f $TEMP.$result.ground.tif  "$result".ground.tif
+((save>0)) && mv -f $TEMP.$Dresult.ground.tif  "$Ddir/$Dresult".ground.tif
 
 dbg "dbg: $TEMP.* temporary files"
 [ $DEBUG -lt 1 ] && rm -f $TEMP.* 2>/dev/null
+rm -f "$Dhillshadefile".*xml 2>/dev/null
+rm -f $(getbasename "$Dhillshadefile" ".").kml 2>/dev/null
 
-donestr="result $result.tif"
-[ "$ground" = 1 ] && donestr="$donestr $result.ground.laz"
+donestr="result:$Dhillshadefile"
+[ "$ground" = 1 ] && donestr="$donestr ground:$Ddir/$Dresult.ground.laz"
 
 echo "$donestr"
 
+dbg "$PRG: END"
