@@ -146,21 +146,21 @@ mkdir -p tmp "$outputdir" 2>/dev/null
 fname=$(getfile "$inf")
 name=$(getbase "$fname" ".laz")
 result="${name}.forest.png"
-dbg las2dem64 -i "$inf" -spike_free 0.9  -step "$step"  -hillshade  -o "$outputdir/$result"
-las2dem64 -i "$inf"  -spike_free 0.9  -step "$step"  -hillshade  -o "$outputdir/$result"
+dbg las2dem64 $DEMOMODE -i "$inf" -spike_free 0.9  -step "$step"  -hillshade  -o "$outputdir/$result"
+las2dem64 $DEMOMODE -i "$inf"  -spike_free 0.9  -step "$step"  -hillshade  -o "$outputdir/$result"
 if [ -f "$AWGEO/config/rgb.rainbow.txt" ] ; then
 	dbg "make colored first only"
 	# ground
-	dbg lasground64 -i "$inf" -wilderness -ultra_fine -o $TEMP.ground.laz
-	lasground64 -i "$inf" -wilderness -ultra_fine -o $TEMP.ground.laz
+	dbg lasground64 $DEMOMODE -i "$inf" -wilderness -ultra_fine -o $TEMP.ground.laz
+	lasground64 $DEMOMODE -i "$inf" -wilderness -ultra_fine -o $TEMP.ground.laz
 	# normalize
-	dbg lasheight64 -i $TEMP.ground.laz  -replace_z -o $TEMP.normalized.laz
-	lasheight64 -i $TEMP.ground.laz  -replace_z -o $TEMP.normalized.laz
+	dbg lasheight64 $DEMOMODE -i $TEMP.ground.laz  -replace_z -o $TEMP.normalized.laz
+	lasheight64 $DEMOMODE -i $TEMP.ground.laz  -replace_z -o $TEMP.normalized.laz
 	#
 	#dbg las2dem64 -i $TEMP.normalized.laz -spike_free 0.9 -step 0.5 -o $TEMP.normalized.tif
 	#las2dem64 -i $TEMP.normalized.laz -spike_free 0.9 -step 0.5 -o $TEMP.normalized.tif
-	dbg las2dem64 -i $TEMP.normalized.laz -first_only -step 0.5 -o $TEMP.fo.tif
-	las2dem64 -i $TEMP.normalized.laz  -first_only -step 0.5 -o $TEMP.fo.tif
+	dbg las2dem64 $DEMOMODE -i $TEMP.normalized.laz -first_only -step 0.5 -o $TEMP.fo.tif
+	las2dem64 $DEMOMODE -i $TEMP.normalized.laz  -first_only -step 0.5 -o $TEMP.fo.tif
 	dbg gdaldem color-relief -co WORLDFILE=YES $TEMP.fo.tif "$AWGEO/config/rgb.rainbow.txt"  "$outputdir/$name.color.fo.png"
 	gdaldem color-relief -co WORLDFILE=YES $TEMP.fo.tif "$AWGEO/config/rgb.rainbow.txt"  "$outputdir/$name.color.fo.png"
         cp -f "$outputdir/$name.color.fo.wld" "$outputdir/$name.color.fo.pgw"

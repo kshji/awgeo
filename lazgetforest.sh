@@ -101,8 +101,8 @@ do_green()
 		desf="$outdir/$Xbasen.green.$forest.png"
 		rm -f "$desf" 2>/dev/null
 		# use_bb = bounding box = whole area
-		dbg lasgrid64 -i "$Xinf" -use_bb -keep_class $c -subcircle $SUBCIRCLE -set_RGB $rgb -rgb -step $STEP -o "$desf"
-		lasgrid64 -i "$Xinf" -use_bb -keep_class $c -subcircle $SUBCIRCLE -set_RGB $rgb -rgb -step $STEP -o "$desf"
+		dbg lasgrid64 $DEMOMODE -i "$Xinf" -use_bb -keep_class $c -subcircle $SUBCIRCLE -set_RGB $rgb -rgb -step $STEP -o "$desf"
+		lasgrid64 $DEMOMODE -i "$Xinf" -use_bb -keep_class $c -subcircle $SUBCIRCLE -set_RGB $rgb -rgb -step $STEP -o "$desf"
 		((DEBUG>0)) && dbg $(identify -format "%w %h" "$desf" )
 		rm -f "$outdir/$Xbasen.green.$forest.kml" 2>/dev/null
 	done
