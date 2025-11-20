@@ -19,6 +19,36 @@
 # To get "hakkuuilmoitukset" - Forest cutting notice 
 # $AWMML/get.metsa.sh -y "2020" -o "mml" -t 0 N5424L    N5424R
 #
+: '/*
+Teema -1. kirjain
+
+h = Hallintorajat
+Kunnanrajat, aluehallintorajat, suojelualueiden rajat.
+k = Korkeussuhteet
+Korkeuskäyrät, korkeuspisteet, jyrkänteet.
+l = Liikenneverkko
+Tiet, rautatiet, ajopolut, lautat.
+m = Maanpeite
+Pellot, suot, metsäalueet, kallioalueet, niityt, puistot.
+n = Nimistö
+Karttanimet (kylät, järvet, tiet, talot).
+r = Rakennukset ja rakennelmat
+Asuinrakennukset, julkiset rakennukset, lomamökit, altaat, mastot.
+v = Vesistöt
+Järvet, joet, ojat, rantaviivat, kosket.
+j = Johtoverkko (Joskus erillisenä, joskus osa liikennettä)
+Sähkölinjat, muuntajat, kaasuputket.
+
+_p = Polygon (Alue)
+_v = Viiva (Line/Arc) – Huom: usein 'v', ei 'vector'
+_s = Symboli/Piste (Point)
+_t = Teksti (Text) – Nämä ovat usein pistemäisiä kohteita, joissa on tekstin sijoittelu- ja kääntökulmatiedot.
+
+ogrinfo -al m_L4133R_p.shp -sql "SELECT DISTINCT LUOKKA FROM m_L4133R_p"
+*/'
+#
+#
+#
 PRG="$0"
 BINDIR="${PRG%/*}"
 [ "$PRG" = "$BINDIR" ] && BINDIR="." # - same dir as program
@@ -150,6 +180,7 @@ update_some_symbols_s()
 	dbg "   " ogrinfo  "$Xfile"  $quit  -dialect SQLite -sql " UPDATE  $Xdb SET symbol=34101 WHERE symbol=34100 "
 	ogrinfo  "$Xfile"  $quit  -dialect SQLite -sql " UPDATE  $Xdb SET symbol=34101 WHERE symbol=34100 "
 
+
 	dbg "update_some_symbols_s END "
 }
 
@@ -175,6 +206,15 @@ update_some_symbols_v()
 	# countours - korkeus- ja syvyyskayrat
 	countour_symbols "$Xfile" "$Xdb"
 
+	# roadnames to the own table or own file? File is better 
+	# - must be imported separately to Ocad. Diff crt as symbols, even same symbol = symbol has also text value
+	#ogr2ogr -f GPKG -update nuuksio1.L4132L.gpkg nuuksio1.L4132L.gpkg -nln roadname -sql "SELECT * FROM v WHERE teksti IS NOT NULL"
+	Roadfile="${Xfile%.*}.roadnames.gpkg"
+	#dbg "   " ogr2ogr -f GPKG -update "$Xfile"  "$Xfile" $quit -nln roadname -sql "SELECT * FROM $Xdb WHERE teksti IS NOT NULL"
+	#ogr2ogr -f GPKG -update "$Xfile"  "$Xfile" $quit -nln roadname -sql "SELECT * FROM $Xdb WHERE teksti IS NOT NULL"
+	dbg "    " ogr2ogr -f GPKG  "$Roadfile"  "$Xfile" $quit -nln roadname -sql "SELECT * FROM $Xdb WHERE teksti IS NOT NULL"
+	ogr2ogr -f GPKG  "$Roadfile"  "$Xfile" $quit -nln roadname -sql "SELECT * FROM $Xdb WHERE teksti IS NOT NULL"
+
 	dbg "update_some_symbols_v END $Xfile $Xdb "
 }
 
@@ -197,10 +237,12 @@ shp2gpkg()
 
 	[ ! -f "$Xzip" ] && echo "can't open file:$Xzip" >&2 && exit 3
 	rm -f "$TEMP"/*.shp 2>/dev/null  # there are also some other extrafiles, but don't care ... 
+	dbg unzip -oqj "$Xzip" -d "$TEMP"
 	unzip -oqj "$Xzip" -d "$TEMP"
 
 	#for t in v p s #t
 	cd $TEMP
+	dbg "shp2gpkg kaydaan shp tiedostot kansiossa $TEMP"
 	resultfile=""
 	oifs="$IFS"
 
@@ -209,11 +251,11 @@ shp2gpkg()
 	rm -f *_palstaalue*.* *_raja*.* 2>/dev/null
 
 
-	for shp in *.shp
+	for shpfile in *.shp
 	do
 
 	  	#msg " $shp"	
-		Xbasename=$(getbase "$shp" ".shp")
+		Xbasename=$(getbase "$shpfile" ".shp")
 		IFS="_" Xflds=($Xbasename)
 		IFS="$oifs"
 		Xnumflds=${#Xflds[*]}
@@ -225,7 +267,7 @@ shp2gpkg()
 		# v = vektori
 		# t = text
 		# p = polygon = alue
-		dbg "    $shp Xtype:$Xtype Xsrclayer:$Xsrclayer"
+		dbg "    $shpfile Xtype:$Xtype Xsrclayer:$Xsrclayer"
 
 		# keep on the own database Cadastral index map - FI: Kiinteistot 
 		#case "$Xtype" in
@@ -252,17 +294,17 @@ shp2gpkg()
 		# TPTEKSTI = kiinteiston tunnus mjono
 
 		
-		dbg "   shp:$shp layer/table:$Xsrclayer type:$Xtype"
+		dbg "   shp:$shpfile layer/table:$Xsrclayer type:$Xtype"
 		# normalisoidaan vastaamaan maastokartta tauluja  LUOKKA+TEKSTI
 		case "$Xtype" in
 			palstaalue) continue ;;
 			kiinteistoraja) # set LUOKKA value
 				dbg ""
 				dbg "    - add fields for $Xtype"
-				ogrinfo "$shp" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN LUOKKA integer"   
-				ogrinfo "$shp" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN KARTOGLK integer"   
+				ogrinfo "$shpfile" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN LUOKKA integer"   
+				ogrinfo "$shpfile" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN KARTOGLK integer"   
 
-                        	ogrinfo  "$shp" $quit -dialect SQLite -sql "
+                        	ogrinfo  "$shpfile" $quit -dialect SQLite -sql "
                                 		UPDATE  $Xsrclayer
                                 		SET LUOKKA=99002, KARTOGLK=0
                                 		"
@@ -270,11 +312,11 @@ shp2gpkg()
 			palstatunnus) # set LUOKKA value
 				dbg ""
 				dbg "    - add fields for $Xtype"
-				ogrinfo "$shp" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN LUOKKA integer"   
-				ogrinfo "$shp" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN KARTOGLK integer"   
-                        	ogrinfo "$shp" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN TEKSTI TEXT(250)"
-                        	ogrinfo "$shp" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN SUUNTA integer"
-                        	ogrinfo  "$shp" $quit -dialect SQLite -sql "
+				ogrinfo "$shpfile" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN LUOKKA integer"   
+				ogrinfo "$shpfile" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN KARTOGLK integer"   
+                        	ogrinfo "$shpfile" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN TEKSTI TEXT(250)"
+                        	ogrinfo "$shpfile" $quit -sql "ALTER TABLE $Xsrclayer ADD COLUMN SUUNTA integer"
+                        	ogrinfo  "$shpfile" $quit -dialect SQLite -sql "
                                 		UPDATE  $Xsrclayer
                                 		SET LUOKKA=99001, TEKSTI=TPTEKSTI, KARTOGLK=0, SUUNTA=0
                                 		"
@@ -290,45 +332,46 @@ shp2gpkg()
 		db=$Xtype
 		#resultfile=$Xtilename.$Xtype.gpkg   # every type in the own gpkg  s p t v kiinteistorajapalstaalue palstatunnus
 		resultfile=$Xtilename.gpkg   # every type in the own table  in the db file: s p t v kiinteistoraja palstatunnus
-		dbg "db:$db Xtype:$Xtype shp:$shp"
+		dbg "db:$db Xtype:$Xtype shp:$shpfile"
 		if [ ! -f "$resultfile"  ] ; then # create
 			dbg "  - create $resultfile "
 			case "$Xtype" in
 				palstatunnus|t|s)  # s ei kayttoa tekstilla, mutta menkoon samassa ...
-					dbg "   " ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "   $Xtype:" ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shpfile"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shpfile"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 				
 				v)
-					dbg "   " ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1) AS KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "   $Xtype:" ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shpfile"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1) AS KORARV,TEKSTI, FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shpfile"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1) AS KORARV,TEKSTI, FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 				*)
-					dbg "   " ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shp"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "   $Xtype:" ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shpfile"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG "$shpfile"  $quit -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 			esac
 		else # append
 			dbg "  - update $resultfile "
-        		#dbg ogr2ogr -f "GPKG" "$resultfile" -append -update "$shp" -nln "$db" 
-        		#ogr2ogr -f "GPKG" "$resultfile" -append -update "$shp" -nln "$db" 2>/dev/null
+        		#dbg ogr2ogr -f "GPKG" "$resultfile" -append -update "$shpfile" -nln "$db" 
+        		#ogr2ogr -f "GPKG" "$resultfile" -append -update "$shpfile" -nln "$db" 2>/dev/null
 			case "$Xtype" in
 				palstatunnus|t|s) 
-					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shpfile"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shpfile"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,SUUNTA,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 				
 				v)
-					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1)) AS KORARV,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shpfile"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1) AS KORARV,TEKSTI, FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shpfile"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,CAST(KORARV AS REAL(8.1)) AS KORARV,TEKSTI, FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 				*)
-					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
-					ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shp"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					dbg "    " ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shpfile"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI, FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
+					ogr2ogr -f "GPKG" "$resultfile" $EPSG $quit -append -update "$shpfile"  -dialect sqlite -sql "SELECT LUOKKA,KARTOGLK,TEKSTI,FALSE AS DONE, Geometry FROM $Xsrclayer" -nln "$db"
 					;;
 			esac
 		fi
 	done 
+
 
 
 	dbg "     "
@@ -341,6 +384,7 @@ shp2gpkg()
 ####################################################################################
 data2ocad()
 {
+	# - tarvitaan edelleen, koska Ocad (2025.11) ei osaa suuntaa kayttaa teksteissa eika symboleissa
 	# data2ocad -f "$destfile" -t "$Ytilename" -o "$Ydestdir"  -m "$mapname"
 	Zinf=""
 	Ztilename=""
@@ -384,18 +428,19 @@ data2ocad()
 		dbg "          table $tablename"
 		case "$tablename" in
                         s)  # symbol = POINT
-				[ -f "$Ztilename.$tablename.csv" ] && $AWGEO/csv2dxf.sh --type s --csv "$Ztilename.$tablename.csv" -d $DEBUG   > "$Ztilename.$tablename.dxf"
-				# drop this table from gpkg
-				dbg "       " ogrinfo "$Zinf" -sql "DROP TABLE $tablename"
-				ogrinfo $quit "$Zinf" -sql "DROP TABLE $tablename"
+				((ocad_support_angle<1)) && [ -f "$Ztilename.$tablename.csv" ] && $AWGEO/csv2dxf.sh --type s --csv "$Ztilename.$tablename.csv" -d $DEBUG   > "$Ztilename.$tablename.dxf"
+				# gpkg also include same symbols ... don't drop
+				###dbg "       " ogrinfo "$Zinf" -sql "DROP TABLE $tablename"
+				###ogrinfo $quit "$Zinf" -sql "DROP TABLE $tablename"
                                 ;;
                         t|palstatunnus) # TEXT
 				outtable="$tablename"
 				[ "$tablename" = "palstatunnus" ] && outtable="kiinteistotunnus"
-				[ -f "$Ztilename.$tablename.csv" ] && $AWGEO/csv2dxf.sh --type t --csv "$Ztilename.$tablename.csv" -d $DEBUG  > "$Ztilename.$outtable.dxf"
+				((ocad_support_angle<1)) && [ -f "$Ztilename.$tablename.csv" ] && $AWGEO/csv2dxf.sh --type t --csv "$Ztilename.$tablename.csv" -d $DEBUG  > "$Ztilename.$outtable.dxf"
+				# gpkg also include same symbols ... don't drop
 				# drop this table from gpkg
-				dbg "      " ogrinfo "$Zinf" -sql "DROP TABLE $tablename"
-				ogrinfo $quit "$Zinf" -sql "DROP TABLE $tablename"
+				###dbg "      " ogrinfo "$Zinf" -sql "DROP TABLE $tablename"
+				###ogrinfo $quit "$Zinf" -sql "DROP TABLE $tablename"
                                 ;;
                         *) continue ;;  # table not used
                  esac
@@ -495,6 +540,14 @@ gpkg_update()
                 			UPDATE  $tablename
                 			SET SYMBOL=LUOKKA
                 			"
+
+			# text to every table, not only t|palstatunnus
+			ogrinfo  "$destfile" $quit  -dialect SQLite -sql "
+          				UPDATE  $tablename
+                				SET text=TEKSTI  
+          				WHERE TEKSTI IS NOT NULL
+        				"
+			#
 			dbg "      SET extra field values $destfile table:$tablename"
 			# update angle
 			case "$tablename" in
@@ -507,11 +560,6 @@ gpkg_update()
 					update_some_symbols_s "$destfile" "$tablename"
 					;;
 				t|palstatunnus) # TEXT
-					ogrinfo  "$destfile" $quit  -dialect SQLite -sql "
-          					UPDATE  $tablename
-                					SET text=TEKSTI  
-          					WHERE TEKSTI IS NOT NULL
-        				"
 					ogrinfo  "$destfile"  $quit   -dialect SQLite -sql "
           					UPDATE  $tablename
                 					SET ANGLE=CAST(SUUNTA*1.0/10000.0/3.14159*180.0 + $Yangle AS  TEXT(100) )
@@ -586,6 +634,8 @@ angle=0
 mapname=""
 EPSG=""
 DEBUG=0
+orgargs="$*"
+ocad_include_angle=0   # Ocad 2025.11 not include support for symbol and text anglen the GPKG  = need to process dxf, which support angle
 
 [ "$AWGEO" = "" ] && err "AWGEO env not set" && exit 1
 [ "$AWMML" = "" ] && err "AWMML env not set" && exit 1
@@ -639,6 +689,8 @@ mapname="${mapname%.}"  # remove last dot if exists
 
 zipcnt=0
 
+dbg "$PRG start using: $orgargs"
+
 # shape to gpkg
 
 # loop zip files
@@ -654,8 +706,8 @@ do
 	msg "$zipf"
         dir=$(getdir "$zipf")
         zipfile=$(getfile "$zipf")
-        shpfile=$(getbase "$zipfile" ".zip")
-        Xtilename=$(getbase "$shpfile" ".shp")
+        SHPfile=$(getbase "$zipfile" ".zip")
+        Xtilename=$(getbase "$SHPfile" ".shp")
 	# 1st file give the tilename if not set
 	[ "$tilename" = "" ] && tilename="$Xtilename"
 	outdir="$outputdir/$tilename"
@@ -666,7 +718,9 @@ do
 	mkdir -p "$TEMP" "$outdir"
 
 	# if exist old, rm it
+	((zipcnt<2)) && dbg rm -f "$outdir"/"$mapname$tilename".gpkg "$outdir"/"$mapname$tilename".*.gpkg 
 	((zipcnt<2)) && rm -f "$outdir"/"$mapname$tilename".gpkg "$outdir"/"$mapname$tilename".*.gpkg 2>/dev/null
+	((zipcnt<2)) && dbg rm -f "$outdir"/"$mapname$tilename".*.dxf 
 	((zipcnt<2)) && rm -f "$outdir"/"$mapname$tilename".*.dxf 2>/dev/null
 
 	dbg shp2gpkg "zipf:$zipf" "outdir:$outdir" "sourcedir:$dir" "zipfile:$zipfile" "tilename:$tilename mapname:$mapname"

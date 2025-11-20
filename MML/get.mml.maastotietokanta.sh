@@ -10,6 +10,38 @@
 # get.mml.maastotietokanta.sh -d 1 -p 0 -g 0 -t 0 -o outdir N5424L  N5424R
 # get.mml.maastotietokanta.sh -d 1 -p 0 -g 0 -t 0 -o outdir --mapname somename N5424L  N5424R
 #
+#
+: '/*
+Teema -1. kirjain
+
+h = Hallintorajat
+Kunnanrajat, aluehallintorajat, suojelualueiden rajat.
+k = Korkeussuhteet
+Korkeuskäyrät, korkeuspisteet, jyrkänteet.
+l = Liikenneverkko
+Tiet, rautatiet, ajopolut, lautat.
+m = Maanpeite
+Pellot, suot, metsäalueet, kallioalueet, niityt, puistot.
+n = Nimistö
+Karttanimet (kylät, järvet, tiet, talot).
+r = Rakennukset ja rakennelmat
+Asuinrakennukset, julkiset rakennukset, lomamökit, altaat, mastot.
+v = Vesistöt
+Järvet, joet, ojat, rantaviivat, kosket.
+j = Johtoverkko (Joskus erillisenä, joskus osa liikennettä)
+Sähkölinjat, muuntajat, kaasuputket.
+
+_p = Polygon (Alue)
+_v = Viiva (Line/Arc) – Huom: usein 'v', ei 'vector'
+_s = Symboli/Piste (Point)
+_t = Teksti (Text) – Nämä ovat usein pistemäisiä kohteita, joissa on tekstin sijoittelu- ja kääntökulmatiedot.
+
+ogrinfo -al m_L4133R_p.shp -sql "SELECT DISTINCT LUOKKA FROM m_L4133R_p"
+*/'
+#
+#
+#
+#
 
 PRG="$0"
 BINDIR="${PRG%/*}"
@@ -147,6 +179,8 @@ shp2gpkg()
 	done 
 
 	# init table changes
+	appendstr=" "
+	resultfile=$Xarea.full.gpkg
 	for destfile in $Xarea.*.gpkg
 	do
 		
@@ -168,6 +202,11 @@ shp2gpkg()
 
 
 		[ "$tablename" = "v" ] && update_some_symbols_v "$tablename" "$destfile"
+
+		
+		ogr2ogr -f "GPKG" "$resultfile" $EPSG  $quit $appendstr "$destfile" -nln "$tablename" 2>/dev/null
+		appendstr=" -append -update "
+	
 	done
 
 	#
@@ -218,6 +257,7 @@ do
 	case "$arg" in
 		-d) DEBUG="$2" ; shift ;;
 		-o) outputdir="$2" ; shift ;;
+		-e) EPSG="$2" ; shift ;;
 		-p) png="$2" ; shift ;;
 		-g) do_shp2gpkg="$2" ; shift ;;
 		-t) tiledir="$2" ; shift ;;
