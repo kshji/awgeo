@@ -1,4 +1,4 @@
-#!/usr/local/bin/awsh
+/usr/local/bin/awsh
 # mml2ocad.sh
 # ver 2025-10-21
 # Copyright 2025 Karjalan ATK-Awot Oy
@@ -136,7 +136,9 @@ get_mml_shp()
 	####$AWMML/get.mml.maastotietokanta.sh -o "$Xin"  "$Xarea"
 	dbg "$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t $tiledir -o $Xin  --mapname "$Xmapname"-d "$DEBUG" $Xarea"
 	msg "$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t $tiledir -o $Xin  --mapname "$Xmapname"-d "$DEBUG" $Xarea"
-	$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t "$tiledir" -o "$Xin"  --mapname "$Xmapname" -d "$DEBUG" "$Xarea"
+	$AWMML/get.mml.maastotietokanta.sh -p 1 -g 0 -t "$tiledir" -o "$Xin"  --mapname "$Xmapname" -d "$DEBUG" "$Xarea"
+
+	# tuloksena on sourcedata on jo gpkg tiedostoja !!!
 }
 #########################################################################
 # MAIN
