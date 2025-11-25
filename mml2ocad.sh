@@ -1,4 +1,4 @@
-/usr/local/bin/awsh
+#!/usr/local/bin/awsh
 # mml2ocad.sh
 # ver 2025-10-21
 # Copyright 2025 Karjalan ATK-Awot Oy
