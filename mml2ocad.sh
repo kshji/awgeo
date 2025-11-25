@@ -1,6 +1,6 @@
 #!/usr/local/bin/awsh
 # mml2ocad.sh
-# ver 2025-10-21
+# ver 2025-11-25
 # Copyright 2025 Karjalan ATK-Awot Oy
 # Jukka Inkeri
 # https://github.com/kshji/awgeo
