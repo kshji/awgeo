@@ -9,6 +9,8 @@
 # $AWGEO/mml2ocad.sh --angle -10.6 -a N5424L		   # outputdir sourcedata/N5424L
 # $AWGEO/mml2ocad.sh --angle -10.6 -a N5424L -o mmlkoe  # output to dir mmlkoe/N5424L
 # $AWGEO/mml2ocad.sh --angle -10.6 -a N5424L -m mapname -o mmlkoe  # output to dir mmlkoe/N5424L
+# $AWGEO/mml2ocad.sh -p 1 --angle -10.6 -a N5424L -m mapname -o mmlkoe  # output to dir mmlkoe/N5424L
+# -p 1 = png myos MML haetaan
 #
 #
 # You can set in ja out dirs
@@ -134,9 +136,9 @@ get_mml_shp()
 	[ "$Xarea" = "" ] && echo "not set areacode" >&2 && return 1
 	mkdir -p "$Xin"
 	####$AWMML/get.mml.maastotietokanta.sh -o "$Xin"  "$Xarea"
-	dbg "$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t $tiledir -o $Xin  --mapname "$Xmapname"-d "$DEBUG" $Xarea"
-	msg "$AWMML/get.mml.maastotietokanta.sh -p 0 -g 0 -t $tiledir -o $Xin  --mapname "$Xmapname"-d "$DEBUG" $Xarea"
-	$AWMML/get.mml.maastotietokanta.sh -p 1 -g 0 -t "$tiledir" -o "$Xin"  --mapname "$Xmapname" -d "$DEBUG" "$Xarea"
+	dbg "$AWMML/get.mml.maastotietokanta.sh -p $pngout -g 0 -t $tiledir -o $Xin  --mapname "$Xmapname"-d "$DEBUG" $Xarea"
+	msg "$AWMML/get.mml.maastotietokanta.sh -p $pngout -g 0 -t $tiledir -o $Xin  --mapname "$Xmapname"-d "$DEBUG" $Xarea"
+	$AWMML/get.mml.maastotietokanta.sh -p $pngout -g 0 -t "$tiledir" -o "$Xin"  --mapname "$Xmapname" -d "$DEBUG" "$Xarea"
 
 	# tuloksena on sourcedata on jo gpkg tiedostoja !!!
 }
@@ -170,6 +172,7 @@ outputdir=""
 arealabel=""
 inputdir=""
 save=0
+pngout=0
 year=$(date +'%Y')
 tiledir=1
 
@@ -189,6 +192,7 @@ do
                         [ "$inputdir" = "" ] && inputdir="sourcedata/$arealabel"
                         ;;
                 -o) outputdir="$2" ; shift ;;
+                -p) pngout="$2" ; shift ;;
 		--tiledir) tiledir="$2" ; shift ;;
 		-m|--mapname) mapname="$2" ; shift ;;
                 -t) ocdtemplate="$2" ; shift ;;
