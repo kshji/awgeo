@@ -235,7 +235,7 @@ mkdir -p "$inputdir" "$outputdir"
 [ -f "$inputdir/$arealabel.pgw" ] && cp -f "$inputdir/$arealabel.pgw" "$outputdir/$mapname$arealabel.pgw" 2>/dev/null
 
 
-masterarea=${arealabel:0:4}
+masterarea=${arealabel:0:5}
 # process input to output
 dbg "$AWMML/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG -e "$EPSG" $inputdir/${masterarea}*.*"
 msg "$AWMML/shpzip2gpkg.sh -t 0 -o $outputdir -a $angle -n $arealabel --mapname "$mapname" -d $DEBUG -e "$EPSG" $inputdir/${masterarea}*.*"
@@ -247,6 +247,16 @@ dbg "ocdtemplate:$ocdtemplate"
 # crtfile 1-n, it's possible
 cp -f $crtfile "$outputdir" 2>/dev/null
 [ -f "$ocdtemplate" ] && cp -f "$ocdtemplate" "$outputdir"/$mapname$arealabel.ocd 2>/dev/null
+
+# if we have downloaded orto, then cp those also
+for orto in "$inputdir"/${masterarea}*.orto.j*
+do
+	dbg "   -orto:$orto"
+	[ ! -f "$orto" ] && continue
+	f="${orto##*/}"
+	dbg cp -f "$orto" "$outputdir/$mapname$f" 
+	cp -f "$orto" "$outputdir/$mapname$f" 2>/dev/null
+done
 
 echo "shp inputfiles dir:$inputdir"
 echo "gpkg inputfiles dir:$inputdir"
