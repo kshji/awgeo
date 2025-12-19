@@ -8,7 +8,8 @@ I am a skilled orienteer who works with maps using Ocad software.
 In Finland, we are happy  because we have so much open source 
 [geospatial data](https://asiointi.maanmittauslaitos.fi/karttapaikka/tiedostopalvelu?lang=en).
 [License CC 4.0](https://creativecommons.org/licenses/by/4.0/deed.fi), 
-data open source [National Land Survey of Finland](https://www.maanmittauslaitos.fi/en)
+data open source [National Land Survey of Finland](https://www.maanmittauslaitos.fi/en).
+[API-key](https://www.maanmittauslaitos.fi/en/rajapinnat/api-avaimen-ohje)
 
   * [Awot](https://awot.fi), my company
   * [Suunnistus.info](https://suunnistus.info), my orienteering pages

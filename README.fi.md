@@ -18,6 +18,7 @@ avointa dataa ei olisi syntynyt erilaisia palveluja perustuen MML:n avoimeen dat
  * [MML paikkatietokanta](https://kartta.paikkatietoikkuna.fi/),
  * [Lisenssi CC 4.0](https://creativecommons.org/licenses/by/4.0/deed.fi), 
  * [Maanmittauslaitos](https://www.maanmittauslaitos.fi/)
+ * [MML API-avain](https://www.maanmittauslaitos.fi/rajapinnat/api-avaimen-ohje)
 
 ## Muita lähteitä
  * [Metsänkäyttöilmoitukset](https://metsakeskus.maps.arcgis.com/apps/MapSeries/index.html?appid=e8c03f73165b44aa8edb276e11ca2d2c)
