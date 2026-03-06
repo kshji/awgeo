@@ -21,7 +21,7 @@ avointa dataa ei olisi syntynyt erilaisia palveluja perustuen MML:n avoimeen dat
  * [MML API-avain](https://www.maanmittauslaitos.fi/rajapinnat/api-avaimen-ohje)
 
 ## Muita lähteitä
- * [Metsänkäyttöilmoitukset](https://metsakeskus.maps.arcgis.com/apps/MapSeries/index.html?appid=e8c03f73165b44aa8edb276e11ca2d2c)
+ * [Metsänkäyttöilmoitukset](https://experience.arcgis.com/experience/bc56dcb749f84297aad54c8371a11fdd/page/Voimassaolevat-mets%C3%A4nk%C3%A4ytt%C3%B6ilmoitukset)
 
 ## Jukka Inkeri - Awot
   * [Awot](https://awot.fi), yritykseni
