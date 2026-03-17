@@ -12,6 +12,12 @@ echo $x '${x%%_*}': ${x%%_*} # 1st
 echo $x '${x%_*}':  ${x%_*}  # not last
 # 123_456
 
+# korvaa alusta
+x="123456123456123"
+echo $x '${x/#123/8888}' ${x/#123/8888}
+# korvaa lopusta
+echo $x '${x/%123/9999}'  ${x/%123/9999}
+
 x="path/abc/file.names"
 echo $x '${x##*/}': ${x##*/}  # last
 filename=${x##*/}
