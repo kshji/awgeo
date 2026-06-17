@@ -410,7 +410,7 @@ data2ocad()
 	[ "$Ztilename" = "" ] && err "$usagestr" && return 1
 	[ "$Zdestdir" = "" ] && err "$usagestr" && return 1
 	[ "$Zinf" = "" ] && err "$usagestr" && return 1
-	[ ! -f "$Zinf" = "" ] && err "can't read $Zinf" && return 1
+	[ ! -f "$Zinf" ] && err "can't read $Zinf" && return 1
 
 
 	dbg "          dir:$PWD"
@@ -477,7 +477,7 @@ gpkg_metsa()
         [ "$Ginf" = "" ] && err "$Gerrstr" >&2 && return 1
         [ "$Gtilename" = "" ] && err "$Gerrstr" >&2 && return 2
         [ "$Gdestdir" = "" ] && err "$Gerrstr" >&2 && return 3
-        [ ! -f "$Ginf" = "" ] && err "Can't read $Ginf" >&2 && return 4
+        [ ! -f "$Ginf" ] && err "Can't read $Ginf" >&2 && return 4
 
 	Xoutf="$Gdestdir/$Gmapname$Gtilename.forestcutting.gpkg"
 
