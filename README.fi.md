@@ -73,6 +73,8 @@ neuvotaan tekemään paikkatiedolle sitä ja tätä ...
   * [Proj Widard](https://projectionwizard.org/)
   * [World Magnetic Model (WMM)](https://www.ncei.noaa.gov/products/world-magnetic-model)
   * [Earth Explorer](https://earthexplorer.usgs.gov/)
+  * [Elevation Contour Generator](https://mapscaping.com/free-online-elevation-contour-generator/)
+  * [Download Shapefiles for Any Country](https://mapscaping.com/download-shapefiles-for-any-country/)
 
 ### Muita mielenkiintoisia työkaluja
   * [Virtual DOS](https://copy.sh/v86/?profile=msdos), [Github](https://github.com/copy/v86), myös Linux, Windows98, ... aikamoista.
