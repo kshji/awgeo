@@ -22,7 +22,7 @@ x="path/abc/file.names"
 echo $x '${x##*/}': ${x##*/}  # last
 filename=${x##*/}
 echo $filename '${filename%.name*}': ${filename%.name*}  # not last = basename accept also .name* ex. .names
-echo $filename '${filename%.name}':  ${filename%.name*}  # before .name = basename   accept only ending .name
+echo $filename '${filename%.name}':  ${filename%.name}  # before .name = basename   accept only ending .name
 
 
 prosnum="processes=4"
@@ -35,3 +35,24 @@ echo ${prosnum##*=}  # last fld, delimiter =
 # https://www.ibm.com/docs/en/aix/7.1.0?topic=shell-parameter-substitution-in-korn-posix
 # https://pubs.opengroup.org/onlinepubs/9799919799.2024edition/utilities/V3_chap02.html  
 # https://www.oreilly.com/library/view/korn-shell-unix/0201675234/0201675234_app05lev1sec12.html
+
+# getopts or ...
+while [[ $1 == -* ]]
+do
+        arg="$1"
+        case "$arg" in
+                -d) DEBUG=$2;shift;;
+                --originE) OriginE=$2;shift;;
+                --originN) OriginN=$2;shift;;
+                -E) E=$2;shift;;
+                -N) N=$2;shift;;
+                --scale|-s) scalestr=$2;shift;;
+                --angle|-a) AngleDeg=$2;shift;;
+                --lat) latDeg=$2;shift;;
+                --lon) lonDeg=$2;shift;;
+                --cmd|-c) Cmd=$2;shift;;
+		-*) usage ;;
+        esac
+        shift
+done
+# $* is data if there is something left
