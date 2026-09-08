@@ -107,8 +107,8 @@ make_symbol_dxf()
         #[ "$osym" = "-1" ] && continue
         #[ "$shpsym" = "" ] && continue
 
-        dbg ogr2ogr -f DXF dxf/$Xsym.dxf -where "symbol=$Xsym" $Xinf.shp 
-        ogr2ogr -f DXF dxf/$Xsym.dxf -where "symbol=$Xsym" $Xinf.shp 2>/dev/null >&2
+        dbg ogr2ogr -skipfailures -f DXF dxf/$Xsym.dxf -where "symbol=$Xsym" $Xinf.shp 
+        ogr2ogr -skipfailures -f DXF dxf/$Xsym.dxf -where "symbol=$Xsym" $Xinf.shp 2>/dev/null >&2
 
         # give name for layer = symbol value
         make_symbol_value dxf/$Xsym.dxf "$Xsym" 2>/dev/null
@@ -131,8 +131,8 @@ make_symbol_dxf()
   # merged_$Xtype.shp done, include all symbols in one file
 
   # make dxf
-  dbg ogr2ogr -f DXF merged_$Xtype.dxf  merged_$Xtype.shp 
-  ogr2ogr -f DXF merged_$Xtype.dxf  merged_$Xtype.shp 2>/dev/null
+  dbg ogr2ogr -skipfailures -f DXF merged_$Xtype.dxf  merged_$Xtype.shp 
+  ogr2ogr -skipfailures -f DXF merged_$Xtype.dxf  merged_$Xtype.shp 2>/dev/null
 
   mv -f merged_$Xtype.dxf ${arealabel}_$Xtype.dxf
   rm -f temp.*  2>/dev/null
