@@ -91,6 +91,8 @@ z=3
 spikefree=0
 mergepng=0
 
+export LD_LIBRARY_PATH=/usr/local/lib/6
+
 outputdir="output"
 inputdir="input"
 
@@ -781,7 +783,7 @@ do
 		--onlycountours) contoursonly=1 ;;
 		--onlyvege) vegeonly=1 ;;
 		--greenlevel) greenshade=$2 ; shift ;;
-		--onlylaz|--noshp) onlylaz=1 ;;
+		--onlylaz|--noshp) onlylaz=1 ; hillshade=0 ; spikefree=0 ;;
 		--vegererun ) vegererun=1 ;;
 		-s|--hillshade) hillshade=1 ;;
 		--spikefree) spikefree=1 ;;
