@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # pullauta.run.sh
-VER=2025-10-23a
+VER=2026-09-10a
+# pullautin 2.15.1
 #
 # Karjalan ATK-Awot Oy
 # Jukka Inkeri
