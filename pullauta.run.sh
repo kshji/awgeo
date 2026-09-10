@@ -620,8 +620,8 @@ pullauta_this_set()
 	 rm -f merged.dxf 2>/dev/null
 	 ((DEBUG>1)) && press_enter step 5
 	 #aw_merge_dxf merged.aw.dxf c2 c3 contours dotknolls basemap
-	 # merge contours and baseline
-	 aw_merge_dxf merged.aw.dxf contours baseline 
+	 # merge contours and basemap
+	 aw_merge_dxf merged.aw.dxf contours basemap 
 	 dbg "cp -f merged.aw.dxf $outputdir/$Xtilename.contours.all$Xcnt.dxf" 
 	 cp -f merged.aw.dxf "$outputdir"/"$Xtilename.contours.all$Xcnt.dxf" 2>/dev/null
 	 dbg "aw_merge_dxf done: merged.aw.dxf $outputdir/$Xtilename.contours.all$Xcnt.dxf"
