@@ -661,6 +661,8 @@ pullauta_this_set()
 	 mv -f "$outdir"/*.laz.p?? "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*.laz_depr.p?? "$outdir/addon" 2>/dev/null
 	 rm -f "$outdir"/*.bin "$outdir/addon" 2>/dev/null
+	 rm -f merged.aw* 2>/dev/null
+
 	 #mv -f "$outdir"/*.bin "$outdir/addon" 2>/dev/null
 
          # make clean to the next process block input
