@@ -394,7 +394,7 @@ make_vege()
 }
 
 ################################################################
-ke_curve()
+make_curve()
 {
 	Xi=$1 
 	Xicurve=$2
@@ -532,7 +532,7 @@ process_shp()
 ################################################################
 press_enter()
 {
-	echo -n "Enter $1:"
+	echo -n "Enter $*:"
 	read Enter
 }
 
@@ -556,7 +556,7 @@ pullauta_this_set()
          rm -rf pullautus*.png pullautus*.pgw temp/* temp?/* 2>/dev/null
 	 rm -f *.xyz *.xyz.bin 2>/dev/null
 	 rm -f merged* 2>/dev/null
-	 ((DEBUG>1)) && ls "$outputdir" && press_enter
+	 ((DEBUG>1)) && ls "$outputdir" && press_enter start
          mkdir -p "$outputdir"
 	 
 	 #((DEBUG>0)) && ls "$inputdir" && echo -n "Continue:" && read continue || echo -n "Continue:" && read continue
@@ -588,9 +588,9 @@ pullauta_this_set()
 	 mv -f "$outputdir"/*contours03*.dxf* "$outputdir"/.save 2>/dev/null
 	 # merge countours step 2 using aw_merge, because pullautin merge.dxf not include formlines !!!!????
 	 mv -f "$outputdir"/*contours*.dxf* "$outputdir"/.contours 2>/dev/null
-	 mv -f "$outputdir"/*baseline*.dxf* "$outputdir"/.contours 2>/dev/null
+	 mv -f "$outputdir"/*basemap*.dxf* "$outputdir"/.contours 2>/dev/null
 	 # rest files merge
-	 ((DEBUG>1)) && press_enter
+	 ((DEBUG>1)) && press_enter step 1
 
 	 # merge all except contours03 !!!
 	 msg "DXF merge begin : $outputdir"
@@ -600,9 +600,9 @@ pullauta_this_set()
 	 #((DEBUG>0)) && ls -1 $outputdir
 	 # currentdir include lot of merged file, but merged.dxf include all - but not fommlines !!!!????
 	 msg "DXF merge done : $outputdir"
-	 dbg " -  cp merged.dxf $outputdir/$Xtilename.all$Xcnt.dxf"
-	 cp -f merged.dxf "$outputdir"/"$Xtilename.all$Xcnt.dxf" 2>/dev/null
-	 ((DEBUG>1)) && press_enter 2
+	 dbg " -  cp merged.dxf $outputdir/$Xtilename.other.all$Xcnt.dxf"
+	 cp -f merged.dxf "$outputdir"/"$Xtilename.other.all$Xcnt.dxf" 2>/dev/null
+	 ((DEBUG>1)) && press_enter step 2
 	 # next lines are only bug fix
 	 # aw fix for merge all: can't put all together
 	 # process awot merge only if pullauta can't do full merge
@@ -610,22 +610,22 @@ pullauta_this_set()
 	 mkdir -p "$outputdir"/.other
 	 mv -f "$outputdir"/*.dxf* "$outputdir"/.other 2>/dev/null
 	 mv -f "$outputdir"/.contours/* "$outputdir"  2>/dev/null
-	 ((DEBUG>1)) && press_enter 2b
+	 ((DEBUG>1)) && press_enter step 3
 	 # merge countours
 	 [ "$pulaw" = "" ] && pullauta dxfmerge  || pullauta.aw dxfmerge
 	 # now we have merged_   countours, baseline
 	 # merge those together
 	 # remove bug merged (=formlines not included)
-	 ((DEBUG>1)) && press_enter 2c
+	 ((DEBUG>1)) && press_enter step 4
 	 rm -f merged.dxf 2>/dev/null
-	 ((DEBUG>1)) && press_enter 3
+	 ((DEBUG>1)) && press_enter step 5
 	 #aw_merge_dxf merged.aw.dxf c2 c3 contours dotknolls basemap
 	 # merge contours and baseline
 	 aw_merge_dxf merged.aw.dxf contours baseline 
 	 dbg "cp -f merged.aw.dxf $outputdir/$Xtilename.contours.all$Xcnt.dxf" 
 	 cp -f merged.aw.dxf "$outputdir"/"$Xtilename.contours.all$Xcnt.dxf" 2>/dev/null
 	 dbg "aw_merge_dxf done: merged.aw.dxf $outputdir/$Xtilename.contours.all$Xcnt.dxf"
-	 ((DEBUG>1)) && press_enter 4
+	 ((DEBUG>1)) && press_enter step 6
 
 	 # return back to dir after merge
 	 mv -f "$outputdir"/.other/*.dxf "$outputdir" 2>/dev/null
@@ -633,7 +633,7 @@ pullauta_this_set()
 	 rm -rf "$outputdir"/.save 2>/dev/null
 	 rm -rf "$outputdir"/.contours 2>/dev/null
 	 rm -rf "$outputdir"/.other 2>/dev/null
-	 ((DEBUG>1)) && press_enter 5
+	 ((DEBUG>1)) && press_enter step 7
 	 #((DEBUG>1)) && ls -1 $outputdir
 	 msg "________________________________________________"
          #mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
