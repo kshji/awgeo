@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # pullauta.run.sh
-VER=2026-09-10a
+VER=2026-09-11a
 # pullautin 2.15.1
+# support full dxf merge using pullautin which save all contours 
+## output_dxf=1
+## merge_dxf_full=1
 #
 # Karjalan ATK-Awot Oy
 # Jukka Inkeri
@@ -83,7 +86,7 @@ PRG="${PRG##*/}"
 angle=0
 DEBUG=0
 configfile=$AWGEO/config/pullauta.template.ini
-[ -f config/pullauta.template.ini ] && configfile=config/pullauta.ini
+[ -f config/pullauta.template.ini ] && configfile=config/pullauta.template.ini
 intermediate_curve="0"  # new version, def is 0 in the config
 only_intermediate_curve=0
 only_hillshade=0
@@ -97,6 +100,19 @@ export LD_LIBRARY_PATH=/usr/local/lib/6
 outputdir="output"
 inputdir="input"
 
+
+########################################################
+usagedxf() 
+{
+	cat <<EOF >&2
+	pullauta.ini have to include:
+		output_dxf=1
+
+	If you have pullauta with support setup:
+		merge_dxf_full=1
+	Then use it - it is FAST
+EOF
+}
 
 ########################################################
 usage()
@@ -537,6 +553,71 @@ press_enter()
 }
 
 ################################################################
+merge_using_awmerge()
+{
+ 	# merge countours step 2 using aw_merge, because pullautin merge.dxf not include formlines !!!!????
+ 	mv -f "$outputdir"/*contours*.dxf* "$outputdir"/.contours 2>/dev/null
+ 	mv -f "$outputdir"/*basemap*.dxf* "$outputdir"/.contours 2>/dev/null
+	# merge all except contours03 !!!
+	msg "merge_using_awmerge begin : $outputdir"
+	((DEBUG>0)) && ls -1 $outputdir
+	[ "$pulaw" = "" ] && pullauta dxfmerge  || pullauta.aw dxfmerge
+	dbg "    DXF merge pullauta dxfmerge done"
+	#((DEBUG>0)) && ls -1 $outputdir
+	# currentdir include lot of merged file, but merged.dxf include all - but not fommlines !!!!????
+	msg "DXF merge done : $outputdir"
+	dbg " -  cp merged.dxf $outputdir/$Xtilename.other.all$Xcnt.dxf"
+	cp -f merged.dxf "$outputdir"/"$Xtilename.other.all$Xcnt.dxf" 2>/dev/null
+	((DEBUG>1)) && press_enter step 2
+	# next lines are only bug fix
+	# aw fix for merge all: can't put all together
+	# process awot merge only if pullauta can't do full merge
+	# pullautin merge now include all other than counters
+	mkdir -p "$outputdir"/.other
+	mv -f "$outputdir"/*.dxf* "$outputdir"/.other 2>/dev/null
+	mv -f "$outputdir"/.contours/* "$outputdir"  2>/dev/null
+	((DEBUG>1)) && press_enter step 3
+	# merge countours
+	[ "$pulaw" = "" ] && pullauta dxfmerge  || pullauta.aw dxfmerge
+	# now we have merged_   countours, baseline
+	# merge those together
+	# remove bug merged (=formlines not included)
+	((DEBUG>1)) && press_enter step 4
+	rm -f merged.dxf 2>/dev/null
+	((DEBUG>1)) && press_enter step 5
+	#aw_merge_dxf merged.aw.dxf c2 c3 contours dotknolls basemap
+	# merge contours and basemap
+	aw_merge_dxf merged.aw.dxf contours basemap 
+	dbg "cp -f merged.aw.dxf $outputdir/$Xtilename.contours.all$Xcnt.dxf" 
+	cp -f merged.aw.dxf "$outputdir"/"$Xtilename.contours.all$Xcnt.dxf" 2>/dev/null
+	dbg "aw_merge_dxf done: merged.aw.dxf $outputdir/$Xtilename.contours.all$Xcnt.dxf"
+	((DEBUG>1)) && press_enter step 6
+
+	mv -f "$outputdir"/.other/*.dxf "$outputdir" 2>/dev/null
+	mv -f "$outputdir"/.save/*.dxf "$outputdir" 2>/dev/null
+	rm -rf "$outputdir"/.save 2>/dev/null
+	rm -rf "$outputdir"/.contours 2>/dev/null
+	rm -rf "$outputdir"/.other 2>/dev/null
+	((DEBUG>1)) && press_enter step 7_awmerge
+	#((DEBUG>1)) && ls -1 $outputdir
+	msg "________________________________________________"
+}
+
+################################################################
+merge_using_pullauta()
+{
+	# need pullauta version which process merged.dxf saving also contours and formlines
+	# pullauta.ini has setup merge_dxf_full=1
+	msg "merge_using_pullauta begin : $outputdir"
+	$AWGEO/pullauta.awot dxfmerge || pullauta dxfmerge  
+	msg "DXF merge done : $outputdir"
+	dbg " -  cp merged.dxf $outputdir/$Xtilename.all$Xcnt.dxf"
+	mv -f merged.dxf "$outputdir"/"$Xtilename.all$Xcnt.dxf" 2>/dev/null
+	((DEBUG>1)) && press_enter step 7_pullauta
+	msg "________________________________________________"
+}
+
+################################################################
 pullauta_this_set()
 {
 	 # make pullauta
@@ -564,8 +645,7 @@ pullauta_this_set()
 	 # pullauta process threated, temp[1-n] subdir and result locate is $outputdir = merged in this set
 	 # need to copy to the my result file
 	 dbg "  pulaw:$pulaw"
-         [ "$pulaw" = "" ] && pullauta || pullauta.aw
-
+         [ "$pulaw" = "" ] && pullauta || pullauta.aw || $AWGEO/pullauta.awot
 
          # do add on
          # The map can also have what is called an intermediate curve between the curve
@@ -580,74 +660,64 @@ pullauta_this_set()
          (( mergepng > 0 )) && merge_png "$outputdir"
 
          # mv pullauta results to the user outdir
-	 dbg "   " rm -f "$outputdir"/"*detected.*"   # not needed
+	 #dbg "   " rm -f "$outputdir"/"*detected.*"   # not needed
 	 #rm -f "$outputdir"/*detected.*   # not needed   2026-09 - we need this, it's usable for map makers
 	 mkdir -p "$outputdir"/.save
 	 mkdir -p "$outputdir"/.contours
 	 # not merge contours03, not needed usually
 	 mv -f "$outputdir"/*contours03*.dxf* "$outputdir"/.save 2>/dev/null
-	 # merge countours step 2 using aw_merge, because pullautin merge.dxf not include formlines !!!!????
-	 mv -f "$outputdir"/*contours*.dxf* "$outputdir"/.contours 2>/dev/null
-	 mv -f "$outputdir"/*basemap*.dxf* "$outputdir"/.contours 2>/dev/null
-	 # rest files merge
+
+	 # Merge DXF using Awot Merge OR Pullautin merge using ini values: output_dxf=1  AND merge_dxf_full=1
+	 merge_dxf_full=$(grep "^merge_dxf_full=1" pullauta.ini 2>/dev/null)
+	 merge_dxf_full=${merge_dxf_full##*=}  # - variable value
+	 output_dxf=$(grep "^output_dxf=1" pullauta.ini 2>/dev/null)
+	 output_dxf=${output_dxf##*=}  # - variable value
+	 # have we done dxf?
+	 [ "$output_dxf" != "1" ] && usagedxf && return
+
+	 # files merge
 	 ((DEBUG>1)) && press_enter step 1
+	 # which merge we'll use - fast pullauta or slower awotmerge
+	 dxfdone=0
+	 if [ "$merge_dxf_full" = "1" ] && [ -f $AWGEO/pullauta.awot ] ; then
+		dbg "merge_using_pullauta"
+		merge_using_pullauta
+		dxfdone=1
+	 fi
+	 if (( dxfdone < 1 )) ; then
+		dbg "merge_using_awmerge"
+		merge_using_awmerge
+		# return not merged dxf
+	 	mv -f "$outputdir"/.save/*contours03*.dxf* "$outputdir" 2>/dev/null
+	 fi
 
-	 # merge all except contours03 !!!
-	 msg "DXF merge begin : $outputdir"
-	 ((DEBUG>0)) && ls -1 $outputdir
-	 [ "$pulaw" = "" ] && pullauta dxfmerge  || pullauta.aw dxfmerge
-	 dbg "    DXF merge pullauta dxfmerge done"
-	 #((DEBUG>0)) && ls -1 $outputdir
-	 # currentdir include lot of merged file, but merged.dxf include all - but not fommlines !!!!????
-	 msg "DXF merge done : $outputdir"
-	 dbg " -  cp merged.dxf $outputdir/$Xtilename.other.all$Xcnt.dxf"
-	 cp -f merged.dxf "$outputdir"/"$Xtilename.other.all$Xcnt.dxf" 2>/dev/null
-	 ((DEBUG>1)) && press_enter step 2
-	 # next lines are only bug fix
-	 # aw fix for merge all: can't put all together
-	 # process awot merge only if pullauta can't do full merge
-	 # pullautin merge now include all other than counters
-	 mkdir -p "$outputdir"/.other
-	 mv -f "$outputdir"/*.dxf* "$outputdir"/.other 2>/dev/null
-	 mv -f "$outputdir"/.contours/* "$outputdir"  2>/dev/null
-	 ((DEBUG>1)) && press_enter step 3
-	 # merge countours
-	 [ "$pulaw" = "" ] && pullauta dxfmerge  || pullauta.aw dxfmerge
-	 # now we have merged_   countours, baseline
-	 # merge those together
-	 # remove bug merged (=formlines not included)
-	 ((DEBUG>1)) && press_enter step 4
-	 rm -f merged.dxf 2>/dev/null
-	 ((DEBUG>1)) && press_enter step 5
-	 #aw_merge_dxf merged.aw.dxf c2 c3 contours dotknolls basemap
-	 # merge contours and basemap
-	 aw_merge_dxf merged.aw.dxf contours basemap 
-	 dbg "cp -f merged.aw.dxf $outputdir/$Xtilename.contours.all$Xcnt.dxf" 
-	 cp -f merged.aw.dxf "$outputdir"/"$Xtilename.contours.all$Xcnt.dxf" 2>/dev/null
-	 dbg "aw_merge_dxf done: merged.aw.dxf $outputdir/$Xtilename.contours.all$Xcnt.dxf"
-	 ((DEBUG>1)) && press_enter step 6
+	 #########################################
+	 # save all merged files
+	 for f in merged*dxf
+	 do
+		Xfilename=${f%.*}
+		[ ! -f "$f" ] && continue
+		mv -f "$f" "$outputdir"/$Xfilename$Xcnt.dxf 2>/dev/null
 
-	 # return back to dir after merge
-	 mv -f "$outputdir"/.other/*.dxf "$outputdir" 2>/dev/null
-	 mv -f "$outputdir"/.save/*.dxf "$outputdir" 2>/dev/null
-	 rm -rf "$outputdir"/.save 2>/dev/null
-	 rm -rf "$outputdir"/.contours 2>/dev/null
-	 rm -rf "$outputdir"/.other 2>/dev/null
-	 ((DEBUG>1)) && press_enter step 7
-	 #((DEBUG>1)) && ls -1 $outputdir
-	 msg "________________________________________________"
-         #mv -f "$outputdir"/*.* "$outdir" 2>/dev/null
+	 done 
+	 
+
+	 #########################################
 	 for f in "$outputdir"/*.*
 	 do
 		filename=${f##*/}
          	dbg "     " mv -f "$f" "$outdir"/"$mapname$filename" 
          	mv -f "$f" "$outdir"/"$mapname$filename" 2>/dev/null
 	 done
-	# All other has done, provess counters, formlines, baselines
+	 # All other has done, provess counters, formlines, baselines
 
 	 
 	 # some datafiles to subdir - all dxf except all.dxf
+	 rm -rf "$outdir"/.save 2>/dev/null
+	 rm -rf "$outdir"/.other 2>/dev/null
+	 rm -rf "$outdir"/.contours 2>/dev/null
 	 mkdir -p "$outdir/addon" 
+	 mv -f "$outputdir"/*merged*.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_undergrowth.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_dotknolls.dxf "$outdir/addon" 2>/dev/null
 	 mv -f "$outdir"/*_c?g.dxf "$outdir/addon" 2>/dev/null

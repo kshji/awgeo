@@ -56,3 +56,15 @@ do
         shift
 done
 # $* is data if there is something left
+#
+#
+: '/*
+LC_ALL	The LC_ALL value takes precedence over the values of all the other environment variables, and if set, determines the language, character set, sort order, and data formats.
+LC_COLLATE	This environment variable defines the collating sequence (or sort order).
+LC_CTYPE	This environment variable defines the character classification and case conversion.
+LC_MESSAGES	This environment variable defines the language and character set for messages.
+LC_MONETARY	This environment variable defines the format for monetary numeric information.
+LC_NUMERIC	This environment variable defines numeric, non-monetary formatting.
+LC_TIME	This environment variable defines the date and time formats.
+LANG	If LC_ALL is not set, the LANG value determines the language, character set, and sort order. Different elements of the LANG value can be overridden by setting the LC_COLLATE, LC_CTYPE, LC_MESSAGE, and LC_TIME environment variables.
+*/'
